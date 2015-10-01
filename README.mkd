@@ -1,8 +1,9 @@
-Open Source, Open Hardware Fitness Watch
-EECS 473 F15 Project
-
-Nathan Immerman
-Joshua Kaufman
-Tyler Kohan
-Amit Shah
-Steven Sloboda
+# Open Source, Open Hardware Fitness Watch    
+#### EECS 473 F15 Project                                                         
+---
+## Team Members
+Nathan Immerman                                                                 
+Joshua Kaufman                                                                  
+Tyler Kohan                                                                     
+Amit Shah                                                                       
+Steven Sloboda  
