@@ -1,6 +1,5 @@
 # Open Source, Open Hardware Fitness Watch    
 #### EECS 473 F15 Project                                                         
----
 ## Team Members
 Nathan Immerman                                                                 
 Joshua Kaufman                                                                  
