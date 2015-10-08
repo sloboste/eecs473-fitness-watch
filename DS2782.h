@@ -2,6 +2,11 @@
  * Interface for the Maxim DS2782 Stand Alone Fuel Gauge IC.
  */
 
+#ifndef _DS2782_H
+#define _DS2782_H
+
+#include <stdint.h>
+
 
 /* The modes of operation that the DS2782 can be in.
  */
@@ -113,3 +118,5 @@ void _DS2782_writeReg(enum DS2782_regEnum, uint8_t data);
  * functionality without a specific function in this interface.
  */
 uint8_t _DS2782_readReg(enum DS2782_regEnum);
+
+#endif
