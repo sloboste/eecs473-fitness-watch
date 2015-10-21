@@ -6,3 +6,8 @@ Joshua Kaufman
 Tyler Kohan                                                                     
 Amit Shah                                                                       
 Steven Sloboda  
+
+## Setup
+* Download the jlink software for your specific platmform from jhttps://www.segger.com/jlink-software.html
+* Download the GCC ARM Embedded Toolchain from https://launchpad.net/gcc-arm-embedded/+download or if you're running Ubuntu https://launchpad.net/~terry.guo/+archive/ubuntu/gcc-arm-embedded works very well
+* Make sure to run ```git submodule update --init --recursive```
