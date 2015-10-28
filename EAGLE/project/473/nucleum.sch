@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="6.5.0">
+<eagle version="6.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -2888,11 +2888,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <sheet>
 <plain>
 <text x="91.44" y="127" size="1.778" layer="98">A-1.8V B-3.0V Output</text>
+<text x="35.56" y="76.2" size="1.778" layer="91">Sup</text>
 </plain>
 <instances>
 <instance part="FRAME2" gate="G$1" x="0" y="0"/>
 <instance part="FRAME2" gate="G$2" x="147.32" y="0"/>
-<instance part="U4" gate="G$1" x="86.36" y="109.22"/>
+<instance part="U4" gate="G$1" x="86.36" y="142.24"/>
 <instance part="GND2" gate="1" x="71.12" y="93.98"/>
 <instance part="GND6" gate="1" x="104.14" y="93.98"/>
 <instance part="L2" gate="G$1" x="109.22" y="119.38" rot="R90"/>
@@ -2902,10 +2903,10 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <instance part="C15" gate="G$1" x="43.18" y="114.3">
 <attribute name="DIGIKEY" x="43.18" y="114.3" size="1.27" layer="96" display="off"/>
 </instance>
-<instance part="C16" gate="G$1" x="109.22" y="111.76" smashed="yes">
-<attribute name="DIGIKEY" x="109.22" y="111.76" size="1.27" layer="96" display="off"/>
-<attribute name="NAME" x="106.68" y="110.49" size="1.778" layer="95" ratio="12" rot="R90" align="bottom-center"/>
-<attribute name="VALUE" x="111.76" y="110.49" size="1.778" layer="96" ratio="12" rot="R270" align="bottom-center"/>
+<instance part="C16" gate="G$1" x="119.38" y="96.52" smashed="yes">
+<attribute name="DIGIKEY" x="119.38" y="96.52" size="1.27" layer="96" display="off"/>
+<attribute name="NAME" x="116.84" y="95.25" size="1.778" layer="95" ratio="12" rot="R90" align="bottom-center"/>
+<attribute name="VALUE" x="121.92" y="95.25" size="1.778" layer="96" ratio="12" rot="R270" align="bottom-center"/>
 </instance>
 <instance part="J2" gate="G$1" x="175.26" y="114.3" rot="R180"/>
 <instance part="GND19" gate="1" x="182.88" y="106.68"/>
@@ -2921,18 +2922,18 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <pinref part="GND2" gate="1" pin="GND"/>
 <wire x1="71.12" y1="96.52" x2="71.12" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="U4" gate="G$1" pin="GND"/>
-<wire x1="71.12" y1="99.06" x2="73.66" y2="99.06" width="0.1524" layer="91"/>
+<wire x1="71.12" y1="99.06" x2="73.66" y2="132.08" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="109.22" x2="43.18" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="99.06" x2="48.26" y2="99.06" width="0.1524" layer="91"/>
 <junction x="71.12" y="99.06"/>
 <pinref part="U4" gate="G$1" pin="VSEL1"/>
 <wire x1="48.26" y1="99.06" x2="71.12" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="111.76" x2="71.12" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="144.78" x2="71.12" y2="111.76" width="0.1524" layer="91"/>
 <wire x1="71.12" y1="111.76" x2="71.12" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="C15" gate="G$1" pin="2"/>
 <pinref part="U4" gate="G$1" pin="VSEL2"/>
 <wire x1="71.12" y1="109.22" x2="71.12" y2="99.06" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="109.22" x2="71.12" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="142.24" x2="71.12" y2="109.22" width="0.1524" layer="91"/>
 <junction x="71.12" y="109.22"/>
 <pinref part="S1" gate="G$1" pin="A"/>
 <wire x1="50.8" y1="101.6" x2="48.26" y2="101.6" width="0.1524" layer="91"/>
@@ -2941,11 +2942,11 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </segment>
 <segment>
 <pinref part="U4" gate="G$1" pin="CTRL"/>
-<wire x1="99.06" y1="101.6" x2="104.14" y2="101.6" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="134.62" x2="104.14" y2="101.6" width="0.1524" layer="91"/>
 <wire x1="104.14" y1="101.6" x2="104.14" y2="96.52" width="0.1524" layer="91"/>
 <pinref part="GND6" gate="1" pin="GND"/>
 <wire x1="104.14" y1="101.6" x2="109.22" y2="101.6" width="0.1524" layer="91"/>
-<wire x1="109.22" y1="101.6" x2="109.22" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="101.6" x2="119.38" y2="91.44" width="0.1524" layer="91"/>
 <junction x="104.14" y="101.6"/>
 <pinref part="C16" gate="G$1" pin="2"/>
 </segment>
@@ -2969,8 +2970,8 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <wire x1="119.38" y1="119.38" x2="119.38" y2="116.84" width="0.1524" layer="91"/>
 <pinref part="U4" gate="G$1" pin="VOUT"/>
 <wire x1="119.38" y1="116.84" x2="109.22" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="109.22" y1="116.84" x2="99.06" y2="116.84" width="0.1524" layer="91"/>
-<wire x1="109.22" y1="114.3" x2="109.22" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="116.84" x2="99.06" y2="149.86" width="0.1524" layer="91"/>
+<wire x1="119.38" y1="99.06" x2="109.22" y2="116.84" width="0.1524" layer="91"/>
 <junction x="109.22" y="116.84"/>
 <junction x="119.38" y="119.38"/>
 <pinref part="P+1" gate="VCC" pin="VCC"/>
@@ -2982,12 +2983,12 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <net name="BATTERY" class="0">
 <segment>
 <pinref part="U4" gate="G$1" pin="VIN"/>
-<wire x1="73.66" y1="119.38" x2="71.12" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="152.4" x2="71.12" y2="119.38" width="0.1524" layer="91"/>
 <wire x1="71.12" y1="119.38" x2="48.26" y2="119.38" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="119.38" x2="43.18" y2="119.38" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="119.38" x2="43.18" y2="116.84" width="0.1524" layer="91"/>
 <pinref part="U4" gate="G$1" pin="EN"/>
-<wire x1="73.66" y1="116.84" x2="71.12" y2="116.84" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="149.86" x2="71.12" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="71.12" y1="116.84" x2="71.12" y2="119.38" width="0.1524" layer="91"/>
 <junction x="71.12" y="119.38"/>
 <wire x1="43.18" y1="119.38" x2="40.64" y2="119.38" width="0.1524" layer="91"/>
@@ -3014,16 +3015,16 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 <segment>
 <pinref part="U4" gate="G$1" pin="SW"/>
 <pinref part="L2" gate="G$1" pin="1"/>
-<wire x1="99.06" y1="119.38" x2="101.6" y2="119.38" width="0.1524" layer="91"/>
+<wire x1="99.06" y1="152.4" x2="101.6" y2="119.38" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$8" class="0">
 <segment>
 <pinref part="U4" gate="G$1" pin="VSEL4"/>
-<wire x1="73.66" y1="104.14" x2="68.58" y2="104.14" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="137.16" x2="68.58" y2="104.14" width="0.1524" layer="91"/>
 <pinref part="U4" gate="G$1" pin="VSEL3"/>
 <wire x1="68.58" y1="104.14" x2="60.96" y2="104.14" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="106.68" x2="68.58" y2="106.68" width="0.1524" layer="91"/>
+<wire x1="73.66" y1="139.7" x2="68.58" y2="106.68" width="0.1524" layer="91"/>
 <wire x1="68.58" y1="106.68" x2="68.58" y2="104.14" width="0.1524" layer="91"/>
 <junction x="68.58" y="104.14"/>
 <pinref part="S1" gate="G$1" pin="IN"/>
