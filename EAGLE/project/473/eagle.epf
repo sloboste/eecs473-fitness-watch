@@ -343,10 +343,10 @@ UsedLibrary="C:/Program Files (x86)/EAGLE-6.6.0/lbr/xilinx-xc9.lbr"
 UsedLibrary="C:/Program Files (x86)/EAGLE-6.6.0/lbr/xilinx-xcv.lbr"
 UsedLibrary="C:/Program Files (x86)/EAGLE-6.6.0/lbr/zetex.lbr"
 UsedLibrary="C:/Program Files (x86)/EAGLE-6.6.0/lbr/zilog.lbr"
-UsedLibrary="N:/EAGLE/libraries/adafruit.lbr"
-UsedLibrary="N:/EAGLE/libraries/dip-switch.lbr"
 UsedLibrary="N:/EAGLE/libraries/MESH.lbr"
 UsedLibrary="N:/EAGLE/libraries/SparkFun.lbr"
+UsedLibrary="N:/EAGLE/libraries/adafruit.lbr"
+UsedLibrary="N:/EAGLE/libraries/dip-switch.lbr"
 
 [Win_1]
 Type="Control Panel"
