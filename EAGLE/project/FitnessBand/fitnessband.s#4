@@ -18643,6 +18643,79 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="DS2782">
+<packages>
+<package name="TSSOP-8">
+<description>&lt;b&gt;8-Pin TSSOP&lt;/b&gt;&lt;p&gt;
+Source: www.xicor.com .. x1205.pdf</description>
+<wire x1="2.025" y1="1.375" x2="2.025" y2="-1.375" width="0.254" layer="51"/>
+<wire x1="2.025" y1="-1.375" x2="-2.025" y2="-1.375" width="0.254" layer="21"/>
+<wire x1="-2.025" y1="-1.375" x2="-2.025" y2="1.375" width="0.254" layer="51"/>
+<wire x1="-2.025" y1="1.375" x2="2.025" y2="1.375" width="0.254" layer="21"/>
+<circle x="-1.5" y="0.85" radius="0.25" width="0.127" layer="21"/>
+<smd name="1" x="-2.975" y="0.975" dx="0.42" dy="1.78" layer="1" rot="R270"/>
+<smd name="2" x="-2.975" y="0.325" dx="0.42" dy="1.78" layer="1" rot="R270"/>
+<smd name="3" x="-2.975" y="-0.325" dx="0.42" dy="1.78" layer="1" rot="R270"/>
+<smd name="4" x="-2.975" y="-0.975" dx="0.42" dy="1.78" layer="1" rot="R270"/>
+<smd name="5" x="2.975" y="-0.975" dx="0.42" dy="1.78" layer="1" rot="R90"/>
+<smd name="6" x="2.975" y="-0.325" dx="0.42" dy="1.78" layer="1" rot="R90"/>
+<smd name="7" x="2.975" y="0.325" dx="0.42" dy="1.78" layer="1" rot="R90"/>
+<smd name="8" x="2.975" y="0.975" dx="0.42" dy="1.78" layer="1" rot="R90"/>
+<text x="2.54" y="-1.905" size="1.016" layer="25" rot="R180">&gt;NAME</text>
+<text x="2.54" y="3.175" size="1.016" layer="27" rot="R180">&gt;VALUE</text>
+<rectangle x1="-2.75" y1="0.4" x2="-2.5" y2="1.55" layer="51" rot="R270"/>
+<rectangle x1="-2.75" y1="-0.25" x2="-2.5" y2="0.9" layer="51" rot="R270"/>
+<rectangle x1="-2.75" y1="-0.9" x2="-2.5" y2="0.25" layer="51" rot="R270"/>
+<rectangle x1="-2.75" y1="-1.55" x2="-2.5" y2="-0.4" layer="51" rot="R270"/>
+<rectangle x1="2.5" y1="-1.55" x2="2.75" y2="-0.4" layer="51" rot="R90"/>
+<rectangle x1="2.5" y1="-0.9" x2="2.75" y2="0.25" layer="51" rot="R90"/>
+<rectangle x1="2.5" y1="-0.25" x2="2.75" y2="0.9" layer="51" rot="R90"/>
+<rectangle x1="2.5" y1="0.4" x2="2.75" y2="1.55" layer="51" rot="R90"/>
+</package>
+</packages>
+<symbols>
+<symbol name="DS2782">
+<wire x1="-7.62" y1="7.62" x2="-7.62" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="-5.08" x2="7.62" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-5.08" x2="7.62" y2="7.62" width="0.254" layer="94"/>
+<wire x1="7.62" y1="7.62" x2="-7.62" y2="7.62" width="0.254" layer="94"/>
+<pin name="SDA" x="-12.7" y="5.08" length="middle"/>
+<pin name="SCL" x="-12.7" y="2.54" length="middle"/>
+<pin name="PIO" x="-12.7" y="0" length="middle"/>
+<pin name="SNS" x="-12.7" y="-2.54" length="middle"/>
+<pin name="VSS" x="12.7" y="-2.54" length="middle" rot="R180"/>
+<pin name="NC" x="12.7" y="0" length="middle" rot="R180"/>
+<pin name="VIN" x="12.7" y="2.54" length="middle" rot="R180"/>
+<pin name="VDD" x="12.7" y="5.08" length="middle" rot="R180"/>
+<text x="-7.62" y="10.16" size="1.27" layer="95">&gt;NAME</text>
+<text x="-7.62" y="-7.62" size="1.27" layer="96">&gt;VALUE</text>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="DS2782">
+<gates>
+<gate name="G$1" symbol="DS2782" x="0" y="-2.54"/>
+</gates>
+<devices>
+<device name="" package="TSSOP-8">
+<connects>
+<connect gate="G$1" pin="NC" pad="1"/>
+<connect gate="G$1" pin="PIO" pad="8"/>
+<connect gate="G$1" pin="SCL" pad="6"/>
+<connect gate="G$1" pin="SDA" pad="5"/>
+<connect gate="G$1" pin="SNS" pad="7"/>
+<connect gate="G$1" pin="VDD" pad="4"/>
+<connect gate="G$1" pin="VIN" pad="3"/>
+<connect gate="G$1" pin="VSS" pad="2"/>
+</connects>
+<technologies>
+<technology name=""/>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -18972,6 +19045,12 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
 <part name="R6" library="resistor" deviceset="R-US_" device="R0603" value="100k"/>
 <part name="U$48" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U$49" library="DS2782" deviceset="DS2782" device=""/>
+<part name="R7" library="SparkFun" deviceset="RESISTOR" device="0603-RES" value="10k"/>
+<part name="R8" library="SparkFun" deviceset="RESISTOR" device="0603-RES" value="10k"/>
+<part name="U$52" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U$53" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="GND41" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -19373,11 +19452,11 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 </sheet>
 <sheet>
 <plain>
-<text x="63.5" y="20.32" size="1.778" layer="91">Do we want this connector or pads?</text>
+<text x="-10.16" y="63.5" size="1.778" layer="91">Do we want this connector or pads?</text>
 </plain>
 <instances>
-<instance part="J6" gate="G$1" x="66.04" y="12.7" rot="R180"/>
-<instance part="GND66" gate="1" x="73.66" y="5.08"/>
+<instance part="J6" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
+<instance part="GND66" gate="1" x="0" y="48.26"/>
 <instance part="IC4" gate="G$1" x="63.5" y="50.8"/>
 <instance part="C43" gate="G$1" x="83.82" y="68.58"/>
 <instance part="GND38" gate="1" x="83.82" y="55.88"/>
@@ -19386,6 +19465,12 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 <instance part="GND40" gate="1" x="45.72" y="38.1"/>
 <instance part="R6" gate="G$1" x="101.6" y="58.42" rot="R90"/>
 <instance part="U$48" gate="G$1" x="101.6" y="68.58"/>
+<instance part="U$49" gate="G$1" x="63.5" y="0"/>
+<instance part="R7" gate="G$1" x="22.86" y="12.7" rot="R90"/>
+<instance part="R8" gate="G$1" x="30.48" y="12.7" rot="R90"/>
+<instance part="U$52" gate="G$1" x="22.86" y="22.86"/>
+<instance part="U$53" gate="G$1" x="30.48" y="22.86"/>
+<instance part="GND41" gate="1" x="76.2" y="-7.62"/>
 </instances>
 <busses>
 </busses>
@@ -19393,8 +19478,8 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 <net name="GND" class="0">
 <segment>
 <pinref part="J6" gate="G$1" pin="1"/>
-<wire x1="66.04" y1="10.16" x2="73.66" y2="10.16" width="0.1524" layer="91"/>
-<wire x1="73.66" y1="10.16" x2="73.66" y2="7.62" width="0.1524" layer="91"/>
+<wire x1="-7.62" y1="53.34" x2="0" y2="53.34" width="0.1524" layer="91"/>
+<wire x1="0" y1="53.34" x2="0" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="GND66" gate="1" pin="GND"/>
 </segment>
 <segment>
@@ -19411,12 +19496,17 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 <pinref part="C44" gate="G$1" pin="2"/>
 <pinref part="GND40" gate="1" pin="GND"/>
 </segment>
+<segment>
+<pinref part="U$49" gate="G$1" pin="VSS"/>
+<pinref part="GND41" gate="1" pin="GND"/>
+<wire x1="76.2" y1="-5.08" x2="76.2" y2="-2.54" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="BATTERY" class="0">
 <segment>
 <pinref part="J6" gate="G$1" pin="2"/>
-<wire x1="66.04" y1="12.7" x2="73.66" y2="12.7" width="0.1524" layer="91"/>
-<label x="76.2" y="12.7" size="1.778" layer="95"/>
+<wire x1="-7.62" y1="55.88" x2="0" y2="55.88" width="0.1524" layer="91"/>
+<label x="2.54" y="55.88" size="1.778" layer="95"/>
 </segment>
 <segment>
 <label x="83.82" y="76.2" size="1.778" layer="95"/>
@@ -19454,6 +19544,33 @@ Source: http://www.maxim-ic.com .. MAX1551-MAX1555.pdf</description>
 <pinref part="U$48" gate="G$1" pin="3.3V"/>
 <pinref part="R6" gate="G$1" pin="2"/>
 <wire x1="101.6" y1="66.04" x2="101.6" y2="63.5" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="R7" gate="G$1" pin="2"/>
+<wire x1="22.86" y1="17.78" x2="22.86" y2="20.32" width="0.1524" layer="91"/>
+<pinref part="U$52" gate="G$1" pin="3.3V"/>
+</segment>
+<segment>
+<wire x1="30.48" y1="20.32" x2="30.48" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="R8" gate="G$1" pin="2"/>
+<pinref part="U$53" gate="G$1" pin="3.3V"/>
+</segment>
+</net>
+<net name="SCL" class="0">
+<segment>
+<wire x1="22.86" y1="7.62" x2="22.86" y2="2.54" width="0.1524" layer="91"/>
+<pinref part="R7" gate="G$1" pin="1"/>
+<wire x1="22.86" y1="2.54" x2="53.34" y2="2.54" width="0.1524" layer="91"/>
+<label x="43.18" y="2.54" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SDA" class="0">
+<segment>
+<wire x1="30.48" y1="7.62" x2="30.48" y2="5.08" width="0.1524" layer="91"/>
+<pinref part="R8" gate="G$1" pin="1"/>
+<pinref part="U$49" gate="G$1" pin="SDA"/>
+<wire x1="30.48" y1="5.08" x2="50.8" y2="5.08" width="0.1524" layer="91"/>
+<label x="43.18" y="5.08" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

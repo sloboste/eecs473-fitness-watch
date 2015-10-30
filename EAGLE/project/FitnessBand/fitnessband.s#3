@@ -19453,6 +19453,7 @@ Source: www.xicor.com .. x1205.pdf</description>
 <sheet>
 <plain>
 <text x="-10.16" y="63.5" size="1.778" layer="91">Do we want this connector or pads?</text>
+<text x="22.86" y="71.12" size="6.4516" layer="91">BATTERY</text>
 </plain>
 <instances>
 <instance part="J6" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
