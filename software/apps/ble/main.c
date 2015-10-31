@@ -14,6 +14,10 @@
 #include "app_timer.h"
 #include "app_scheduler.h"
 #include "app_timer_appsh.h"
+#include "ble_hrs.h"
+#include "ble_bas.h"
+
+#include "nrf_delay.h"
 
 // Include or not the service_changed characteristic. if not enabled, the
 // server's database cannot be changed for the lifetime of the device
@@ -47,6 +51,15 @@ static const char * DEVICE_NAME = "Watchman 1.0";
 static uint16_t current_conn_handle; // Current connection handle
 
 
+// handle for the heart rate service
+ble_hrs_t hrs_handle;
+uint8_t hrs_body_sensor_location = BLE_HRS_BODY_SENSOR_LOCATION_WRIST;
+static void heart_rate_update(void);
+
+// handle for the battery level service
+ble_bas_t bas_handle;
+static void battery_update(void);
+
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
@@ -60,6 +73,7 @@ static void conn_params_init(void);
 static void on_conn_params_evt(ble_conn_params_evt_t * evt_ptr);
 static void conn_params_error_handler(uint32_t nrf_error);
 static void timers_init(void);
+static void on_ble_evt(ble_evt_t * ble_evt_ptr);
 
 
 // information about the advertisement
@@ -149,10 +163,10 @@ static void gap_params_init(void)
 static void advertising_init(void)
 {
     uint32_t                  err_code;
-    ble_uuid_t adv_uuids[] = { // TODO: use constants defined by nordic
+    ble_uuid_t adv_uuids[] = { 
         {0x1800, BLE_UUID_TYPE_BLE},    // Generic Access Service
-        {0x180D, BLE_UUID_TYPE_BLE},    // Heart Rate Service
-        {0x180F, BLE_UUID_TYPE_BLE},    // Battery Service
+        {BLE_UUID_HEART_RATE_SERVICE, BLE_UUID_TYPE_BLE},
+        {BLE_UUID_BATTERY_SERVICE, BLE_UUID_TYPE_BLE},
     };
     // TODO: can't advertise custom 128 bit uuids without modifying nordic code
 
@@ -192,6 +206,7 @@ static void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&m_adv_params);
     APP_ERROR_CHECK(err_code);
+    nrf_gpio_pin_set(ADVERTISING_LED);
 }
 
 
@@ -238,9 +253,11 @@ static void power_manage(void)
 static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
     on_ble_evt(ble_evt_ptr);
-    //dm_ble_evt_handler(ble_evt_ptr);
-    //ble_conn_params_on_ble_evt(ble_evt_ptr);
+    ble_conn_params_on_ble_evt(ble_evt_ptr);
     //ble_advertising_on_ble_evt(ble_evt_ptr);
+    //dm_ble_evt_handler(ble_evt_ptr);
+    ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
+    ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
 }
 
 // Initialize the connection parameters module
@@ -293,6 +310,77 @@ static void scheduler_init(void)
     APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
 }
 
+static void on_ble_evt(ble_evt_t * ble_evt_ptr)
+{
+    uint32_t err_code;    
+
+    switch (ble_evt_ptr->header.evt_id) {
+        case BLE_GAP_EVT_CONNECTED:
+            current_conn_handle = ble_evt_ptr->evt.gap_evt.conn_handle;
+            nrf_gpio_pin_set(CONNECTED_LED);
+            nrf_gpio_pin_clear(ADVERTISING_LED);
+            break;
+        case BLE_GAP_EVT_DISCONNECTED:
+            current_conn_handle = BLE_CONN_HANDLE_INVALID;
+            nrf_gpio_pin_clear(CONNECTED_LED);
+            advertising_start();
+            break;
+        // TODO: add more if needed
+        default:
+            break;
+    }
+}
+
+static void battery_update(void)
+{
+    static uint8_t level = 100;
+    ble_bas_battery_level_update(&bas_handle, level--);
+}
+
+static void heart_rate_update(void)
+{
+    static uint16_t rate_in_bpm = 0;
+    ble_hrs_heart_rate_measurement_send(&hrs_handle, rate_in_bpm++);
+}
+
+void services_init(void)
+{
+    uint32_t err_code;
+
+    // Init heart rate service 
+    ble_hrs_init_t hrs_init;
+    memset(&hrs_init, 0, sizeof(hrs_init));
+    hrs_init.evt_handler = NULL;
+    hrs_init.is_sensor_contact_supported = false;
+    hrs_init.p_body_sensor_location = &hrs_body_sensor_location;
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_hrm_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_hrm_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_hrm_attr_md.write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&hrs_init.hrs_bsl_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&hrs_init.hrs_bsl_attr_md.write_perm);
+    err_code = ble_hrs_init(&hrs_handle, &hrs_init);
+    APP_ERROR_CHECK(err_code);
+
+    // Init battery service
+    ble_bas_init_t bas_init;
+    memset(&bas_init, 0, sizeof(bas_init));
+    bas_init.evt_handler = NULL;
+    bas_init.support_notification = true;
+    bas_init.p_report_ref = NULL;
+    bas_init.initial_batt_level = 100;
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(
+        &bas_init.battery_level_char_attr_md.cccd_write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(
+        &bas_init.battery_level_char_attr_md.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(
+        &bas_init.battery_level_char_attr_md.write_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(
+        &bas_init.battery_level_report_read_perm);
+    err_code = ble_bas_init(&bas_handle, &bas_init);
+    APP_ERROR_CHECK(err_code);
+}
+
+
 /**
  * @brief Function for application main entry.
  */
@@ -313,15 +401,19 @@ int main(void)
     gap_params_init();
     advertising_init();
     conn_params_init();
+    services_init();
 
     // Wait for button press
     while (nrf_gpio_pin_read(ADVERTISING_BUTTON)) {}; 
 
     advertising_start();
-    nrf_gpio_pin_set(ADVERTISING_LED);
 
     while (1) {
-        app_sched_execute();
+        //app_sched_execute();
         power_manage();
+
+        // FIXME remove later
+        battery_update();
+        heart_rate_update();
     }
 }
