@@ -2,6 +2,8 @@
 #include <stdint.h>
 
 #include "green_dev_board.h"
+#include "heart_rate_service_config.h"
+#include "battery_service_config.h"
 
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -12,6 +14,10 @@
 #include "ble_conn_params.h"
 #include "ble_hci.h"
 #include "app_timer.h"
+#include "app_scheduler.h"
+#include "app_timer_appsh.h"
+
+#include "nrf_delay.h"
 
 // Include or not the service_changed characteristic. if not enabled, the
 // server's database cannot be changed for the lifetime of the device
@@ -20,13 +26,13 @@
 #define ADVERTISING_LED                 PIN_LED_0   // On when advertising 
 #define CONNECTED_LED                   PIN_LED_1   // On when connected
 
-// Time in seconds for which the device must be advertising in non-connectable
-// mode. 0 disables timeout.
-#define APP_CFG_NON_CONN_ADV_TIMEOUT    0
+#define ADVERTISING_BUTTON              PIN_BUTTON_0  // Activate advertising
 
-//The advertising interval for non-connectable advertisement (100 ms). This
-// value can vary between 100ms to 10.24s).
-#define NON_CONNECTABLE_ADV_INTERVAL    MSEC_TO_UNITS(500, UNIT_0_625_MS)
+// Time in seconds for which the device must be advertising. 0 disables timeout.
+#define APP_ADV_TIMEOUT_SECONDS    0
+
+//The advertising interval. This value can be between 100ms to 10.24s.
+#define APP_ADV_INTERVAL    MSEC_TO_UNITS(160, UNIT_0_625_MS)
 
 // Connection parameters
 #define CONN_INTERVAL_MIN           BLE_GAP_CP_MIN_CONN_INTVL_MIN
@@ -38,10 +44,11 @@
 #define APP_TIMER_MAX_TIMERS        6
 #define APP_TIMER_OP_QUEUE_SIZE     4     
 
+#define SCHED_MAX_EVENT_DATA_SIZE   sizeof(app_timer_event_t)
+#define SCHED_QUEUE_SIZE            10
 
-static const char * DEVICE_NAME = "Fitness Watch";
+static const char * DEVICE_NAME = "Watchman 1.0";
 static uint16_t current_conn_handle; // Current connection handle
-
 
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
@@ -56,10 +63,12 @@ static void conn_params_init(void);
 static void on_conn_params_evt(ble_conn_params_evt_t * evt_ptr);
 static void conn_params_error_handler(uint32_t nrf_error);
 static void timers_init(void);
+static void on_ble_evt(ble_evt_t * ble_evt_ptr);
 
 
 // information about the advertisement
 ble_advdata_t                           advdata;
+ble_advdata_t                           scanrspdata;
 // Parameters to be passed to the stack when starting advertising
 static ble_gap_adv_params_t             m_adv_params;
 
@@ -109,13 +118,12 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 static void gap_params_init(void)
 {
     uint32_t                err_code;
-    ble_gap_conn_sec_mode_t sec_mode;
-    ble_gap_conn_params_t conn_params;
 
     // Full signal strength
     sd_ble_gap_tx_power_set(4);
 
     // Open conenction (no security)
+    ble_gap_conn_sec_mode_t sec_mode;
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
     // Set the name of the device so its easier to find
@@ -126,6 +134,8 @@ static void gap_params_init(void)
     err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_WATCH_SPORTS_WATCH);
 
     // Set preferred peripheral connection parameters
+    ble_gap_conn_params_t conn_params;
+    memset(&conn_params, 0, sizeof(conn_params));
     conn_params.min_conn_interval = CONN_INTERVAL_MIN;
     conn_params.max_conn_interval = CONN_INTERVAL_MAX;
     conn_params.slave_latency = CONN_SLAVE_LATENCY;
@@ -143,26 +153,38 @@ static void gap_params_init(void)
 static void advertising_init(void)
 {
     uint32_t                  err_code;
+    ble_uuid_t adv_uuids[] = { 
+        {0x1800, BLE_UUID_TYPE_BLE},    // Generic Access Service
+        {hrs_UUID, BLE_UUID_TYPE_BLE},
+        {bas_UUID, BLE_UUID_TYPE_BLE},
+    };
+    // TODO: can't advertise custom 128 bit uuids without modifying nordic code
 
-    // Build and set advertising data.
+    // Build and set advertising and scan response data.
     memset(&advdata, 0, sizeof(advdata));
-
     advdata.name_type = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance = true;
-    advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_LIMITED_DISC_MODE;
+    advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; // TODO want to be le_only_limited_disc
+    advdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
+    advdata.uuids_complete.p_uuids = adv_uuids;
 
-    err_code = ble_advdata_set(&advdata, NULL);
+    /*
+    memset(&scanrspdata, 0, sizeof(scanrspdata));
+    scanrspdata.service_data_count = 1;
+    p_service_data_array = services_ptr;
+    */
+
+    err_code = ble_advdata_set(&advdata, NULL); //&scanrspdata);
     APP_ERROR_CHECK(err_code);
 
     // Initialize advertising parameters (used when starting advertising).
     memset(&m_adv_params, 0, sizeof(m_adv_params));
-
-    // TODO: change these when it is connectable
-    m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+    m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
     m_adv_params.p_peer_addr = NULL;    // Undirected advertisement.
     m_adv_params.fp = BLE_GAP_ADV_FP_ANY;
-    m_adv_params.interval = NON_CONNECTABLE_ADV_INTERVAL;
-    m_adv_params.timeout = APP_CFG_NON_CONN_ADV_TIMEOUT;
+    m_adv_params.interval = APP_ADV_INTERVAL;
+    m_adv_params.timeout = APP_ADV_TIMEOUT_SECONDS;
+    
 }
 
 
@@ -174,6 +196,7 @@ static void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&m_adv_params);
     APP_ERROR_CHECK(err_code);
+    nrf_gpio_pin_set(ADVERTISING_LED);
 }
 
 
@@ -219,13 +242,12 @@ static void power_manage(void)
 // after a BLE stack event has been received.
 static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
-    // TODO: remove
-    nrf_gpio_pin_set(PIN_LED_1);
-
-    //dm_ble_evt_handler(ble_evt_ptr);
+    on_ble_evt(ble_evt_ptr);
     ble_conn_params_on_ble_evt(ble_evt_ptr);
-    //on_ble_evt(ble_evt_ptr);
     //ble_advertising_on_ble_evt(ble_evt_ptr);
+    //dm_ble_evt_handler(ble_evt_ptr);
+    ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
+    ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
 }
 
 // Initialize the connection parameters module
@@ -273,6 +295,46 @@ static void timers_init(void)
                    APP_TIMER_OP_QUEUE_SIZE, false);
 }
 
+static void scheduler_init(void)
+{
+    APP_SCHED_INIT(SCHED_MAX_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
+}
+
+static void on_ble_evt(ble_evt_t * ble_evt_ptr)
+{
+    //uint32_t err_code;    
+
+    switch (ble_evt_ptr->header.evt_id) {
+        case BLE_GAP_EVT_CONNECTED:
+            current_conn_handle = ble_evt_ptr->evt.gap_evt.conn_handle;
+            nrf_gpio_pin_set(CONNECTED_LED);
+            nrf_gpio_pin_clear(ADVERTISING_LED);
+            break;
+        case BLE_GAP_EVT_DISCONNECTED:
+            current_conn_handle = BLE_CONN_HANDLE_INVALID;
+            nrf_gpio_pin_clear(CONNECTED_LED);
+            advertising_start();
+            break;
+        // TODO: add more if needed
+        default:
+            break;
+    }
+}
+
+
+void services_init(void)
+{
+    uint32_t err_code;
+
+    // Init heart rate service 
+    err_code = hrs_init();
+    APP_ERROR_CHECK(err_code);
+
+    // Init battery service
+    err_code = bas_init();
+    APP_ERROR_CHECK(err_code);
+}
+
 
 /**
  * @brief Function for application main entry.
@@ -280,22 +342,33 @@ static void timers_init(void)
 int main(void)
 {
     // Initialize.
+    nrf_gpio_cfg_input(ADVERTISING_BUTTON, GPIO_PIN_CNF_PULL_Pullup);
+
     nrf_gpio_cfg_output(ADVERTISING_LED);
     nrf_gpio_cfg_output(CONNECTED_LED);
+
     nrf_gpio_pin_clear(ADVERTISING_LED);
     nrf_gpio_pin_clear(CONNECTED_LED);
 
     timers_init();
     ble_stack_init();
+    scheduler_init();
     gap_params_init();
     advertising_init();
     conn_params_init();
+    services_init();
 
+    // Wait for button press
+    while (nrf_gpio_pin_read(ADVERTISING_BUTTON)) {}; 
 
     advertising_start();
-    nrf_gpio_pin_set(ADVERTISING_LED);
 
     while (1) {
+        //app_sched_execute();
         power_manage();
+
+        // FIXME remove later
+        bas_update();
+        hrs_update();
     }
 }
