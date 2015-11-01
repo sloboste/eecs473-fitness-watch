@@ -8700,31 +8700,12 @@ Standard 11-pin 0.1" header. Use with straight break away headers (SKU : PRT-001
 <text x="-2.54" y="-2.54" size="1.778" layer="96">&gt;VALUE</text>
 <pin name="GND" x="0" y="2.54" visible="off" length="short" direction="sup" rot="R270"/>
 </symbol>
-<symbol name="VCC">
-<wire x1="1.27" y1="-1.905" x2="0" y2="0" width="0.254" layer="94"/>
-<wire x1="0" y1="0" x2="-1.27" y2="-1.905" width="0.254" layer="94"/>
-<text x="-2.54" y="-2.54" size="1.778" layer="96" rot="R90">&gt;VALUE</text>
-<pin name="VCC" x="0" y="-2.54" visible="off" length="short" direction="sup" rot="R90"/>
-</symbol>
 </symbols>
 <devicesets>
 <deviceset name="GND" prefix="GND">
 <description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
 <gates>
 <gate name="1" symbol="GND" x="0" y="0"/>
-</gates>
-<devices>
-<device name="">
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="VCC" prefix="P+">
-<description>&lt;b&gt;SUPPLY SYMBOL&lt;/b&gt;</description>
-<gates>
-<gate name="VCC" symbol="VCC" x="0" y="0"/>
 </gates>
 <devices>
 <device name="">
@@ -9369,16 +9350,6 @@ chip</description>
 <text x="-2.54" y="-1.27" size="1.778" layer="95" ratio="12" rot="R90" align="bottom-center">&gt;NAME</text>
 <text x="2.54" y="-1.27" size="1.778" layer="96" ratio="12" rot="R270" align="bottom-center">&gt;VALUE</text>
 </symbol>
-<symbol name="INDUCTOR">
-<pin name="1" x="0" y="7.62" visible="off" length="short" rot="R270"/>
-<pin name="2" x="0" y="-7.62" visible="off" length="short" rot="R90"/>
-<wire x1="0" y1="5.08" x2="0" y2="2.54" width="0.254" layer="94" curve="-180"/>
-<wire x1="0" y1="2.54" x2="0" y2="0" width="0.254" layer="94" curve="-180"/>
-<wire x1="0" y1="0" x2="0" y2="-2.54" width="0.254" layer="94" curve="-180"/>
-<wire x1="0" y1="-2.54" x2="0" y2="-5.08" width="0.254" layer="94" curve="-180"/>
-<text x="-0.508" y="-2.54" size="1.27" layer="95" ratio="12" rot="R90">&gt;NAME</text>
-<text x="3.048" y="-2.54" size="1.27" layer="96" ratio="12" rot="R90">&gt;VALUE</text>
-</symbol>
 </symbols>
 <devicesets>
 <deviceset name="RESISTOR" prefix="R" uservalue="yes">
@@ -9433,31 +9404,6 @@ Basic schematic elements and footprints for 0603, 1206, and PTH resistors.</desc
 </technologies>
 </device>
 <device name="0603_CAP" package="0603_CAP">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="INDUCTOR" prefix="L" uservalue="yes">
-<gates>
-<gate name="G$1" symbol="INDUCTOR" x="0" y="0"/>
-</gates>
-<devices>
-<device name="0402" package="0402_CAP">
-<connects>
-<connect gate="G$1" pin="1" pad="1"/>
-<connect gate="G$1" pin="2" pad="2"/>
-</connects>
-<technologies>
-<technology name=""/>
-</technologies>
-</device>
-<device name="0603" package="0603_CAP">
 <connects>
 <connect gate="G$1" pin="1" pad="1"/>
 <connect gate="G$1" pin="2" pad="2"/>
@@ -10150,20 +10096,15 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="C56" library="passives" deviceset="CAPACITOR" device="" value="0.8pF"/>
 <part name="GND57" library="supply1" deviceset="GND" device=""/>
 <part name="C57" library="passives" deviceset="CAPACITOR" device="" value="1nF"/>
-<part name="C58" library="passives" deviceset="CAPACITOR" device="" value="0.1uF"/>
-<part name="C59" library="passives" deviceset="CAPACITOR" device="" value="4.7uF"/>
+<part name="C58" library="passives" deviceset="CAPACITOR" device="" value="100nF"/>
+<part name="C59" library="passives" deviceset="CAPACITOR" device="" value="100nF"/>
 <part name="GND58" library="supply1" deviceset="GND" device=""/>
 <part name="GND59" library="supply1" deviceset="GND" device=""/>
-<part name="P+27" library="supply1" deviceset="VCC" device=""/>
-<part name="C60" library="passives" deviceset="CAPACITOR" device="" value="1uF"/>
-<part name="GND60" library="supply1" deviceset="GND" device=""/>
-<part name="L4" library="passives" deviceset="INDUCTOR" device="0402" value="15nH"/>
-<part name="L5" library="passives" deviceset="INDUCTOR" device="0603" value="10uH"/>
 <part name="GND61" library="supply1" deviceset="GND" device=""/>
 <part name="R25" library="passives" deviceset="RESISTOR" device="0402_RES" value="12k"/>
 <part name="J5" library="connector" deviceset="TC2030-JLINK" device="-NL"/>
 <part name="GND62" library="supply1" deviceset="GND" device=""/>
-<part name="J6" library="headers" deviceset="SH_MALE_2/1MM" device=""/>
+<part name="B_CONNECTOR" library="headers" deviceset="SH_MALE_2/1MM" device=""/>
 <part name="GND66" library="supply1" deviceset="GND" device=""/>
 <part name="U$27" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$37" library="microbuilder" deviceset="GND" device=""/>
@@ -10172,7 +10113,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="GND38" library="supply1" deviceset="GND" device=""/>
 <part name="GND39" library="supply1" deviceset="GND" device=""/>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
-<part name="R6" library="resistor" deviceset="R-US_" device="R0603" value="100k"/>
 <part name="U$48" library="microbuilder" deviceset="3.3V" device=""/>
 <part name="LDO" library="national-semiconductor" deviceset="LP2951" device="M"/>
 <part name="GND42" library="supply1" deviceset="GND" device=""/>
@@ -10200,8 +10140,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="GND47" library="SparkFun" deviceset="GND" device=""/>
 <part name="GND53" library="SparkFun" deviceset="GND" device=""/>
 <part name="GND54" library="SparkFun" deviceset="GND" device=""/>
-<part name="R30" library="SparkFun" deviceset="RESISTOR" device="0603-RES" value="10k"/>
-<part name="R38" library="SparkFun" deviceset="RESISTOR" device="0603-RES" value="10k"/>
 <part name="IMU" library="Testing" deviceset="MPU-6050" device="-1"/>
 <part name="GND55" library="SparkFun" deviceset="GND" device=""/>
 <part name="GND70" library="SparkFun" deviceset="GND" device=""/>
@@ -10219,8 +10157,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="U$18" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$30" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$1" library="microbuilder" deviceset="3.3V" device=""/>
-<part name="D1" library="leds" deviceset="SML-LX0404SIUPGUSB" device=""/>
-<part name="P+1" library="supply1" deviceset="VCC" device=""/>
+<part name="RGB_LED" library="leds" deviceset="SML-LX0404SIUPGUSB" device=""/>
 <part name="R1" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
 <part name="R2" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
 <part name="R3" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
@@ -10231,15 +10168,22 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="C3" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
 <part name="C4" library="resistor" deviceset="C-EU" device="C0402"/>
 <part name="C5" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
-<part name="C6" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
-<part name="C7" library="resistor" deviceset="C-EU" device="C0402" value="10nF"/>
-<part name="C8" library="resistor" deviceset="C-EU" device="C0402" value="2.2uF"/>
-<part name="C12" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
-<part name="C13" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
-<part name="C14" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
-<part name="C15" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
-<part name="C16" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
+<part name="C_FRAM" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
+<part name="C7_IMU" library="resistor" deviceset="C-EU" device="C0402" value="10nF"/>
+<part name="C8_IMU" library="resistor" deviceset="C-EU" device="C0402" value="2.2uF"/>
+<part name="C12_IMU" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
+<part name="C13_IMU" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
+<part name="C14_LCD" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
+<part name="C15_LCD" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
+<part name="C16_LCD" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
 <part name="R4" library="resistor" deviceset="R-US_" device="R0402" value="1K"/>
+<part name="R5_IMU" library="resistor" deviceset="R-US_" device="R0402" value="10K"/>
+<part name="R9_IMU" library="resistor" deviceset="R-US_" device="R0402" value="10K"/>
+<part name="R10" library="resistor" deviceset="R-US_" device="R0402" value="100K"/>
+<part name="U$3" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U$4" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U$5" library="microbuilder" deviceset="3.3V" device=""/>
+<part name="U$6" library="microbuilder" deviceset="3.3V" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -10272,8 +10216,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="GND47" gate="1" x="50.8" y="-45.72"/>
 <instance part="GND53" gate="1" x="99.06" y="-48.26"/>
 <instance part="GND54" gate="1" x="48.26" y="-15.24"/>
-<instance part="R30" gate="G$1" x="109.22" y="-7.62" rot="R90"/>
-<instance part="R38" gate="G$1" x="116.84" y="-7.62" rot="R90"/>
 <instance part="IMU" gate="G$1" x="71.12" y="-25.4"/>
 <instance part="GND55" gate="1" x="43.18" y="-45.72"/>
 <instance part="GND70" gate="1" x="35.56" y="-45.72"/>
@@ -10288,8 +10230,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="JP16" gate="G$1" x="162.56" y="-10.16"/>
 <instance part="U$18" gate="G$1" x="193.04" y="-15.24"/>
 <instance part="U$30" gate="G$1" x="193.04" y="-5.08"/>
-<instance part="D1" gate="G$1" x="233.68" y="-17.78"/>
-<instance part="P+1" gate="VCC" x="220.98" y="-5.08"/>
+<instance part="RGB_LED" gate="G$1" x="233.68" y="-17.78"/>
 <instance part="R1" gate="G$1" x="254" y="-12.7" smashed="yes" rot="R180">
 <attribute name="NAME" x="252.73" y="-9.1186" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="257.81" y="-9.398" size="1.778" layer="96" rot="R180"/>
@@ -10306,15 +10247,19 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="FRAM" gate="G$1" x="182.88" y="-68.58"/>
 <instance part="U$2" gate="G$1" x="167.64" y="-55.88"/>
 <instance part="C5" gate="G$1" x="154.94" y="66.04"/>
-<instance part="C6" gate="G$1" x="165.1" y="-66.04"/>
-<instance part="C7" gate="G$1" x="99.06" y="-38.1"/>
-<instance part="C8" gate="G$1" x="43.18" y="-35.56"/>
-<instance part="C12" gate="G$1" x="35.56" y="-35.56"/>
-<instance part="C13" gate="G$1" x="48.26" y="-5.08"/>
-<instance part="C14" gate="G$1" x="58.42" y="43.18"/>
-<instance part="C15" gate="G$1" x="66.04" y="43.18"/>
-<instance part="C16" gate="G$1" x="73.66" y="43.18"/>
+<instance part="C_FRAM" gate="G$1" x="165.1" y="-66.04"/>
+<instance part="C7_IMU" gate="G$1" x="99.06" y="-38.1"/>
+<instance part="C8_IMU" gate="G$1" x="43.18" y="-35.56"/>
+<instance part="C12_IMU" gate="G$1" x="35.56" y="-35.56"/>
+<instance part="C13_IMU" gate="G$1" x="48.26" y="-5.08"/>
+<instance part="C14_LCD" gate="G$1" x="58.42" y="43.18"/>
+<instance part="C15_LCD" gate="G$1" x="66.04" y="43.18"/>
+<instance part="C16_LCD" gate="G$1" x="73.66" y="43.18"/>
 <instance part="R4" gate="G$1" x="162.56" y="53.34"/>
+<instance part="R5_IMU" gate="G$1" x="109.22" y="-7.62" rot="R90"/>
+<instance part="R9_IMU" gate="G$1" x="116.84" y="-7.62" rot="R90"/>
+<instance part="U$5" gate="G$1" x="203.2" y="-15.24"/>
+<instance part="U$6" gate="G$1" x="220.98" y="-10.16"/>
 </instances>
 <busses>
 </busses>
@@ -10323,12 +10268,12 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <segment>
 <wire x1="73.66" y1="38.1" x2="73.66" y2="35.56" width="0.1524" layer="91"/>
 <pinref part="U$39" gate="G$1" pin="GND"/>
-<pinref part="C16" gate="G$1" pin="2"/>
+<pinref part="C16_LCD" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <wire x1="58.42" y1="38.1" x2="58.42" y2="30.48" width="0.1524" layer="91"/>
 <pinref part="U$40" gate="G$1" pin="GND"/>
-<pinref part="C14" gate="G$1" pin="2"/>
+<pinref part="C14_LCD" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <wire x1="101.6" y1="45.72" x2="88.9" y2="45.72" width="0.1524" layer="91"/>
@@ -10384,22 +10329,22 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <segment>
 <pinref part="GND53" gate="1" pin="GND"/>
 <wire x1="99.06" y1="-45.72" x2="99.06" y2="-43.18" width="0.1524" layer="91"/>
-<pinref part="C7" gate="G$1" pin="2"/>
+<pinref part="C7_IMU" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="GND55" gate="1" pin="GND"/>
-<wire x1="43.18" y1="-43.18" x2="43.18" y2="-40.64" width="0.1524" layer="91"/>
-<pinref part="C8" gate="G$1" pin="2"/>
+<pinref part="C8_IMU" gate="G$1" pin="2"/>
+<wire x1="43.18" y1="-40.64" x2="43.18" y2="-43.18" width="0.1524" layer="91"/>
 </segment>
 <segment>
 <pinref part="GND70" gate="1" pin="GND"/>
 <wire x1="35.56" y1="-40.64" x2="35.56" y2="-43.18" width="0.1524" layer="91"/>
-<pinref part="C12" gate="G$1" pin="2"/>
+<pinref part="C12_IMU" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="GND54" gate="1" pin="GND"/>
 <wire x1="48.26" y1="-12.7" x2="48.26" y2="-10.16" width="0.1524" layer="91"/>
-<pinref part="C13" gate="G$1" pin="2"/>
+<pinref part="C13_IMU" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="GND47" gate="1" pin="GND"/>
@@ -10438,10 +10383,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U$18" gate="G$1" pin="GND"/>
 </segment>
 <segment>
-<wire x1="193.04" y1="-2.54" x2="172.72" y2="-2.54" width="0.1524" layer="91"/>
-<pinref part="U$30" gate="G$1" pin="GND"/>
-</segment>
-<segment>
 <wire x1="170.18" y1="-73.66" x2="167.64" y2="-73.66" width="0.1524" layer="91"/>
 <wire x1="167.64" y1="-73.66" x2="165.1" y2="-73.66" width="0.1524" layer="91"/>
 <wire x1="165.1" y1="-73.66" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
@@ -10449,7 +10390,12 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="167.64" y1="-76.2" x2="167.64" y2="-73.66" width="0.1524" layer="91"/>
 <junction x="167.64" y="-73.66"/>
 <pinref part="FRAM" gate="G$1" pin="VSS"/>
-<pinref part="C6" gate="G$1" pin="2"/>
+<pinref part="C_FRAM" gate="G$1" pin="2"/>
+</segment>
+<segment>
+<pinref part="U$30" gate="G$1" pin="GND"/>
+<pinref part="JP16" gate="G$1" pin="9"/>
+<wire x1="193.04" y1="-2.54" x2="172.72" y2="-2.54" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -10466,7 +10412,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="58.42" y1="50.8" x2="58.42" y2="58.42" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="45.72" x2="58.42" y2="50.8" width="0.1524" layer="91"/>
 <junction x="58.42" y="50.8"/>
-<pinref part="C14" gate="G$1" pin="1"/>
+<pinref part="C14_LCD" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <wire x1="101.6" y1="55.88" x2="73.66" y2="55.88" width="0.1524" layer="91"/>
@@ -10475,7 +10421,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="LCD_PORT" gate="G$1" pin="DISP"/>
 <pinref part="U$38" gate="G$1" pin="3.3V"/>
 <junction x="73.66" y="55.88"/>
-<pinref part="C16" gate="G$1" pin="1"/>
+<pinref part="C16_LCD" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <wire x1="154.94" y1="68.58" x2="154.94" y2="71.12" width="0.1524" layer="91"/>
@@ -10493,18 +10439,18 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="88.9" y1="-35.56" x2="99.06" y2="-35.56" width="0.1524" layer="91"/>
 <pinref part="U$90" gate="G$1" pin="3.3V"/>
 <wire x1="99.06" y1="-33.02" x2="99.06" y2="-35.56" width="0.1524" layer="91"/>
-<pinref part="C7" gate="G$1" pin="1"/>
+<pinref part="C7_IMU" gate="G$1" pin="1"/>
 <junction x="99.06" y="-35.56"/>
 </segment>
 <segment>
-<pinref part="R30" gate="G$1" pin="2"/>
 <wire x1="109.22" y1="-2.54" x2="109.22" y2="2.54" width="0.1524" layer="91"/>
 <pinref part="U$91" gate="G$1" pin="3.3V"/>
+<pinref part="R5_IMU" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <wire x1="116.84" y1="2.54" x2="116.84" y2="-2.54" width="0.1524" layer="91"/>
-<pinref part="R38" gate="G$1" pin="2"/>
 <pinref part="U$92" gate="G$1" pin="3.3V"/>
+<pinref part="R9_IMU" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <wire x1="48.26" y1="-2.54" x2="48.26" y2="0" width="0.1524" layer="91"/>
@@ -10512,7 +10458,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="53.34" y1="-17.78" x2="53.34" y2="-2.54" width="0.1524" layer="91"/>
 <wire x1="53.34" y1="-2.54" x2="48.26" y2="-2.54" width="0.1524" layer="91"/>
 <pinref part="U$89" gate="G$1" pin="3.3V"/>
-<pinref part="C13" gate="G$1" pin="1"/>
+<pinref part="C13_IMU" gate="G$1" pin="1"/>
 <junction x="48.26" y="-2.54"/>
 </segment>
 <segment>
@@ -10523,7 +10469,21 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="167.64" y1="-60.96" x2="170.18" y2="-60.96" width="0.1524" layer="91"/>
 <wire x1="167.64" y1="-58.42" x2="167.64" y2="-60.96" width="0.1524" layer="91"/>
 <junction x="167.64" y="-60.96"/>
-<pinref part="C6" gate="G$1" pin="1"/>
+<pinref part="C_FRAM" gate="G$1" pin="1"/>
+</segment>
+<segment>
+<pinref part="U$5" gate="G$1" pin="3.3V"/>
+<wire x1="203.2" y1="-17.78" x2="203.2" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="203.2" y1="-20.32" x2="190.5" y2="-20.32" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="-20.32" x2="190.5" y2="-15.24" width="0.1524" layer="91"/>
+<pinref part="JP16" gate="G$1" pin="4"/>
+<wire x1="190.5" y1="-15.24" x2="172.72" y2="-15.24" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U$6" gate="G$1" pin="3.3V"/>
+<wire x1="220.98" y1="-12.7" x2="220.98" y2="-17.78" width="0.1524" layer="91"/>
+<pinref part="RGB_LED" gate="G$1" pin="VDD"/>
+<wire x1="220.98" y1="-17.78" x2="223.52" y2="-17.78" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="ALCD" class="0">
@@ -10540,7 +10500,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <junction x="66.04" y="53.34"/>
 <pinref part="LCD_PORT" gate="G$1" pin="VDDA"/>
 <label x="66.04" y="60.96" size="1.778" layer="95"/>
-<pinref part="C15" gate="G$1" pin="1"/>
+<pinref part="C15_LCD" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="AGLCD" class="0">
@@ -10559,7 +10519,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <segment>
 <wire x1="66.04" y1="38.1" x2="66.04" y2="30.48" width="0.1524" layer="91"/>
 <label x="66.04" y="25.4" size="1.778" layer="95"/>
-<pinref part="C15" gate="G$1" pin="2"/>
+<pinref part="C15_LCD" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="SCLK_LCD" class="0">
@@ -10617,6 +10577,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="53.34" y1="-30.48" x2="43.18" y2="-30.48" width="0.1524" layer="91"/>
 <pinref part="IMU" gate="G$1" pin="CPOUT"/>
 <wire x1="43.18" y1="-33.02" x2="43.18" y2="-30.48" width="0.1524" layer="91"/>
+<pinref part="C8_IMU" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="N$49" class="0">
@@ -10624,7 +10585,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="53.34" y1="-27.94" x2="35.56" y2="-27.94" width="0.1524" layer="91"/>
 <pinref part="IMU" gate="G$1" pin="REGOUT"/>
 <wire x1="35.56" y1="-27.94" x2="35.56" y2="-33.02" width="0.1524" layer="91"/>
-<pinref part="C12" gate="G$1" pin="1"/>
+<pinref part="C12_IMU" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="SCL_IMU" class="0">
@@ -10632,8 +10593,8 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="109.22" y1="-12.7" x2="109.22" y2="-22.86" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="-22.86" x2="88.9" y2="-22.86" width="0.1524" layer="91"/>
 <label x="91.44" y="-22.86" size="1.778" layer="95"/>
-<pinref part="R30" gate="G$1" pin="1"/>
 <pinref part="IMU" gate="G$1" pin="SCL"/>
+<pinref part="R5_IMU" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="SDA_IMU" class="0">
@@ -10641,8 +10602,8 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="116.84" y1="-12.7" x2="116.84" y2="-25.4" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="-25.4" x2="88.9" y2="-25.4" width="0.1524" layer="91"/>
 <label x="91.44" y="-25.4" size="1.778" layer="95"/>
-<pinref part="R38" gate="G$1" pin="1"/>
 <pinref part="IMU" gate="G$1" pin="SDA"/>
+<pinref part="R9_IMU" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="INT_IMU" class="0">
@@ -10650,14 +10611,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="IMU" gate="G$1" pin="INT"/>
 <wire x1="53.34" y1="-20.32" x2="35.56" y2="-20.32" width="0.1524" layer="91"/>
 <label x="25.4" y="-20.32" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="VCC" class="0">
-<segment>
-<pinref part="D1" gate="G$1" pin="VDD"/>
-<wire x1="223.52" y1="-17.78" x2="220.98" y2="-17.78" width="0.1524" layer="91"/>
-<wire x1="220.98" y1="-17.78" x2="220.98" y2="-7.62" width="0.1524" layer="91"/>
-<pinref part="P+1" gate="VCC" pin="VCC"/>
 </segment>
 </net>
 <net name="LED_BLUE" class="0">
@@ -10683,7 +10636,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="N$1" class="0">
 <segment>
-<pinref part="D1" gate="G$1" pin="R"/>
+<pinref part="RGB_LED" gate="G$1" pin="R"/>
 <wire x1="243.84" y1="-15.24" x2="246.38" y2="-15.24" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="-15.24" x2="246.38" y2="-12.7" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="-12.7" x2="248.92" y2="-12.7" width="0.1524" layer="91"/>
@@ -10692,14 +10645,14 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="N$2" class="0">
 <segment>
-<pinref part="D1" gate="G$1" pin="G"/>
+<pinref part="RGB_LED" gate="G$1" pin="G"/>
 <wire x1="243.84" y1="-17.78" x2="248.92" y2="-17.78" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="2"/>
 </segment>
 </net>
 <net name="N$3" class="0">
 <segment>
-<pinref part="D1" gate="G$1" pin="B"/>
+<pinref part="RGB_LED" gate="G$1" pin="B"/>
 <wire x1="243.84" y1="-20.32" x2="246.38" y2="-20.32" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="-20.32" x2="246.38" y2="-22.86" width="0.1524" layer="91"/>
 <wire x1="246.38" y1="-22.86" x2="248.92" y2="-22.86" width="0.1524" layer="91"/>
@@ -10769,6 +10722,20 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="177.8" y="-17.78" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="GPIO1" class="0">
+<segment>
+<pinref part="JP16" gate="G$1" pin="8"/>
+<wire x1="172.72" y1="-5.08" x2="177.8" y2="-5.08" width="0.1524" layer="91"/>
+<label x="177.8" y="-5.08" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="HR" class="0">
+<segment>
+<pinref part="JP16" gate="G$1" pin="10"/>
+<wire x1="172.72" y1="0" x2="175.26" y2="0" width="0.1524" layer="91"/>
+<label x="175.26" y="0" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>
@@ -10779,16 +10746,14 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <text x="50.8" y="63.5" size="2.54" layer="91">CHARGER</text>
 <text x="12.7" y="12.7" size="1.778" layer="91">NEEDS A VAl!</text>
 <text x="93.98" y="27.94" size="2.54" layer="91">Fuel Gauge</text>
-<text x="-20.32" y="78.74" size="1.778" layer="91">NEED A MICRO USB PORT</text>
 </plain>
 <instances>
-<instance part="J6" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
+<instance part="B_CONNECTOR" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
 <instance part="GND66" gate="1" x="0" y="48.26"/>
 <instance part="CHARGER" gate="G$1" x="63.5" y="50.8"/>
 <instance part="GND38" gate="1" x="83.82" y="55.88"/>
 <instance part="GND39" gate="1" x="73.66" y="40.64"/>
 <instance part="GND40" gate="1" x="45.72" y="38.1"/>
-<instance part="R6" gate="G$1" x="101.6" y="58.42" rot="R90"/>
 <instance part="U$48" gate="G$1" x="101.6" y="68.58"/>
 <instance part="LDO" gate="G$1" x="-17.78" y="17.78"/>
 <instance part="GND42" gate="1" x="-33.02" y="5.08"/>
@@ -10813,13 +10778,14 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="C2" gate="G$1" x="45.72" y="45.72"/>
 <instance part="C3" gate="G$1" x="83.82" y="68.58"/>
 <instance part="C4" gate="G$1" x="7.62" y="15.24"/>
+<instance part="R10" gate="G$1" x="101.6" y="58.42" rot="R90"/>
 </instances>
 <busses>
 </busses>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="J6" gate="G$1" pin="1"/>
+<pinref part="B_CONNECTOR" gate="G$1" pin="1"/>
 <wire x1="-7.62" y1="53.34" x2="0" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="0" y1="53.34" x2="0" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="GND66" gate="1" pin="GND"/>
@@ -10889,7 +10855,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="BATTERY" class="0">
 <segment>
-<pinref part="J6" gate="G$1" pin="2"/>
+<pinref part="B_CONNECTOR" gate="G$1" pin="2"/>
 <wire x1="-7.62" y1="55.88" x2="0" y2="55.88" width="0.1524" layer="91"/>
 <label x="2.54" y="55.88" size="1.778" layer="95"/>
 </segment>
@@ -10940,15 +10906,15 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="101.6" y1="53.34" x2="101.6" y2="50.8" width="0.1524" layer="91"/>
 <wire x1="106.68" y1="50.8" x2="101.6" y2="50.8" width="0.1524" layer="91"/>
 <junction x="101.6" y="50.8"/>
-<pinref part="R6" gate="G$1" pin="1"/>
 <label x="106.68" y="50.8" size="1.778" layer="95"/>
+<pinref part="R10" gate="G$1" pin="1"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
 <segment>
 <pinref part="U$48" gate="G$1" pin="3.3V"/>
-<pinref part="R6" gate="G$1" pin="2"/>
 <wire x1="101.6" y1="66.04" x2="101.6" y2="63.5" width="0.1524" layer="91"/>
+<pinref part="R10" gate="G$1" pin="2"/>
 </segment>
 <segment>
 <pinref part="LDO" gate="G$1" pin="OUT"/>
@@ -10975,15 +10941,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="R34" gate="G$1" pin="2"/>
 <pinref part="R37" gate="G$1" pin="2"/>
 <pinref part="U$49" gate="G$1" pin="3.3V"/>
-</segment>
-</net>
-<net name="N$46" class="0">
-<segment>
-<pinref part="LDO" gate="G$1" pin="FB"/>
-<wire x1="-5.08" y1="15.24" x2="-2.54" y2="15.24" width="0.1524" layer="91"/>
-<wire x1="-2.54" y1="15.24" x2="-2.54" y2="10.16" width="0.1524" layer="91"/>
-<pinref part="LDO" gate="G$1" pin="VTAB"/>
-<wire x1="-2.54" y1="10.16" x2="-5.08" y2="10.16" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$47" class="0">
@@ -11051,6 +11008,15 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="R34" gate="G$1" pin="1"/>
 </segment>
 </net>
+<net name="N$4" class="0">
+<segment>
+<pinref part="LDO" gate="G$1" pin="FB"/>
+<wire x1="-5.08" y1="15.24" x2="-2.54" y2="15.24" width="0.1524" layer="91"/>
+<wire x1="-2.54" y1="15.24" x2="-2.54" y2="10.16" width="0.1524" layer="91"/>
+<pinref part="LDO" gate="G$1" pin="VTAB"/>
+<wire x1="-2.54" y1="10.16" x2="-5.08" y2="10.16" width="0.1524" layer="91"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>
@@ -11087,16 +11053,13 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="C59" gate="G$1" x="17.78" y="71.12"/>
 <instance part="GND58" gate="1" x="53.34" y="60.96"/>
 <instance part="GND59" gate="1" x="22.86" y="60.96"/>
-<instance part="P+27" gate="VCC" x="35.56" y="81.28"/>
-<instance part="C60" gate="G$1" x="-2.54" y="76.2"/>
-<instance part="GND60" gate="1" x="-2.54" y="63.5"/>
-<instance part="L4" gate="G$1" x="7.62" y="81.28"/>
-<instance part="L5" gate="G$1" x="7.62" y="63.5"/>
 <instance part="GND61" gate="1" x="10.16" y="-30.48"/>
 <instance part="R25" gate="G$1" x="10.16" y="-15.24" rot="R90"/>
 <instance part="J5" gate="G$1" x="114.3" y="83.82"/>
 <instance part="GND62" gate="1" x="96.52" y="73.66"/>
 <instance part="U$1" gate="G$1" x="96.52" y="93.98"/>
+<instance part="U$3" gate="G$1" x="40.64" y="78.74"/>
+<instance part="U$4" gate="G$1" x="35.56" y="78.74"/>
 </instances>
 <busses>
 </busses>
@@ -11196,11 +11159,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <junction x="22.86" y="63.5"/>
 </segment>
 <segment>
-<pinref part="C60" gate="G$1" pin="2"/>
-<pinref part="GND60" gate="1" pin="GND"/>
-<wire x1="-2.54" y1="71.12" x2="-2.54" y2="66.04" width="0.1524" layer="91"/>
-</segment>
-<segment>
 <pinref part="C57" gate="G$1" pin="2"/>
 <pinref part="GND58" gate="1" pin="GND"/>
 <wire x1="53.34" y1="66.04" x2="53.34" y2="63.5" width="0.1524" layer="91"/>
@@ -11225,22 +11183,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U17" gate="G$1" pin="GND"/>
 <pinref part="GND49" gate="1" pin="GND"/>
 <wire x1="38.1" y1="-22.86" x2="38.1" y2="-35.56" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="VCC" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="VDD"/>
-<wire x1="35.56" y1="55.88" x2="35.56" y2="76.2" width="0.1524" layer="91"/>
-<pinref part="P+27" gate="VCC" pin="VCC"/>
-<pinref part="C59" gate="G$1" pin="1"/>
-<wire x1="35.56" y1="76.2" x2="35.56" y2="78.74" width="0.1524" layer="91"/>
-<wire x1="35.56" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
-<wire x1="27.94" y1="76.2" x2="17.78" y2="76.2" width="0.1524" layer="91"/>
-<wire x1="17.78" y1="76.2" x2="17.78" y2="73.66" width="0.1524" layer="91"/>
-<junction x="35.56" y="76.2"/>
-<pinref part="C58" gate="G$1" pin="1"/>
-<wire x1="27.94" y1="73.66" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
-<junction x="27.94" y="76.2"/>
 </segment>
 </net>
 <net name="N$27" class="0">
@@ -11401,39 +11343,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <junction x="116.84" y="-7.62"/>
 </segment>
 </net>
-<net name="N$39" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="AVDD"/>
-<wire x1="40.64" y1="55.88" x2="40.64" y2="76.2" width="0.1524" layer="91"/>
-<pinref part="C60" gate="G$1" pin="1"/>
-<wire x1="40.64" y1="76.2" x2="40.64" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="40.64" y1="91.44" x2="7.62" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="91.44" x2="-2.54" y2="91.44" width="0.1524" layer="91"/>
-<wire x1="-2.54" y1="91.44" x2="-2.54" y2="78.74" width="0.1524" layer="91"/>
-<pinref part="L4" gate="G$1" pin="1"/>
-<wire x1="7.62" y1="88.9" x2="7.62" y2="91.44" width="0.1524" layer="91"/>
-<junction x="7.62" y="91.44"/>
-<pinref part="C57" gate="G$1" pin="1"/>
-<wire x1="40.64" y1="76.2" x2="53.34" y2="76.2" width="0.1524" layer="91"/>
-<wire x1="53.34" y1="76.2" x2="53.34" y2="73.66" width="0.1524" layer="91"/>
-<junction x="40.64" y="76.2"/>
-</segment>
-</net>
-<net name="N$40" class="0">
-<segment>
-<pinref part="L4" gate="G$1" pin="2"/>
-<pinref part="L5" gate="G$1" pin="1"/>
-<wire x1="7.62" y1="73.66" x2="7.62" y2="71.12" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$41" class="0">
-<segment>
-<pinref part="L5" gate="G$1" pin="2"/>
-<wire x1="7.62" y1="55.88" x2="7.62" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U17" gate="G$1" pin="DCC"/>
-<wire x1="7.62" y1="48.26" x2="15.24" y2="48.26" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="TX_GPS" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="P08"/>
@@ -11454,6 +11363,28 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="101.6" y1="88.9" x2="96.52" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="96.52" y1="88.9" x2="96.52" y2="91.44" width="0.1524" layer="91"/>
 <pinref part="U$1" gate="G$1" pin="3.3V"/>
+</segment>
+<segment>
+<pinref part="C57" gate="G$1" pin="1"/>
+<wire x1="53.34" y1="76.2" x2="53.34" y2="73.66" width="0.1524" layer="91"/>
+<wire x1="40.64" y1="76.2" x2="53.34" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="U17" gate="G$1" pin="AVDD"/>
+<wire x1="40.64" y1="55.88" x2="40.64" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="U$3" gate="G$1" pin="3.3V"/>
+<junction x="40.64" y="76.2"/>
+</segment>
+<segment>
+<pinref part="U17" gate="G$1" pin="VDD"/>
+<wire x1="35.56" y1="55.88" x2="35.56" y2="76.2" width="0.1524" layer="91"/>
+<pinref part="C59" gate="G$1" pin="1"/>
+<wire x1="35.56" y1="76.2" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="27.94" y1="76.2" x2="17.78" y2="76.2" width="0.1524" layer="91"/>
+<wire x1="17.78" y1="76.2" x2="17.78" y2="73.66" width="0.1524" layer="91"/>
+<pinref part="C58" gate="G$1" pin="1"/>
+<wire x1="27.94" y1="73.66" x2="27.94" y2="76.2" width="0.1524" layer="91"/>
+<junction x="27.94" y="76.2"/>
+<pinref part="U$4" gate="G$1" pin="3.3V"/>
+<junction x="35.56" y="76.2"/>
 </segment>
 </net>
 <net name="SCL_IMU" class="0">
@@ -11547,6 +11478,20 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="-5.08" y="25.4" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="GPIO1" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P17"/>
+<wire x1="60.96" y1="45.72" x2="68.58" y2="45.72" width="0.1524" layer="91"/>
+<label x="68.58" y="45.72" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="HR" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P01/AIN2"/>
+<wire x1="15.24" y1="40.64" x2="5.08" y2="40.64" width="0.1524" layer="91"/>
+<label x="2.54" y="38.1" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 <sheet>
@@ -11580,9 +11525,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </nets>
 </sheet>
 </sheets>
-<errors>
-<approved hash="202,2,53.34,53.34,IC4,DC,,,,"/>
-</errors>
 </schematic>
 </drawing>
 </eagle>

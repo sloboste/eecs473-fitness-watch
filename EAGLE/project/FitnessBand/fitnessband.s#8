@@ -14259,7 +14259,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="35.56" y1="-27.94" x2="35.56" y2="-33.02" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="SCL" class="0">
+<net name="SCL_IMU" class="0">
 <segment>
 <wire x1="109.22" y1="-12.7" x2="109.22" y2="-22.86" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="-22.86" x2="88.9" y2="-22.86" width="0.1524" layer="91"/>
@@ -14268,7 +14268,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U18" gate="G$1" pin="SCL"/>
 </segment>
 </net>
-<net name="SDA" class="0">
+<net name="SDA_IMU" class="0">
 <segment>
 <wire x1="116.84" y1="-12.7" x2="116.84" y2="-25.4" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="-25.4" x2="88.9" y2="-25.4" width="0.1524" layer="91"/>
@@ -14277,7 +14277,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U18" gate="G$1" pin="SDA"/>
 </segment>
 </net>
-<net name="IMU_INT" class="0">
+<net name="INT_IMU" class="0">
 <segment>
 <pinref part="U18" gate="G$1" pin="INT"/>
 <wire x1="53.34" y1="-20.32" x2="35.56" y2="-20.32" width="0.1524" layer="91"/>
@@ -15052,41 +15052,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="7.62" y1="48.26" x2="15.24" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="AIN3" class="0">
-<segment>
-<label x="7.62" y="38.1" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P02/AIN3"/>
-<wire x1="7.62" y1="38.1" x2="15.24" y2="38.1" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN4" class="0">
-<segment>
-<label x="7.62" y="35.56" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P03/AIN4"/>
-<wire x1="7.62" y1="35.56" x2="15.24" y2="35.56" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN5" class="0">
-<segment>
-<label x="7.62" y="33.02" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P04/AIN5"/>
-<wire x1="7.62" y1="33.02" x2="15.24" y2="33.02" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN6" class="0">
-<segment>
-<label x="7.62" y="30.48" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P05/AIN6"/>
-<wire x1="7.62" y1="30.48" x2="15.24" y2="30.48" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN7" class="0">
-<segment>
-<label x="7.62" y="27.94" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P06/AIN7/AREF1"/>
-<wire x1="7.62" y1="27.94" x2="15.24" y2="27.94" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$42" class="0">
 <segment>
 <pinref part="D3" gate="G$1" pin="R"/>
@@ -15116,14 +15081,14 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <segment>
 <pinref part="U17" gate="G$1" pin="P08"/>
 <wire x1="15.24" y1="20.32" x2="7.62" y2="20.32" width="0.1524" layer="91"/>
-<label x="7.62" y="20.32" size="1.6764" layer="95" ratio="5" rot="R180" xref="yes"/>
+<label x="-2.54" y="20.32" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX_GPS" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="P09"/>
 <wire x1="15.24" y1="17.78" x2="7.62" y2="17.78" width="0.1524" layer="91"/>
-<label x="7.62" y="17.78" size="1.27" layer="95" rot="R180" xref="yes"/>
+<label x="-2.54" y="17.78" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -15136,6 +15101,48 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="-20.32" y1="116.84" x2="-17.78" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="-20.32" y1="119.38" x2="-20.32" y2="116.84" width="0.1524" layer="91"/>
 <junction x="-20.32" y="116.84"/>
+</segment>
+</net>
+<net name="SCL_IMU" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P24"/>
+<wire x1="60.96" y1="25.4" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
+<label x="66.04" y="25.4" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SDA_IMU" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P25"/>
+<wire x1="60.96" y1="22.86" x2="66.04" y2="22.86" width="0.1524" layer="91"/>
+<label x="66.04" y="22.86" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="BUTTON1" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P21"/>
+<wire x1="60.96" y1="35.56" x2="66.04" y2="35.56" width="0.1524" layer="91"/>
+<label x="66.04" y="35.56" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="BUTTON2" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P22"/>
+<wire x1="60.96" y1="33.02" x2="66.04" y2="33.02" width="0.1524" layer="91"/>
+<label x="66.04" y="33.02" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="BUTTON3" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P23"/>
+<wire x1="60.96" y1="30.48" x2="66.04" y2="30.48" width="0.1524" layer="91"/>
+<label x="66.04" y="30.48" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="INT_IMU" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P28"/>
+<wire x1="60.96" y1="15.24" x2="66.04" y2="15.24" width="0.1524" layer="91"/>
+<label x="66.04" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
