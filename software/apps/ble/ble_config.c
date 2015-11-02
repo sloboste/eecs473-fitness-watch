@@ -16,6 +16,7 @@
 #include "battery_service.h"
 #include "heart_rate_service.h"
 #include "gps_service.h"
+#include "ped_service.h"
 #include "timer_config.h"
 
 
@@ -212,6 +213,7 @@ static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
     ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
     ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
     ble_gps_on_ble_evt(ble_evt_ptr);
+    ble_ped_on_ble_evt(ble_evt_ptr);
 }
 
 
@@ -253,6 +255,10 @@ static void services_init(void)
 
     // Init gps service
     err_code = ble_gps_init();
+    APP_ERROR_CHECK(err_code);
+
+    // Init pedometer service
+    err_code = ble_ped_init();
     APP_ERROR_CHECK(err_code);
 }
 

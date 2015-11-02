@@ -23,7 +23,7 @@
 // TODO we might not need this...
 // The types of events that may occur in the GPS service.
 typedef enum {
-    TODO, // FIXME invalid 
+    GPS_TODO, // FIXME invalid 
 } ble_gps_evt_type_t;
 
 // The type definition for a BLE GPS service event. 

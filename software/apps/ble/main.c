@@ -77,17 +77,25 @@ int main(void)
 
     advertising_start();
 
-    uint32_t val = 0; // FIXME remove later
-    uint8_t status = 0x1; // FIXME remove later
+    uint32_t gval = 0; // FIXME remove later
+    uint8_t gstatus = 0x1; // FIXME remove later
+    uint32_t pval = 0; // FIXME remove later
+    uint8_t pstatus = 0x1; // FIXME remove later
     while (1) {
         power_manage();
 
         // FIXME remove later
         bas_update();
         hrs_update();
-        ble_gps_update_location(val++);
-        ble_gps_update_speed(val++);
-        status ^= 0x1;
-        ble_gps_update_status(status);
+
+        ble_gps_update_location(gval++);
+        ble_gps_update_speed(gval++);
+        gstatus ^= 0x1;
+        ble_gps_update_status(gstatus);
+
+        ble_ped_update_step_count(pval--);
+        pstatus ^= 0x1;
+        ble_ped_update_status(pstatus);
+        // ---
     }
 }
