@@ -9,6 +9,9 @@
 
 #include "gps_service.h"
 
+// Object to represent the gps service
+static ble_gps_t ble_gps_object;
+
 // Location characteristic
 #define LOCATION_LEN 4
 static char location_buf[LOCATION_LEN] = {0x01, 0x02, 0x03, 0x04};
@@ -27,7 +30,7 @@ static char status_buf[STATUS_LEN] = {0x0F};
 static char * status_name = "GPS Status";
 
 
-uint32_t gpssrv_update_location(uint32_t location)
+uint32_t ble_gps_update_location(uint32_t location)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -39,8 +42,8 @@ uint32_t gpssrv_update_location(uint32_t location)
     gatts_value.p_value = (uint8_t *) &location; 
     
     err_code = sd_ble_gatts_value_set(
-        gpssrv_object.conn_handle,
-        gpssrv_object.location_char_handles.value_handle,
+        ble_gps_object.conn_handle,
+        ble_gps_object.location_char_handles.value_handle,
         &gatts_value);
 
     if (err_code != NRF_SUCCESS) {
@@ -48,23 +51,23 @@ uint32_t gpssrv_update_location(uint32_t location)
     }
 
     // Send notification
-    if (gpssrv_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
+    if (ble_gps_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
         ble_gatts_hvx_params_t hvx_params;
         memset(&hvx_params, 0, sizeof(hvx_params));
         
-        hvx_params.handle = gpssrv_object.location_char_handles.value_handle,
+        hvx_params.handle = ble_gps_object.location_char_handles.value_handle,
         hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
         hvx_params.offset = gatts_value.offset;
         hvx_params.p_len = &gatts_value.len;
         hvx_params.p_data = gatts_value.p_value;
 
-        err_code = sd_ble_gatts_hvx(gpssrv_object.conn_handle, &hvx_params);
+        err_code = sd_ble_gatts_hvx(ble_gps_object.conn_handle, &hvx_params);
     }
     
     return err_code;
 }
 
-uint32_t gpssrv_update_speed(uint32_t speed)
+uint32_t ble_gps_update_speed(uint32_t speed)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -76,8 +79,8 @@ uint32_t gpssrv_update_speed(uint32_t speed)
     gatts_value.p_value = (uint8_t *) &speed; 
     
     err_code = sd_ble_gatts_value_set(
-        gpssrv_object.conn_handle,
-        gpssrv_object.speed_char_handles.value_handle,
+        ble_gps_object.conn_handle,
+        ble_gps_object.speed_char_handles.value_handle,
         &gatts_value);
 
     if (err_code != NRF_SUCCESS) {
@@ -85,23 +88,23 @@ uint32_t gpssrv_update_speed(uint32_t speed)
     }
 
     // Send notification
-    if (gpssrv_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
+    if (ble_gps_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
         ble_gatts_hvx_params_t hvx_params;
         memset(&hvx_params, 0, sizeof(hvx_params));
         
-        hvx_params.handle = gpssrv_object.speed_char_handles.value_handle,
+        hvx_params.handle = ble_gps_object.speed_char_handles.value_handle,
         hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
         hvx_params.offset = gatts_value.offset;
         hvx_params.p_len = &gatts_value.len;
         hvx_params.p_data = gatts_value.p_value;
 
-        err_code = sd_ble_gatts_hvx(gpssrv_object.conn_handle, &hvx_params);
+        err_code = sd_ble_gatts_hvx(ble_gps_object.conn_handle, &hvx_params);
     }
     
     return err_code;
 }
 
-uint32_t gpssrv_update_status(uint8_t status)
+uint32_t ble_gps_update_status(uint8_t status)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -113,8 +116,8 @@ uint32_t gpssrv_update_status(uint8_t status)
     gatts_value.p_value = (uint8_t *) &status; 
     
     err_code = sd_ble_gatts_value_set(
-        gpssrv_object.conn_handle,
-        gpssrv_object.status_char_handles.value_handle,
+        ble_gps_object.conn_handle,
+        ble_gps_object.status_char_handles.value_handle,
         &gatts_value);
 
     if (err_code != NRF_SUCCESS) {
@@ -122,17 +125,17 @@ uint32_t gpssrv_update_status(uint8_t status)
     }
 
     // Send notification
-    if (gpssrv_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
+    if (ble_gps_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
         ble_gatts_hvx_params_t hvx_params;
         memset(&hvx_params, 0, sizeof(hvx_params));
         
-        hvx_params.handle = gpssrv_object.status_char_handles.value_handle,
+        hvx_params.handle = ble_gps_object.status_char_handles.value_handle,
         hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
         hvx_params.offset = gatts_value.offset;
         hvx_params.p_len = &gatts_value.len;
         hvx_params.p_data = gatts_value.p_value;
 
-        err_code = sd_ble_gatts_hvx(gpssrv_object.conn_handle, &hvx_params);
+        err_code = sd_ble_gatts_hvx(ble_gps_object.conn_handle, &hvx_params);
     }
     
     return err_code;
@@ -140,12 +143,12 @@ uint32_t gpssrv_update_status(uint8_t status)
 
 static void on_connect(ble_evt_t * evt_ptr)
 {
-    gpssrv_object.conn_handle = evt_ptr->evt.gap_evt.conn_handle;
+    ble_gps_object.conn_handle = evt_ptr->evt.gap_evt.conn_handle;
 }
 
 static void on_disconnect(ble_evt_t * evt_ptr)
 {
-    gpssrv_object.conn_handle = BLE_CONN_HANDLE_INVALID;
+    ble_gps_object.conn_handle = BLE_CONN_HANDLE_INVALID;
 }
 
 static void on_write(ble_evt_t * evt_ptr)
@@ -153,10 +156,10 @@ static void on_write(ble_evt_t * evt_ptr)
     /* TODO: do we even need this?
     ble_gatts_evt_write_t * evt_write_ptr = &evt_ptr->evt.gatts_evt.params.write;
 
-    if ((evt_write_ptr->handle == gpssrv_object.location_char.cccd_handle) &&
+    if ((evt_write_ptr->handle == ble_gps_object.location_char.cccd_handle) &&
         (evt_write_ptr->len == 2)) {
         // Call event handler because cccd written
-        if (gpssrv_object->evt_handler != NULL) {
+        if (ble_gps_object->evt_handler != NULL) {
              
         } 
     }
@@ -186,7 +189,7 @@ static uint32_t char_add(uint16_t uuid, uint16_t value_len, char * value_buf,
     uint32_t err_code;
     
     ble_uuid_t char_uuid;
-    ble_uuid128_t base_uuid = gpssrv_BASE_UUID;
+    ble_uuid128_t base_uuid = ble_gps_BASE_UUID;
     char_uuid.uuid = uuid;
     err_code = sd_ble_uuid_vs_add(&base_uuid, &char_uuid.type);
     
@@ -229,41 +232,41 @@ static uint32_t char_add(uint16_t uuid, uint16_t value_len, char * value_buf,
     attr_char_value.p_value   = value_buf;
     
     err_code = sd_ble_gatts_characteristic_add(
-        gpssrv_object.service_handle, &char_md, &attr_char_value,
+        ble_gps_object.service_handle, &char_md, &attr_char_value,
         char_handles_ptr);
     
 
     return err_code;
 }
 
-uint32_t gpssrv_init(void)
+uint32_t ble_gps_init(void)
 {
     uint32_t err_code;
 
     ble_uuid_t service_uuid;
-    ble_uuid128_t base_uuid = gpssrv_BASE_UUID;
-    service_uuid.uuid = gpssrv_UUID;
+    ble_uuid128_t base_uuid = ble_gps_BASE_UUID;
+    service_uuid.uuid = ble_gps_UUID;
     err_code = sd_ble_uuid_vs_add(&base_uuid, &service_uuid.type);
 
     err_code = sd_ble_gatts_service_add(
         BLE_GATTS_SRVC_TYPE_PRIMARY,
         &service_uuid,
-        &(gpssrv_object.service_handle));
+        &(ble_gps_object.service_handle));
 
     err_code = char_add(
-        gpssrv_UUID_LOCATION, LOCATION_LEN, &location_buf,
+        ble_gps_UUID_LOCATION, LOCATION_LEN, &location_buf,
         strlen(location_name), location_name, 1, 0, 1,
-        &gpssrv_object.location_char_handles);
+        &ble_gps_object.location_char_handles);
 
     err_code = char_add(
-        gpssrv_UUID_SPEED, SPEED_LEN, &speed_buf,
+        ble_gps_UUID_SPEED, SPEED_LEN, &speed_buf,
         strlen(speed_name), speed_name, 1, 0, 1,
-        &gpssrv_object.speed_char_handles);
+        &ble_gps_object.speed_char_handles);
 
     err_code = char_add(
-        gpssrv_UUID_STATUS, STATUS_LEN, &status_buf,
+        ble_gps_UUID_STATUS, STATUS_LEN, &status_buf,
         strlen(status_name), status_name, 1, 0, 1,
-        &gpssrv_object.status_char_handles);
+        &ble_gps_object.status_char_handles);
 
     // FIXME bad err_code will be ignored if not last value
     return err_code;

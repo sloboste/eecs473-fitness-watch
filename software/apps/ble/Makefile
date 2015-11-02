@@ -8,16 +8,15 @@ APPLICATION_SRCS += ble_debug_assert_handler.c
 APPLICATION_SRCS += ble_srv_common.c
 APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += app_util_platform.c
+APPLICATION_SRCS += ble_hrs.c
+APPLICATION_SRCS += ble_bas.c
+
 #APPLICATION_SRCS += nrf_delay.c
 #APPLICATION_SRCS += nrf_drv_common.c
 #APPLICATION_SRCS += nrf_drv_gpiote.c
 #APPLICATION_SRCS += nrf_drv_twi.c
-APPLICATION_SRCS += app_scheduler.c
-APPLICATION_SRCS += app_timer_appsh.c
-APPLICATION_SRCS += ble_hrs.c
-APPLICATION_SRCS += ble_bas.c
-
-APPLICATION_SRCS += nrf_delay.c
+#APPLICATION_SRCS += app_scheduler.c
+#APPLICATION_SRCS += app_timer_appsh.c
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
