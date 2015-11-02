@@ -61,9 +61,9 @@ static void gap_params_init(void)
     // Full signal strength
     sd_ble_gap_tx_power_set(4);
 
-    // Open conenction (no security)
+    // Do not let the device name be changed remotely
     ble_gap_conn_sec_mode_t sec_mode;
-    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&sec_mode);
 
     // Set the name of the device so its easier to find
     err_code = sd_ble_gap_device_name_set(
