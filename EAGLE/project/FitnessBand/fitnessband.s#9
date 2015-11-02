@@ -14259,7 +14259,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="35.56" y1="-27.94" x2="35.56" y2="-33.02" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="SCL" class="0">
+<net name="SCL_IMU" class="0">
 <segment>
 <wire x1="109.22" y1="-12.7" x2="109.22" y2="-22.86" width="0.1524" layer="91"/>
 <wire x1="109.22" y1="-22.86" x2="88.9" y2="-22.86" width="0.1524" layer="91"/>
@@ -14268,7 +14268,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U18" gate="G$1" pin="SCL"/>
 </segment>
 </net>
-<net name="SDA" class="0">
+<net name="SDA_IMU" class="0">
 <segment>
 <wire x1="116.84" y1="-12.7" x2="116.84" y2="-25.4" width="0.1524" layer="91"/>
 <wire x1="116.84" y1="-25.4" x2="88.9" y2="-25.4" width="0.1524" layer="91"/>
@@ -14277,7 +14277,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U18" gate="G$1" pin="SDA"/>
 </segment>
 </net>
-<net name="IMU_INT" class="0">
+<net name="INT_IMU" class="0">
 <segment>
 <pinref part="U18" gate="G$1" pin="INT"/>
 <wire x1="53.34" y1="-20.32" x2="35.56" y2="-20.32" width="0.1524" layer="91"/>
@@ -14824,13 +14824,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U17" gate="G$1" pin="DEC2"/>
 </segment>
 </net>
-<net name="BOOTLOADER_RX" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P11"/>
-<wire x1="15.24" y1="12.7" x2="7.62" y2="12.7" width="0.1524" layer="91"/>
-<label x="7.62" y="12.7" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
 <net name="SWDCLK" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="SWDCLK"/>
@@ -14893,20 +14886,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="7.62" y1="99.06" x2="10.16" y2="99.06" width="0.1524" layer="91"/>
 <label x="10.16" y="99.06" size="1.27" layer="95" xref="yes"/>
 <pinref part="U3" gate="G$1" pin="!WP"/>
-</segment>
-</net>
-<net name="BOOTLOADER_TX" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P12"/>
-<wire x1="15.24" y1="10.16" x2="7.62" y2="10.16" width="0.1524" layer="91"/>
-<label x="7.62" y="10.16" size="1.27" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
-<net name="BOOTLOADER_CTRL" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P13"/>
-<wire x1="15.24" y1="7.62" x2="7.62" y2="7.62" width="0.1524" layer="91"/>
-<label x="7.62" y="7.62" size="1.27" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="N$28" class="0">
@@ -15071,41 +15050,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="7.62" y1="55.88" x2="7.62" y2="48.26" width="0.1524" layer="91"/>
 <pinref part="U17" gate="G$1" pin="DCC"/>
 <wire x1="7.62" y1="48.26" x2="15.24" y2="48.26" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN3" class="0">
-<segment>
-<label x="7.62" y="38.1" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P02/AIN3"/>
-<wire x1="7.62" y1="38.1" x2="15.24" y2="38.1" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN4" class="0">
-<segment>
-<label x="7.62" y="35.56" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P03/AIN4"/>
-<wire x1="7.62" y1="35.56" x2="15.24" y2="35.56" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN5" class="0">
-<segment>
-<label x="7.62" y="33.02" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P04/AIN5"/>
-<wire x1="7.62" y1="33.02" x2="15.24" y2="33.02" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN6" class="0">
-<segment>
-<label x="7.62" y="30.48" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P05/AIN6"/>
-<wire x1="7.62" y1="30.48" x2="15.24" y2="30.48" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="AIN7" class="0">
-<segment>
-<label x="7.62" y="27.94" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P06/AIN7/AREF1"/>
-<wire x1="7.62" y1="27.94" x2="15.24" y2="27.94" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$42" class="0">
