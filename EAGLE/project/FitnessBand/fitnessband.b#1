@@ -8,8 +8,8 @@
 </settings>
 <grid distance="0.01" unitdist="mm" unit="mm" style="lines" multiple="1" display="yes" altdistance="0.001" altunitdist="inch" altunit="inch"/>
 <layers>
-<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
-<layer number="2" name="Route2" color="1" fill="3" visible="no" active="yes"/>
+<layer number="1" name="Top" color="4" fill="1" visible="no" active="yes"/>
+<layer number="2" name="Route2" color="1" fill="3" visible="yes" active="yes"/>
 <layer number="3" name="Route3" color="4" fill="3" visible="no" active="no"/>
 <layer number="4" name="Route4" color="1" fill="4" visible="no" active="no"/>
 <layer number="5" name="Route5" color="4" fill="4" visible="no" active="no"/>
@@ -23,7 +23,7 @@
 <layer number="13" name="Route13" color="4" fill="5" visible="no" active="no"/>
 <layer number="14" name="Route14" color="1" fill="6" visible="no" active="no"/>
 <layer number="15" name="Route15" color="4" fill="6" visible="no" active="yes"/>
-<layer number="16" name="Bottom" color="1" fill="1" visible="no" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
 <layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
 <layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
@@ -31,7 +31,7 @@
 <layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="22" name="bPlace" color="7" fill="1" visible="no" active="yes"/>
 <layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
-<layer number="24" name="bOrigins" color="15" fill="1" visible="no" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
 <layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
 <layer number="26" name="bNames" color="7" fill="1" visible="no" active="yes"/>
 <layer number="27" name="tValues" color="7" fill="1" visible="no" active="yes"/>
@@ -2773,7 +2773,7 @@ design rules under a new name.</description>
 <element name="C14_LCD" library="resistor" package="C0402" value="1uF" x="23.06" y="22.39" rot="MR180"/>
 <element name="C15_LCD" library="resistor" package="C0402" value="1uF" x="20.63" y="21.06" rot="MR180"/>
 <element name="C16_LCD" library="resistor" package="C0402" value="0.1uF" x="17.28" y="22.68" rot="MR0"/>
-<element name="C2_CH" library="resistor" package="C0402" value="1uF" x="9.56" y="7.17" rot="MR180"/>
+<element name="C2_CH" library="resistor" package="C0402" value="1uF" x="9.48" y="7.44" rot="MR180"/>
 <element name="C3_CH" library="resistor" package="C0402" value="1uF" x="3.91" y="11.54" rot="MR90"/>
 <element name="C4_LDO" library="resistor" package="C0402" value="" x="10.77" y="21.74" rot="MR90"/>
 <element name="C47" library="passives" package="0402_CAP" value="12pF" x="7.19" y="18.0754"/>
@@ -2793,11 +2793,11 @@ design rules under a new name.</description>
 <element name="C63_FG" library="SparkFun" package="0402-CAP" value="10nF" x="7.37" y="4.89" rot="MR0"/>
 <element name="C7_IMU" library="resistor" package="C0402" value="10nF" x="31.11" y="20.46" rot="R180"/>
 <element name="C8_IMU" library="resistor" package="C0402" value="2.2uF" x="32.54" y="28.7" rot="R180"/>
-<element name="CHARGER" library="maxim" package="SOT23-5L" value="MAX1555" x="7.55" y="11.19" rot="MR0">
-<attribute name="OC_NEWARK" value="59J2761" x="7.55" y="11.19" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="OC_FARNELL" value="1628222" x="7.55" y="11.19" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="MF" value="MAXIM" x="7.55" y="11.19" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="MPN" value="MAX1555EZK+T" x="7.55" y="11.19" size="1.778" layer="28" rot="MR0" display="off"/>
+<element name="CHARGER" library="maxim" package="SOT23-5L" value="MAX1555" x="7.45" y="10.69" rot="MR0.5">
+<attribute name="OC_NEWARK" value="59J2761" x="7.45" y="10.69" size="1.778" layer="28" rot="MR0.5" display="off"/>
+<attribute name="OC_FARNELL" value="1628222" x="7.45" y="10.69" size="1.778" layer="28" rot="MR0.5" display="off"/>
+<attribute name="MF" value="MAXIM" x="7.45" y="10.69" size="1.778" layer="28" rot="MR0.5" display="off"/>
+<attribute name="MPN" value="MAX1555EZK+T" x="7.45" y="10.69" size="1.778" layer="28" rot="MR0.5" display="off"/>
 </element>
 <element name="RGB_LED" library="leds" package="1MM_SQ_4PAD" value="SML-LX0404SIUPGUSB" x="25.66" y="3.61">
 <attribute name="DIGIKEY" value="67-2125-1-ND" x="25.66" y="3.61" size="1.778" layer="27" display="off"/>
@@ -3336,20 +3336,20 @@ design rules under a new name.</description>
 <wire x1="5.62" y1="1.99" x2="5.58" y2="1.95" width="0.254" layer="16"/>
 <wire x1="3.18" y1="14.83" x2="5.17" y2="18.325" width="0" layer="19" extent="1-16"/>
 <wire x1="3.91" y1="10.89" x2="3.18" y2="14.83" width="0" layer="19" extent="1-16"/>
-<wire x1="8.5" y1="12.49" x2="3.91" y2="10.89" width="0" layer="19" extent="16-16"/>
+<wire x1="8.411309375" y1="11.981659375" x2="3.91" y2="10.89" width="0" layer="19" extent="16-16"/>
 <wire x1="4.95" y1="2.98" x2="3.91" y2="10.89" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="USB_PORT">
 <contactref element="CHARGER" pad="1"/>
 <contactref element="C2_CH" pad="1"/>
 <contactref element="X5" pad="VBUS"/>
-<wire x1="8.91" y1="7.17" x2="8.5" y2="9.89" width="0" layer="19" extent="16-16"/>
-<wire x1="4.58" y1="6.46" x2="8.91" y2="7.17" width="0" layer="19" extent="1-16"/>
+<wire x1="8.83" y1="7.44" x2="8.388621875" y2="9.38175625" width="0" layer="19" extent="16-16"/>
+<wire x1="4.58" y1="6.46" x2="8.83" y2="7.44" width="0" layer="19" extent="1-16"/>
 </signal>
 <signal name="CHARGING?">
 <contactref element="CHARGER" pad="3"/>
 <contactref element="R10_CH" pad="1"/>
-<wire x1="6.6" y1="9.89" x2="10.95" y2="9.87" width="0" layer="19" extent="16-16"/>
+<wire x1="6.48869375" y1="9.3983375" x2="10.95" y2="9.87" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="N$47">
 <contactref element="FG" pad="2"/>
@@ -3366,7 +3366,16 @@ design rules under a new name.</description>
 <contactref element="C63_FG" pad="1"/>
 <wire x1="8.02" y1="4.89" x2="9.81" y2="4.89" width="0.254" layer="16"/>
 <wire x1="9.81" y1="4.89" x2="9.93" y2="5.01" width="0.254" layer="16"/>
-<wire x1="4.95" y1="4.28" x2="8.02" y2="4.89" width="0" layer="19" extent="16-16"/>
+<wire x1="4.95" y1="4.28" x2="4.95" y2="5.15" width="0.254" layer="16"/>
+<wire x1="4.95" y1="5.15" x2="5.7" y2="5.9" width="0.254" layer="16"/>
+<via x="5.7" y="5.9" extent="1-16" drill="0.2032"/>
+<wire x1="5.7" y1="5.9" x2="7.76" y2="5.9" width="0.254" layer="2"/>
+<wire x1="7.76" y1="5.9" x2="7.77" y2="5.89" width="0.254" layer="2"/>
+<via x="7.77" y="5.89" extent="1-16" drill="0.2032"/>
+<wire x1="7.77" y1="5.89" x2="7.79" y2="5.89" width="0.254" layer="16"/>
+<wire x1="7.79" y1="5.89" x2="8.01" y2="5.67" width="0.254" layer="16"/>
+<wire x1="8.01" y1="5.67" x2="8.01" y2="4.9" width="0.254" layer="16"/>
+<wire x1="8.01" y1="4.9" x2="8.02" y2="4.89" width="0.254" layer="16"/>
 </signal>
 <signal name="SDA_FG">
 <contactref element="FG" pad="8"/>
@@ -3385,8 +3394,11 @@ design rules under a new name.</description>
 <contactref element="R36_FG" pad="1"/>
 <contactref element="U17" pad="17"/>
 <wire x1="12.75" y1="4.49" x2="12.73" y2="4.51" width="0.254" layer="16"/>
+<wire x1="15.3" y1="4.27" x2="14.27" y2="4.27" width="0.254" layer="16"/>
+<wire x1="14.27" y1="4.27" x2="14.17" y2="4.37" width="0.254" layer="16"/>
+<wire x1="14.17" y1="4.37" x2="12.87" y2="4.37" width="0.254" layer="16"/>
+<wire x1="12.87" y1="4.37" x2="12.73" y2="4.51" width="0.254" layer="16"/>
 <wire x1="12.73" y1="4.51" x2="12.794" y2="27.1554" width="0" layer="19" extent="1-16"/>
-<wire x1="15.3" y1="4.27" x2="12.75" y2="4.49" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="QST_FG">
 <contactref element="FG" pad="6"/>
