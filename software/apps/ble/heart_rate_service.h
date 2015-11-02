@@ -7,8 +7,8 @@
  *           ble_hrs_on_ble_evt(ble_evt_t *)
  */
 
-#ifndef __HRS_H
-#define __HRS_H
+#ifndef __BLE_HRS_H
+#define __BLE_HRS_H
 
 #include <stdbool.h>
 #include <stdint.h>

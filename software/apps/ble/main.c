@@ -2,8 +2,9 @@
 #include <stdint.h>
 
 #include "green_dev_board.h"
-#include "heart_rate_service_config.h"
-#include "battery_service_config.h"
+#include "heart_rate_service.h"
+#include "battery_service.h"
+#include "gps_service.h"
 
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -68,7 +69,7 @@ static void on_ble_evt(ble_evt_t * ble_evt_ptr);
 
 // information about the advertisement
 ble_advdata_t                           advdata;
-ble_advdata_t                           scanrspdata;
+ble_advdata_t                           srdata;
 // Parameters to be passed to the stack when starting advertising
 static ble_gap_adv_params_t             m_adv_params;
 
@@ -157,24 +158,22 @@ static void advertising_init(void)
         {0x1800, BLE_UUID_TYPE_BLE},    // Generic Access Service
         {hrs_UUID, BLE_UUID_TYPE_BLE},
         {bas_UUID, BLE_UUID_TYPE_BLE},
+        //{gpssrv_UUID, BLE_UUID_TYPE_VENDOR_BEGIN},
     };
-    // TODO: can't advertise custom 128 bit uuids without modifying nordic code
+    // TODO: can't advertise custom 128 bit uuids but will exceed byte limit anyway... 
 
     // Build and set advertising and scan response data.
     memset(&advdata, 0, sizeof(advdata));
     advdata.name_type = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance = true;
     advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; // TODO want to be le_only_limited_disc
-    advdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
-    advdata.uuids_complete.p_uuids = adv_uuids;
 
-    /*
-    memset(&scanrspdata, 0, sizeof(scanrspdata));
-    scanrspdata.service_data_count = 1;
-    p_service_data_array = services_ptr;
-    */
 
-    err_code = ble_advdata_set(&advdata, NULL); //&scanrspdata);
+    memset(&srdata, 0, sizeof(srdata));
+    srdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
+    srdata.uuids_complete.p_uuids = adv_uuids;
+
+    err_code = ble_advdata_set(&advdata, &srdata);
     APP_ERROR_CHECK(err_code);
 
     // Initialize advertising parameters (used when starting advertising).
@@ -244,10 +243,10 @@ static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
     on_ble_evt(ble_evt_ptr);
     ble_conn_params_on_ble_evt(ble_evt_ptr);
-    //ble_advertising_on_ble_evt(ble_evt_ptr);
-    //dm_ble_evt_handler(ble_evt_ptr);
     ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
     ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
+
+    ble_gps_on_ble_evt(ble_evt_ptr);
 }
 
 // Initialize the connection parameters module
@@ -333,6 +332,10 @@ void services_init(void)
     // Init battery service
     err_code = bas_init();
     APP_ERROR_CHECK(err_code);
+
+    // Init gps service
+    err_code = gpssrv_init();
+    APP_ERROR_CHECK(err_code);
 }
 
 
@@ -363,6 +366,8 @@ int main(void)
 
     advertising_start();
 
+    uint32_t val = 0; // FIXME remove later
+    uint8_t status = 0x1; // FIXME remove later
     while (1) {
         //app_sched_execute();
         power_manage();
@@ -370,5 +375,9 @@ int main(void)
         // FIXME remove later
         bas_update();
         hrs_update();
+        gpssrv_update_location(val++);
+        gpssrv_update_speed(val++);
+        status ^= 0x1;
+        gpssrv_update_status(status);
     }
 }

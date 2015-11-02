@@ -7,8 +7,8 @@
  *           ble_bas_on_ble_evt(ble_evt_t *)
  */
 
-#ifndef __BAS_H
-#define __BAS_H
+#ifndef __BLE_BAS_H
+#define __BLE_BAS_H
 
 #include <stdbool.h>
 #include <stdint.h>
