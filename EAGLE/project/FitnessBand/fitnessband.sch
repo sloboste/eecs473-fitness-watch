@@ -8810,82 +8810,6 @@ Standard 11-pin 0.1" header. Use with straight break away headers (SKU : PRT-001
 <smd name="SE" x="0.537" y="0" dx="0.22" dy="0.22" layer="1" roundness="100"/>
 <text x="0" y="0.75" size="1.016" layer="25" font="vector" ratio="12" align="bottom-center">&gt;NAME</text>
 </package>
-<package name="SOIC-8">
-<wire x1="-2.362" y1="-1.803" x2="2.362" y2="-1.803" width="0.1524" layer="51"/>
-<wire x1="2.362" y1="-1.803" x2="2.362" y2="1.803" width="0.1524" layer="21"/>
-<wire x1="2.362" y1="1.803" x2="-2.362" y2="1.803" width="0.1524" layer="51"/>
-<wire x1="-2.362" y1="1.803" x2="-2.362" y2="-1.803" width="0.1524" layer="21"/>
-<circle x="-2.8194" y="-2.0066" radius="0.2032" width="0" layer="21"/>
-<smd name="1" x="-1.905" y="-2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="2" x="-0.635" y="-2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="3" x="0.635" y="-2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="4" x="1.905" y="-2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="5" x="1.905" y="2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="6" x="0.635" y="2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="7" x="-0.635" y="2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<smd name="8" x="-1.905" y="2.6162" dx="0.6096" dy="2.2098" layer="1"/>
-<text x="2.54" y="0" size="1.016" layer="27" font="vector" ratio="12" rot="R90" align="top-center">&gt;VALUE</text>
-<text x="-2.54" y="0" size="1.016" layer="25" font="vector" ratio="12" rot="R90" align="bottom-center">&gt;NAME</text>
-<rectangle x1="-2.0828" y1="-2.8702" x2="-1.7272" y2="-1.8542" layer="51"/>
-<rectangle x1="-0.8128" y1="-2.8702" x2="-0.4572" y2="-1.8542" layer="51"/>
-<rectangle x1="0.4572" y1="-2.8702" x2="0.8128" y2="-1.8542" layer="51"/>
-<rectangle x1="1.7272" y1="-2.8702" x2="2.0828" y2="-1.8542" layer="51"/>
-<rectangle x1="-2.0828" y1="1.8542" x2="-1.7272" y2="2.8702" layer="51"/>
-<rectangle x1="-0.8128" y1="1.8542" x2="-0.4572" y2="2.8702" layer="51"/>
-<rectangle x1="0.4572" y1="1.8542" x2="0.8128" y2="2.8702" layer="51"/>
-<rectangle x1="1.7272" y1="1.8542" x2="2.0828" y2="2.8702" layer="51"/>
-</package>
-<package name="TDFN-8">
-<smd name="2" x="-0.475" y="-2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="3" x="0.475" y="-2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="4" x="1.425" y="-2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="1" x="-1.425" y="-2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="8" x="-1.425" y="2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="7" x="-0.475" y="2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="6" x="0.475" y="2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="5" x="1.425" y="2.0066" dx="0.45" dy="0.8" layer="1"/>
-<smd name="NC" x="0" y="0" dx="3.2" dy="2" layer="1" cream="no"/>
-<rectangle x1="-1.5" y1="0.2" x2="-0.8" y2="0.9" layer="31"/>
-<rectangle x1="-0.3" y1="0.2" x2="0.3" y2="0.9" layer="31"/>
-<rectangle x1="0.8" y1="0.2" x2="1.5" y2="0.9" layer="31"/>
-<rectangle x1="0.8" y1="-0.9" x2="1.5" y2="-0.2" layer="31"/>
-<rectangle x1="-0.3" y1="-0.9" x2="0.3" y2="-0.2" layer="31"/>
-<rectangle x1="-1.5" y1="-0.9" x2="-0.8" y2="-0.2" layer="31"/>
-<wire x1="-2.25" y1="2" x2="2.25" y2="2" width="0.127" layer="21"/>
-<wire x1="2.25" y1="2" x2="2.25" y2="-2" width="0.127" layer="21"/>
-<wire x1="2.25" y1="-2" x2="-1.36" y2="-2" width="0.127" layer="21"/>
-<wire x1="-1.36" y1="-2" x2="-2.25" y2="-2" width="0.127" layer="21"/>
-<wire x1="-2.25" y1="-2" x2="-2.25" y2="-1.1" width="0.127" layer="21"/>
-<circle x="-2.56" y="-2.35" radius="0.22360625" width="0" layer="21"/>
-<wire x1="-2.25" y1="-1.1" x2="-2.25" y2="2" width="0.127" layer="21"/>
-<wire x1="-2.25" y1="-1.1" x2="-1.36" y2="-2" width="0.127" layer="21"/>
-<text x="-2.5" y="0" size="1.016" layer="25" font="vector" ratio="12" rot="R90" align="bottom-center">&gt;NAME</text>
-<text x="3.4" y="0" size="1.016" layer="27" font="vector" ratio="12" rot="R90" align="bottom-center">&gt;VALUE</text>
-</package>
-<package name="TDFN-8/6MM">
-<smd name="2" x="-0.635" y="-2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="3" x="0.635" y="-2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="4" x="1.905" y="-2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="1" x="-1.905" y="-2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="8" x="-1.905" y="2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="7" x="-0.635" y="2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="6" x="0.635" y="2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="5" x="1.905" y="2.9" dx="0.55" dy="1.2" layer="1"/>
-<smd name="NC" x="0" y="0" dx="4" dy="2.3" layer="1" cream="no"/>
-<wire x1="2.5" y1="3" x2="2.5" y2="-3" width="0.127" layer="21"/>
-<circle x="-2.995" y="-2.65" radius="0.22360625" width="0" layer="21"/>
-<text x="-2.595" y="0" size="1.016" layer="25" font="vector" ratio="12" rot="R90" align="bottom-center">&gt;NAME</text>
-<text x="3.63" y="0" size="1.016" layer="27" font="vector" ratio="12" rot="R90" align="bottom-center">&gt;VALUE</text>
-<wire x1="-2.5" y1="3" x2="-2.5" y2="-3" width="0.127" layer="21"/>
-<wire x1="-2.5" y1="-3" x2="2.5" y2="-3" width="0.127" layer="21"/>
-<wire x1="2.5" y1="3" x2="-2.5" y2="3" width="0.127" layer="21"/>
-<rectangle x1="-1.8" y1="0.1" x2="-0.9" y2="1" layer="31"/>
-<rectangle x1="-1.8" y1="-1" x2="-0.9" y2="-0.1" layer="31"/>
-<rectangle x1="-0.4" y1="-1" x2="0.5" y2="-0.1" layer="31"/>
-<rectangle x1="-0.4" y1="0.1" x2="0.5" y2="1" layer="31"/>
-<rectangle x1="0.9" y1="-1" x2="1.8" y2="-0.1" layer="31"/>
-<rectangle x1="0.9" y1="0.1" x2="1.8" y2="1" layer="31"/>
-</package>
 </packages>
 <symbols>
 <symbol name="ANTENNA">
@@ -8964,22 +8888,6 @@ Standard 11-pin 0.1" header. Use with straight break away headers (SKU : PRT-001
 <wire x1="12.7" y1="5.08" x2="-12.7" y2="5.08" width="0.254" layer="94"/>
 <text x="-12.7" y="5.588" size="1.778" layer="95" ratio="12">&gt;NAME</text>
 <text x="-6.858" y="5.588" size="1.778" layer="96" ratio="12">&gt;VALUE</text>
-</symbol>
-<symbol name="FM25LB">
-<wire x1="-7.62" y1="10.16" x2="-7.62" y2="-12.7" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-12.7" x2="7.62" y2="-12.7" width="0.254" layer="94"/>
-<wire x1="7.62" y1="-12.7" x2="7.62" y2="10.16" width="0.254" layer="94"/>
-<wire x1="7.62" y1="10.16" x2="-7.62" y2="10.16" width="0.254" layer="94"/>
-<pin name="VDD" x="-12.7" y="7.62" length="middle"/>
-<pin name="VSS" x="-12.7" y="-5.08" length="middle"/>
-<pin name="SI" x="12.7" y="5.08" length="middle" rot="R180"/>
-<pin name="SO" x="12.7" y="2.54" length="middle" rot="R180"/>
-<pin name="SCK" x="12.7" y="0" length="middle" rot="R180"/>
-<pin name="!CS" x="12.7" y="-2.54" length="middle" rot="R180"/>
-<pin name="!HOLD" x="12.7" y="-7.62" length="middle" rot="R180"/>
-<pin name="!WP" x="12.7" y="-10.16" length="middle" rot="R180"/>
-<text x="-5.08" y="10.16" size="1.27" layer="95">&gt;NAME</text>
-<text x="-5.08" y="-15.24" size="1.27" layer="95">&gt;VALUE</text>
 </symbol>
 </symbols>
 <devicesets>
@@ -9085,68 +8993,6 @@ nRF24LE1, nRF51822-QFAA/AB, with integrated harmonic filter</description>
 <technology name="">
 <attribute name="DIGIKEY" value="497-13637-1-ND" constant="no"/>
 <attribute name="MOUSER" value="511-BAL-NRF01D3" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-<deviceset name="FM25" prefix="U">
-<description>Cypress FRAM</description>
-<gates>
-<gate name="G$1" symbol="FM25LB" x="0" y="0"/>
-</gates>
-<devices>
-<device name="L04B-G" package="SOIC-8">
-<connects>
-<connect gate="G$1" pin="!CS" pad="1"/>
-<connect gate="G$1" pin="!HOLD" pad="7"/>
-<connect gate="G$1" pin="!WP" pad="3"/>
-<connect gate="G$1" pin="SCK" pad="6"/>
-<connect gate="G$1" pin="SI" pad="5"/>
-<connect gate="G$1" pin="SO" pad="2"/>
-<connect gate="G$1" pin="VDD" pad="8"/>
-<connect gate="G$1" pin="VSS" pad="4"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="DIGIKEY" value="428-3209-ND" constant="no"/>
-<attribute name="MOUSER" value="877-FM25L04B-G" constant="no"/>
-</technology>
-</technologies>
-</device>
-<device name="L04B-DG" package="TDFN-8">
-<connects>
-<connect gate="G$1" pin="!CS" pad="1"/>
-<connect gate="G$1" pin="!HOLD" pad="7"/>
-<connect gate="G$1" pin="!WP" pad="3"/>
-<connect gate="G$1" pin="SCK" pad="6"/>
-<connect gate="G$1" pin="SI" pad="5"/>
-<connect gate="G$1" pin="SO" pad="2"/>
-<connect gate="G$1" pin="VDD" pad="8"/>
-<connect gate="G$1" pin="VSS" pad="4"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="DIGIKEY" value="FM25L04B-DGRA-ND" constant="no"/>
-<attribute name="MOUSER" value="877-FM25L04B-DG" constant="no"/>
-</technology>
-</technologies>
-</device>
-<device name="V20-DG" package="TDFN-8/6MM">
-<connects>
-<connect gate="G$1" pin="!CS" pad="1"/>
-<connect gate="G$1" pin="!HOLD" pad="7"/>
-<connect gate="G$1" pin="!WP" pad="3"/>
-<connect gate="G$1" pin="SCK" pad="6"/>
-<connect gate="G$1" pin="SI" pad="5"/>
-<connect gate="G$1" pin="SO" pad="2"/>
-<connect gate="G$1" pin="VDD" pad="8"/>
-<connect gate="G$1" pin="VSS" pad="4"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="DIGIKEY" value="FM25V20-DGRA-ND" constant="no"/>
-<attribute name="MOUSER" value="877-FM25V20-DG" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -10104,7 +9950,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="R25" library="passives" deviceset="RESISTOR" device="0402_RES" value="12k"/>
 <part name="J5" library="connector" deviceset="TC2030-JLINK" device="-NL"/>
 <part name="GND62" library="supply1" deviceset="GND" device=""/>
-<part name="B_CONNECTOR" library="headers" deviceset="SH_MALE_2/1MM" device=""/>
+<part name="LIPO" library="headers" deviceset="SH_MALE_2/1MM" device=""/>
 <part name="GND66" library="supply1" deviceset="GND" device=""/>
 <part name="U$27" library="microbuilder" deviceset="GND" device=""/>
 <part name="U$37" library="microbuilder" deviceset="GND" device=""/>
@@ -10161,14 +10007,10 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <part name="R1_LED" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
 <part name="R2_LED" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
 <part name="R3_LED" library="passives" deviceset="RESISTOR" device="0402_RES" value="1k"/>
-<part name="GND1" library="supply1" deviceset="GND" device=""/>
-<part name="FRAM" library="chips" deviceset="FM25" device="L04B-DG"/>
-<part name="U$2" library="microbuilder" deviceset="3.3V" device=""/>
 <part name="C2_CH" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
 <part name="C3_CH" library="resistor" deviceset="C-EU" device="C0402" value="1uF"/>
 <part name="C4_LDO" library="resistor" deviceset="C-EU" device="C0402"/>
 <part name="C5_GPS" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
-<part name="C_FRAM" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
 <part name="C7_IMU" library="resistor" deviceset="C-EU" device="C0402" value="10nF"/>
 <part name="C8_IMU" library="resistor" deviceset="C-EU" device="C0402" value="2.2uF"/>
 <part name="C12_IMU" library="resistor" deviceset="C-EU" device="C0402" value="0.1uF"/>
@@ -10199,13 +10041,13 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <instance part="LCD_PORT" gate="G$1" x="111.76" y="55.88"/>
 <instance part="U$39" gate="G$1" x="73.66" y="33.02"/>
 <instance part="U$40" gate="G$1" x="58.42" y="27.94"/>
-<instance part="U$41" gate="G$1" x="88.9" y="27.94"/>
+<instance part="U$41" gate="G$1" x="88.9" y="35.56"/>
 <instance part="U$44" gate="G$1" x="27.94" y="40.64"/>
 <instance part="FB3_LCD" gate="G$1" x="35.56" y="55.88"/>
 <instance part="FB4_LCD" gate="G$1" x="35.56" y="45.72"/>
 <instance part="U$50" gate="G$1" x="58.42" y="60.96"/>
 <instance part="U$51" gate="G$1" x="27.94" y="60.96"/>
-<instance part="U$27" gate="G$1" x="83.82" y="45.72"/>
+<instance part="U$27" gate="G$1" x="83.82" y="35.56"/>
 <instance part="U$37" gate="G$1" x="81.28" y="60.96" rot="R180"/>
 <instance part="U$38" gate="G$1" x="73.66" y="58.42"/>
 <instance part="GPS" gate="G$1" x="210.82" y="53.34"/>
@@ -10243,11 +10085,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <attribute name="NAME" x="252.73" y="-14.1986" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="257.81" y="-14.478" size="1.778" layer="96" rot="R180"/>
 </instance>
-<instance part="GND1" gate="1" x="167.64" y="-78.74"/>
-<instance part="FRAM" gate="G$1" x="182.88" y="-68.58"/>
-<instance part="U$2" gate="G$1" x="167.64" y="-55.88"/>
 <instance part="C5_GPS" gate="G$1" x="154.94" y="66.04"/>
-<instance part="C_FRAM" gate="G$1" x="165.1" y="-66.04"/>
 <instance part="C7_IMU" gate="G$1" x="99.06" y="-38.1"/>
 <instance part="C8_IMU" gate="G$1" x="43.18" y="-35.56"/>
 <instance part="C12_IMU" gate="G$1" x="35.56" y="-35.56"/>
@@ -10277,7 +10115,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </segment>
 <segment>
 <wire x1="101.6" y1="45.72" x2="88.9" y2="45.72" width="0.1524" layer="91"/>
-<wire x1="88.9" y1="45.72" x2="88.9" y2="30.48" width="0.1524" layer="91"/>
+<wire x1="88.9" y1="45.72" x2="88.9" y2="38.1" width="0.1524" layer="91"/>
 <pinref part="LCD_PORT" gate="G$1" pin="VSS"/>
 <pinref part="U$41" gate="G$1" pin="GND"/>
 </segment>
@@ -10286,12 +10124,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <wire x1="27.94" y1="45.72" x2="27.94" y2="43.18" width="0.1524" layer="91"/>
 <pinref part="U$44" gate="G$1" pin="GND"/>
 <pinref part="FB4_LCD" gate="G$1" pin="P$1"/>
-</segment>
-<segment>
-<wire x1="101.6" y1="48.26" x2="83.82" y2="48.26" width="0.1524" layer="91"/>
-<label x="86.36" y="48.26" size="1.778" layer="95"/>
-<pinref part="LCD_PORT" gate="G$1" pin="EXTMODE"/>
-<pinref part="U$27" gate="G$1" pin="GND"/>
 </segment>
 <segment>
 <wire x1="101.6" y1="58.42" x2="81.28" y2="58.42" width="0.1524" layer="91"/>
@@ -10383,19 +10215,15 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U$18" gate="G$1" pin="GND"/>
 </segment>
 <segment>
-<wire x1="170.18" y1="-73.66" x2="167.64" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="167.64" y1="-73.66" x2="165.1" y2="-73.66" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="-73.66" x2="165.1" y2="-71.12" width="0.1524" layer="91"/>
-<pinref part="GND1" gate="1" pin="GND"/>
-<wire x1="167.64" y1="-76.2" x2="167.64" y2="-73.66" width="0.1524" layer="91"/>
-<junction x="167.64" y="-73.66"/>
-<pinref part="FRAM" gate="G$1" pin="VSS"/>
-<pinref part="C_FRAM" gate="G$1" pin="2"/>
-</segment>
-<segment>
 <pinref part="U$30" gate="G$1" pin="GND"/>
 <pinref part="JP16" gate="G$1" pin="9"/>
 <wire x1="193.04" y1="-2.54" x2="172.72" y2="-2.54" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="U$27" gate="G$1" pin="GND"/>
+<wire x1="83.82" y1="38.1" x2="83.82" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="LCD_PORT" gate="G$1" pin="EXTMODE"/>
+<wire x1="83.82" y1="48.26" x2="101.6" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -10460,16 +10288,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U$89" gate="G$1" pin="3.3V"/>
 <pinref part="C13_IMU" gate="G$1" pin="1"/>
 <junction x="48.26" y="-2.54"/>
-</segment>
-<segment>
-<wire x1="165.1" y1="-63.5" x2="165.1" y2="-60.96" width="0.1524" layer="91"/>
-<wire x1="165.1" y1="-60.96" x2="167.64" y2="-60.96" width="0.1524" layer="91"/>
-<pinref part="FRAM" gate="G$1" pin="VDD"/>
-<pinref part="U$2" gate="G$1" pin="3.3V"/>
-<wire x1="167.64" y1="-60.96" x2="170.18" y2="-60.96" width="0.1524" layer="91"/>
-<wire x1="167.64" y1="-58.42" x2="167.64" y2="-60.96" width="0.1524" layer="91"/>
-<junction x="167.64" y="-60.96"/>
-<pinref part="C_FRAM" gate="G$1" pin="1"/>
 </segment>
 <segment>
 <pinref part="U$5" gate="G$1" pin="3.3V"/>
@@ -10659,48 +10477,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="R2_LED" gate="G$1" pin="2"/>
 </segment>
 </net>
-<net name="!FRAM_CS" class="0">
-<segment>
-<wire x1="195.58" y1="-71.12" x2="198.12" y2="-71.12" width="0.1524" layer="91"/>
-<label x="198.12" y="-71.12" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="!CS"/>
-</segment>
-</net>
-<net name="!FRAM_HOLD" class="0">
-<segment>
-<wire x1="195.58" y1="-76.2" x2="198.12" y2="-76.2" width="0.1524" layer="91"/>
-<label x="198.12" y="-76.2" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="!HOLD"/>
-</segment>
-</net>
-<net name="!FRAM_WP" class="0">
-<segment>
-<wire x1="195.58" y1="-78.74" x2="198.12" y2="-78.74" width="0.1524" layer="91"/>
-<label x="198.12" y="-78.74" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="!WP"/>
-</segment>
-</net>
-<net name="SPI_SCK_FRAM" class="0">
-<segment>
-<wire x1="195.58" y1="-68.58" x2="198.12" y2="-68.58" width="0.1524" layer="91"/>
-<label x="198.12" y="-68.58" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="SCK"/>
-</segment>
-</net>
-<net name="SPI_MOSI_FRAM" class="0">
-<segment>
-<wire x1="195.58" y1="-63.5" x2="198.12" y2="-63.5" width="0.1524" layer="91"/>
-<label x="198.12" y="-63.5" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="SI"/>
-</segment>
-</net>
-<net name="SPI_MISO_FRAM" class="0">
-<segment>
-<wire x1="195.58" y1="-66.04" x2="198.12" y2="-66.04" width="0.1524" layer="91"/>
-<label x="198.12" y="-66.04" size="1.27" layer="95" xref="yes"/>
-<pinref part="FRAM" gate="G$1" pin="SO"/>
-</segment>
-</net>
 <net name="BUTTON1" class="0">
 <segment>
 <pinref part="JP16" gate="G$1" pin="11"/>
@@ -10748,7 +10524,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <text x="93.98" y="27.94" size="2.54" layer="91">Fuel Gauge</text>
 </plain>
 <instances>
-<instance part="B_CONNECTOR" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
+<instance part="LIPO" gate="G$1" x="-7.62" y="55.88" rot="R180"/>
 <instance part="GND66" gate="1" x="0" y="48.26"/>
 <instance part="CHARGER" gate="G$1" x="63.5" y="50.8"/>
 <instance part="GND38" gate="1" x="83.82" y="55.88"/>
@@ -10785,7 +10561,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <nets>
 <net name="GND" class="0">
 <segment>
-<pinref part="B_CONNECTOR" gate="G$1" pin="1"/>
+<pinref part="LIPO" gate="G$1" pin="1"/>
 <wire x1="-7.62" y1="53.34" x2="0" y2="53.34" width="0.1524" layer="91"/>
 <wire x1="0" y1="53.34" x2="0" y2="50.8" width="0.1524" layer="91"/>
 <pinref part="GND66" gate="1" pin="GND"/>
@@ -10855,7 +10631,7 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="BATTERY" class="0">
 <segment>
-<pinref part="B_CONNECTOR" gate="G$1" pin="2"/>
+<pinref part="LIPO" gate="G$1" pin="2"/>
 <wire x1="-7.62" y1="55.88" x2="0" y2="55.88" width="0.1524" layer="91"/>
 <label x="2.54" y="55.88" size="1.778" layer="95"/>
 </segment>
@@ -11221,27 +10997,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="132.08" y="88.9" size="1.27" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="!FRAM_CS" class="0">
-<segment>
-<label x="7.62" y="2.54" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P15"/>
-<wire x1="7.62" y1="2.54" x2="15.24" y2="2.54" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="!FRAM_HOLD" class="0">
-<segment>
-<label x="7.62" y="5.08" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P14"/>
-<wire x1="7.62" y1="5.08" x2="15.24" y2="5.08" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="!FRAM_WP" class="0">
-<segment>
-<label x="66.04" y="48.26" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P16"/>
-<wire x1="66.04" y1="48.26" x2="60.96" y2="48.26" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$28" class="0">
 <segment>
 <wire x1="60.96" y1="20.32" x2="88.9" y2="20.32" width="0.1524" layer="91"/>
@@ -11253,48 +11008,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <junction x="93.98" y="40.64"/>
 <pinref part="X4" gate="G$1" pin="1"/>
 <pinref part="U17" gate="G$1" pin="P26/AIN0/XL2"/>
-</segment>
-</net>
-<net name="SPI_SCK_FRAM" class="0">
-<segment>
-<label x="7.62" y="43.18" size="1.27" layer="95" rot="R180" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P00/AREF0"/>
-<wire x1="7.62" y1="43.18" x2="15.24" y2="43.18" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="LED_BLUE" class="0">
-<segment>
-<label x="66.04" y="40.64" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P19"/>
-<wire x1="66.04" y1="40.64" x2="60.96" y2="40.64" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="LED_GREEN" class="0">
-<segment>
-<label x="66.04" y="38.1" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P20"/>
-<wire x1="60.96" y1="38.1" x2="66.04" y2="38.1" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="LED_RED" class="0">
-<segment>
-<label x="66.04" y="43.18" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P18"/>
-<wire x1="60.96" y1="43.18" x2="66.04" y2="43.18" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="SPI_MOSI_FRAM" class="0">
-<segment>
-<label x="66.04" y="10.16" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P30"/>
-<wire x1="60.96" y1="10.16" x2="66.04" y2="10.16" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="SPI_MISO_FRAM" class="0">
-<segment>
-<label x="66.04" y="12.7" size="1.27" layer="95" xref="yes"/>
-<pinref part="U17" gate="G$1" pin="P29"/>
-<wire x1="66.04" y1="12.7" x2="60.96" y2="12.7" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$29" class="0">
@@ -11345,16 +11058,16 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="TX_GPS" class="0">
 <segment>
-<pinref part="U17" gate="G$1" pin="P08"/>
-<wire x1="15.24" y1="20.32" x2="7.62" y2="20.32" width="0.1524" layer="91"/>
-<label x="-2.54" y="20.32" size="1.778" layer="95"/>
+<pinref part="U17" gate="G$1" pin="P11"/>
+<wire x1="15.24" y1="12.7" x2="10.16" y2="12.7" width="0.1524" layer="91"/>
+<label x="2.54" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="RX_GPS" class="0">
 <segment>
-<pinref part="U17" gate="G$1" pin="P09"/>
-<wire x1="15.24" y1="17.78" x2="7.62" y2="17.78" width="0.1524" layer="91"/>
-<label x="-2.54" y="17.78" size="1.778" layer="95"/>
+<pinref part="U17" gate="G$1" pin="P12"/>
+<wire x1="15.24" y1="10.16" x2="10.16" y2="10.16" width="0.1524" layer="91"/>
+<label x="2.54" y="10.16" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="3.3V" class="0">
@@ -11401,13 +11114,6 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="66.04" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="BUTTON1" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P21"/>
-<wire x1="60.96" y1="35.56" x2="66.04" y2="35.56" width="0.1524" layer="91"/>
-<label x="66.04" y="35.56" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="BUTTON2" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="P22"/>
@@ -11417,9 +11123,9 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 </net>
 <net name="BUTTON3" class="0">
 <segment>
-<pinref part="U17" gate="G$1" pin="P23"/>
-<wire x1="60.96" y1="30.48" x2="66.04" y2="30.48" width="0.1524" layer="91"/>
-<label x="66.04" y="30.48" size="1.778" layer="95"/>
+<pinref part="U17" gate="G$1" pin="P21"/>
+<wire x1="60.96" y1="35.56" x2="66.04" y2="35.56" width="0.1524" layer="91"/>
+<label x="66.04" y="35.56" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="INT_IMU" class="0">
@@ -11429,25 +11135,11 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="66.04" y="15.24" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="SDA_FG" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P10"/>
-<wire x1="15.24" y1="15.24" x2="7.62" y2="15.24" width="0.1524" layer="91"/>
-<label x="-2.54" y="15.24" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="SCL_FG" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P11"/>
-<wire x1="15.24" y1="12.7" x2="7.62" y2="12.7" width="0.1524" layer="91"/>
-<label x="-2.54" y="12.7" size="1.778" layer="95"/>
-</segment>
-</net>
 <net name="ALT_FG" class="0">
 <segment>
-<pinref part="U17" gate="G$1" pin="P12"/>
-<wire x1="15.24" y1="10.16" x2="7.62" y2="10.16" width="0.1524" layer="91"/>
-<label x="-2.54" y="10.16" size="1.778" layer="95"/>
+<pinref part="U17" gate="G$1" pin="P13"/>
+<wire x1="15.24" y1="7.62" x2="10.16" y2="7.62" width="0.1524" layer="91"/>
+<label x="2.54" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SCLK_LCD" class="0">
@@ -11482,14 +11174,56 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <segment>
 <pinref part="U17" gate="G$1" pin="P01/AIN2"/>
 <wire x1="15.24" y1="40.64" x2="5.08" y2="40.64" width="0.1524" layer="91"/>
-<label x="2.54" y="38.1" size="1.778" layer="95"/>
+<label x="5.08" y="40.64" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SCL_FG" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P15"/>
+<wire x1="15.24" y1="2.54" x2="10.16" y2="2.54" width="0.1524" layer="91"/>
+<label x="2.54" y="2.54" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SDA_FG" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P16"/>
+<wire x1="60.96" y1="48.26" x2="68.58" y2="48.26" width="0.1524" layer="91"/>
+<label x="66.04" y="48.26" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="QST_FG" class="0">
 <segment>
-<pinref part="U17" gate="G$1" pin="P13"/>
-<wire x1="15.24" y1="7.62" x2="7.62" y2="7.62" width="0.1524" layer="91"/>
-<label x="-2.54" y="7.62" size="1.778" layer="95"/>
+<pinref part="U17" gate="G$1" pin="P14"/>
+<wire x1="15.24" y1="5.08" x2="10.16" y2="5.08" width="0.1524" layer="91"/>
+<label x="2.54" y="5.08" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="BUTTON1" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P23"/>
+<wire x1="60.96" y1="30.48" x2="66.04" y2="30.48" width="0.1524" layer="91"/>
+<label x="66.04" y="30.48" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LED_BLUE" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P08"/>
+<wire x1="15.24" y1="20.32" x2="10.16" y2="20.32" width="0.1524" layer="91"/>
+<label x="-2.54" y="20.32" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LED_GREEN" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P10"/>
+<wire x1="15.24" y1="15.24" x2="10.16" y2="15.24" width="0.1524" layer="91"/>
+<label x="-2.54" y="15.24" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="LED_RED" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P09"/>
+<wire x1="15.24" y1="17.78" x2="10.16" y2="17.78" width="0.1524" layer="91"/>
+<label x="-2.54" y="17.78" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
