@@ -1,5 +1,5 @@
 /*
- * gps app test
+ * GPS app test
  */
 
 // Standard Libraries
