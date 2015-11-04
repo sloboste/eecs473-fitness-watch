@@ -1,31 +1,41 @@
 /* 
  */
 
+// Timer
 #include "app_timer.h"
 #include "nrf_drv_clock.h"
 #include "nrf_gpio.h" 
 
+// Scheduler
 #include "app_scheduler.h"
 #include "app_timer_appsh.h"
 #include "nordic_common.h"
 #include "app_util_platform.h"
 
+#include "nrf_delay.h"
+
 #include "green_dev_board.h"
 
+// Timer
 #define APP_TIMER_PRESCALER 16      // value of the RTC1 prescaler register
 #define APP_TIMER_MAX_TIMERS 2      // max number of timers in this app
 #define APP_TIMER_OP_QUEUE_SIZE 3   // Size of timer operations queue
 
-#define SCHED_MAX_EVENT_DATA_SIZE MAX(APP_TIMER_SCHED_EVT_SIZE, sizeof(timer_0_pin)) // max size of the event data
+// Scheduler
+#define SCHED_MAX_EVENT_DATA_SIZE MAX(APP_TIMER_SCHED_EVT_SIZE, sizeof(task_led_arg_t)) // max size of the event data
 #define SCHED_QUEUE_SIZE 10
 
+typedef struct task_led_arg_struct {
+    uint32_t pin;
+    uint32_t cpu_time_ms;
+} task_led_arg_t;
 
 static app_timer_id_t led_0_timer_id;
 static app_timer_id_t led_1_timer_id;
-static uint32_t timer_0_ms = 200;
-static uint32_t timer_1_ms = 600;
-static uint32_t timer_0_pin = PIN_LED_0;
-static uint32_t timer_1_pin = PIN_LED_1;
+static uint32_t timer_0_ms = 1000;
+static uint32_t timer_1_ms = 200;
+static task_led_arg_t task_led_0_arg = {PIN_LED_0, 200};
+static task_led_arg_t task_led_1_arg = {PIN_LED_1, 100};
 
 static void lfclk_request(void);
 static void timer_0_handler(void * p_context);
@@ -51,20 +61,24 @@ static void lfclk_request(void)
 static void timer_0_handler(void * p_context)
 {
     //app_sched_event_put(&pin, sizeof(pin), button_scheduler_event_handler);
-    app_sched_event_put(&timer_0_pin, sizeof(timer_0_pin), task_led);
+    app_sched_event_put(
+        (void *) &task_led_0_arg, sizeof(task_led_0_arg), task_led);
 }
 
 // This executes in interrupt context
 static void timer_1_handler(void * p_context)
 {
-    app_sched_event_put(&timer_1_pin, sizeof(timer_1_pin), task_led);
+    app_sched_event_put(
+        (void *) &task_led_1_arg, sizeof(task_led_1_arg), task_led);
 }
 
 // This executes in thread context
 static void task_led(void * arg)
 {
-    uint32_t * pin_num_ptr = (uint32_t *) arg;
-    nrf_gpio_pin_toggle(*pin_num_ptr);
+    task_led_arg_t * arg_ptr  = (task_led_arg_t *) arg;
+    nrf_gpio_pin_set(arg_ptr->pin);
+    nrf_delay_ms(arg_ptr->cpu_time_ms);
+    nrf_gpio_pin_clear(arg_ptr->pin);
 }
 
 
