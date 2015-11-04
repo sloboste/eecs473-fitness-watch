@@ -27,7 +27,7 @@
 #define BLINK_RATE  APP_TIMER_TICKS(500, BLINK_TIMER_PRESCALER) // Blink every 0.5 seconds
 
 // NOTE: added this
-#define LED_PIN 18 // led 0 on the green board
+#define LED_PIN 21 // led 0 on the green board
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
