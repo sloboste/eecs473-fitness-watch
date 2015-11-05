@@ -11102,18 +11102,11 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <junction x="35.56" y="76.2"/>
 </segment>
 </net>
-<net name="SCL_IMU" class="0">
+<net name="SDA_IMU" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="P24"/>
 <wire x1="60.96" y1="25.4" x2="66.04" y2="25.4" width="0.1524" layer="91"/>
 <label x="66.04" y="25.4" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="SDA_IMU" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P25"/>
-<wire x1="60.96" y1="22.86" x2="66.04" y2="22.86" width="0.1524" layer="91"/>
-<label x="66.04" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="BUTTON2" class="0">
@@ -11233,6 +11226,13 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U17" gate="G$1" pin="P20"/>
 <wire x1="60.96" y1="38.1" x2="66.04" y2="38.1" width="0.1524" layer="91"/>
 <label x="66.04" y="38.1" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="SCL_IMU" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P25"/>
+<wire x1="60.96" y1="22.86" x2="66.04" y2="22.86" width="0.1524" layer="91"/>
+<label x="66.04" y="22.86" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
