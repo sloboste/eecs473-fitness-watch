@@ -2873,8 +2873,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="28.9946" y1="12.8946" x2="28.99" y2="12.89" width="0.1524" layer="1"/>
 <wire x1="28.99" y1="12.89" x2="28.99" y2="12.29693125" width="0.1524" layer="1"/>
 <wire x1="28.99" y1="12.29693125" x2="29.19693125" y2="12.09" width="0.1524" layer="1"/>
-<wire x1="28.5946" y1="13.094" x2="28.5946" y2="12.7354" width="0.1524" layer="1"/>
-<wire x1="28.5946" y1="12.7354" x2="29.02" y2="12.31" width="0.1524" layer="1"/>
 <wire x1="29.02" y1="12.31" x2="29.02" y2="12.21" width="0.1524" layer="1"/>
 <wire x1="29.02" y1="12.21" x2="29.13" y2="12.1" width="0.1524" layer="1"/>
 <contactref element="LCD_PORT" pad="P$8"/>
@@ -2992,6 +2990,11 @@ Please make sure your boards conform to these design rules.</description>
 <via x="33.48" y="26.08" extent="1-16" drill="0.3556"/>
 <via x="37.21" y="29.03" extent="1-16" drill="0.3556"/>
 <via x="22.98" y="25.61" extent="1-16" drill="0.3556"/>
+<wire x1="28.5946" y1="12.7354" x2="28.5946" y2="12.3954" width="0.1524" layer="1"/>
+<wire x1="28.5946" y1="12.3954" x2="28.6" y2="12.44" width="0.1524" layer="1"/>
+<wire x1="28.6" y1="12.44" x2="28.61" y2="12.39" width="0.1524" layer="1"/>
+<wire x1="28.61" y1="12.39" x2="29.19693125" y2="12.09" width="0.1524" layer="1"/>
+<wire x1="29.02" y1="12.31" x2="29.19693125" y2="12.09" width="0.1524" layer="1"/>
 <wire x1="28.5946" y1="13.094" x2="28.33" y2="14.53" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="3.3V">

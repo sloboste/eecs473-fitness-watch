@@ -141,6 +141,9 @@
 <wire x1="39.94" y1="0" x2="39.95" y2="30.06" width="0" layer="20"/>
 <wire x1="39.95" y1="30.06" x2="-0.04" y2="30.09" width="0" layer="20"/>
 <wire x1="-0.04" y1="30.09" x2="0" y2="0" width="0" layer="20"/>
+<text x="21.43" y="6.75" size="1.778" layer="122" rot="MR0">The EIR REV1
+The Watchmen
+EECS 473 F15</text>
 </plain>
 <libraries>
 <library name="chips">
@@ -3869,4 +3872,10 @@ Please make sure your boards conform to these design rules.</description>
 </signals>
 </board>
 </drawing>
+<compatibility>
+<note version="6.3" minversion="6.2.2" severity="warning">
+Since Version 6.2.2 text objects can contain more than one line,
+which will not be processed correctly with this version.
+</note>
+</compatibility>
 </eagle>

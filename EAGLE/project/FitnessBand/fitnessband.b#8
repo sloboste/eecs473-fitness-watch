@@ -2975,9 +2975,6 @@ Please make sure your boards conform to these design rules.</description>
 <wire x1="33.34" y1="19.94" x2="33.33" y2="19.93" width="0.1524" layer="1"/>
 <via x="25.98" y="17.73" extent="1-16" drill="0.3302"/>
 <via x="16.08" y="15.6" extent="1-16" drill="0.3302"/>
-<wire x1="25.98" y1="17.73" x2="27.5946" y2="16.094" width="0" layer="19" extent="1-1"/>
-<wire x1="30.48306875" y1="21.8" x2="29.4204" y2="22.9304" width="0" layer="19" extent="1-16"/>
-<wire x1="28.215" y1="9.608" x2="26.685" y2="10.04926875" width="0" layer="19" extent="1-1"/>
 <via x="27.2" y="17.71" extent="1-16" drill="0.3302"/>
 <via x="28.3" y="17.71" extent="1-16" drill="0.3302"/>
 <via x="29.27" y="17.72" extent="1-16" drill="0.3302"/>
@@ -2993,6 +2990,8 @@ Please make sure your boards conform to these design rules.</description>
 <via x="26.05" y="14.5" extent="1-16" drill="0.3302"/>
 <via x="26.01" y="15.68" extent="1-16" drill="0.3302"/>
 <via x="26.04" y="16.7" extent="1-16" drill="0.3302"/>
+<wire x1="29.4204" y1="22.9304" x2="30.48306875" y2="21.8" width="0" layer="19" extent="1-16"/>
+<wire x1="28.5946" y1="13.094" x2="28.33" y2="14.53" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="3.3V">
 <contactref element="FB3_LCD" pad="1"/>
