@@ -22,11 +22,13 @@
 #include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
- #include <math.h>
-//#include "twi.h"
+#include <math.h>
 #include "twi_master.h"
+//#include "nrf_drv_config.h"
+//#include "nrf_drv_twi.h"
 #include "inv_mpu.h"
 #include "nrf_delay.h"
+#include "SEGGER_RTT.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -42,26 +44,62 @@
  */
 
 bool i2c_write(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t const *data){
-	uint8_t w2_data[2];
-
+	slave_addr = slave_addr << 1;
+    int tx_size = length+1;
+    uint8_t w2_data[tx_size];
+    //SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
     w2_data[0] = reg_addr;
-    w2_data[1] = *data;
-    return twi_master_transfer(slave_addr, w2_data, length, TWI_ISSUE_STOP);
+    for(int i = 1; i < tx_size; ++i){
+        //SEGGER_RTT_printf(0, "DATA: %d\r\n", *(data+i-1));
+        w2_data[i] = *(data+i-1);
+    }
+    //SEGGER_RTT_printf(0, "DATA: %d\r\n", sizeof(w2_data));
+    
+
+    return !twi_master_transfer(slave_addr, w2_data, sizeof(w2_data), TWI_ISSUE_STOP);;
 }
 
+
+// bool i2c_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *data){
+// 	bool transfer_succeeded;
+//     transfer_succeeded  = twi_master_transfer(slave_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
+//     transfer_succeeded &= twi_master_transfer(slave_addr|TWI_READ_BIT, data, length, TWI_ISSUE_STOP);
+//     return transfer_succeeded;
+// }
 
 bool i2c_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *data){
-	bool transfer_succeeded;
+    slave_addr = slave_addr << 1;
+    bool transfer_succeeded;
+    if(reg_addr == 0x74){
+        SEGGER_RTT_printf(0, "TS: %d\r\n", transfer_succeeded);
+    }
     transfer_succeeded  = twi_master_transfer(slave_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
+    if(reg_addr == 0x74){
+        SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
+    }
     transfer_succeeded &= twi_master_transfer(slave_addr|TWI_READ_BIT, data, length, TWI_ISSUE_STOP);
-    return transfer_succeeded;
+    if(reg_addr == 0x74){
+        SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
+        if(!transfer_succeeded == 1){
+            volatile int i = 0;
+            while(1) i++;
+        }
+    }
+    return !transfer_succeeded;
 }
+
 #define delay_ms 	nrf_delay_ms
 
 static inline int reg_int_cb(struct int_param_s *int_param)
 {
 }
 #define min(a,b) ((a<b)?a:b)
+
+
+void i2c_init(){
+    twi_master_init();
+    return;
+}
 
 #define MPU6050
 #if !defined MPU6050 && !defined MPU9150 && !defined MPU6500 && !defined MPU9250
@@ -644,8 +682,11 @@ int mpu_reg_dump(void)
     for (ii = 0; ii < st->hw->num_reg; ii++) {
         if (ii == st->reg->fifo_r_w || ii == st->reg->mem_r_w)
             continue;
-        if (i2c_read(st->hw->addr, ii, 1, &data))
+        if (i2c_read(st->hw->addr, ii, 1, &data)){
+            SEGGER_RTT_printf(0, "Reg: %d\r\n", ii);
+            SEGGER_RTT_printf(0, "Data: %d\r\n", data);
             return -1;
+        }
 //      log_i("%#5x: %#5x\r\n", ii, data);
     }
     return 0;
@@ -685,6 +726,10 @@ int mpu_init(struct int_param_s *int_param)
 {
     unsigned char data[6], rev;
 
+    SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+    // SEGGER_RTT_printf(0, "REG: %d\r\n", st->reg->pwr_mgmt_1);
+    // SEGGER_RTT_printf(0, "DATA: %d\r\n", BIT_RESET);
+
     /* Reset device. */
     data[0] = BIT_RESET;
     if (i2c_write(st->hw->addr, st->reg->pwr_mgmt_1, 1, data))
@@ -717,6 +762,11 @@ int mpu_init(struct int_param_s *int_param)
         if (i2c_read(st->hw->addr, st->reg->prod_id, 1, data))
             return -5;
         rev = data[0] & 0x0F;
+        // SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+        // SEGGER_RTT_printf(0, "DATA: %d\r\n", data[0]);
+        // SEGGER_RTT_printf(0, "REV: %d\r\n", rev);
+        // SEGGER_RTT_printf(0, "addr: %d\r\n", st->hw->addr);
+        // SEGGER_RTT_printf(0, "prod_id: %d\r\n", st->reg->prod_id);
         if (!rev) {
 
             return -6;
@@ -726,23 +776,23 @@ int mpu_init(struct int_param_s *int_param)
         } else
             st->chip_cfg.accel_half = 0;
     }
-#elif defined MPU6500
-#define MPU6500_MEM_REV_ADDR    (0x17)
-    if (mpu_read_mem(MPU6500_MEM_REV_ADDR, 1, &rev))
-        return -7;
-    if (rev == 0x1)
-        st->chip_cfg.accel_half = 0;
-    else {
+// #elif defined MPU6500
+// #define MPU6500_MEM_REV_ADDR    (0x17)
+//     if (mpu_read_mem(MPU6500_MEM_REV_ADDR, 1, &rev))
+//         return -7;
+//     if (rev == 0x1)
+//         st->chip_cfg.accel_half = 0;
+//     else {
 
-        return -8;
-    }
+//         return -8;
+//     }
 
-    /* MPU6500 shares 4kB of memory between the DMP and the FIFO. Since the
-     * first 3kB are needed by the DMP, we'll use the last 1kB for the FIFO.
-     */
-    data[0] = BIT_FIFO_SIZE_1024 | 0x8;
-    if (i2c_write(st->hw->addr, st->reg->accel_cfg2, 1, data))
-        return -9;
+//      MPU6500 shares 4kB of memory between the DMP and the FIFO. Since the
+//      * first 3kB are needed by the DMP, we'll use the last 1kB for the FIFO.
+     
+//     data[0] = BIT_FIFO_SIZE_1024 | 0x8;
+//     if (i2c_write(st->hw->addr, st->reg->accel_cfg2, 1, data))
+//         return -9;
 #endif
 
     /* Set to invalid values to ensure no I2C writes are skipped. */
@@ -792,8 +842,11 @@ int mpu_init(struct int_param_s *int_param)
         return -15;
 #else
     /* Already disabled by setup_compass. */
-    if (mpu_set_bypass(0))
-        return -16;
+    // int errCode = mpu_set_bypass(0);
+    // SEGGER_RTT_printf(0, "ERR: %d\r\n", errCode);
+    // if(errCode)
+    //if (mpu_set_bypass(0))
+    //    return -16;
 #endif
 
     mpu_set_sensors(0);
@@ -1744,7 +1797,7 @@ int mpu_set_bypass(unsigned char bypass_on)
             return -1;
         tmp &= ~BIT_AUX_IF_EN;
         if (i2c_write(st->hw->addr, st->reg->user_ctrl, 1, &tmp))
-            return -1;
+            return -2;
         delay_ms(3);
         tmp = BIT_BYPASS_EN;
         if (st->chip_cfg.active_low_int)
@@ -1752,17 +1805,21 @@ int mpu_set_bypass(unsigned char bypass_on)
         if (st->chip_cfg.latched_int)
             tmp |= BIT_LATCH_EN | BIT_ANY_RD_CLR;
         if (i2c_write(st->hw->addr, st->reg->int_pin_cfg, 1, &tmp))
-            return -1;
+            return -3;
     } else {
         /* Enable I2C master mode if compass is being used. */
         if (i2c_read(st->hw->addr, st->reg->user_ctrl, 1, &tmp))
-            return -1;
+            return -4;
         if (st->chip_cfg.sensors & INV_XYZ_COMPASS)
             tmp |= BIT_AUX_IF_EN;
         else
             tmp &= ~BIT_AUX_IF_EN;
-        if (i2c_write(st->hw->addr, st->reg->user_ctrl, 1, &tmp))
-            return -1;
+        if (i2c_write(st->hw->addr, st->reg->user_ctrl, 1, &tmp)) //!!!
+            {
+                SEGGER_RTT_printf(0, "From: %d\r\n", st->reg->user_ctrl);
+                SEGGER_RTT_printf(0, "Sending: %d\r\n", tmp);
+            return -5;
+            }
         delay_ms(3);
         if (st->chip_cfg.active_low_int)
             tmp = BIT_ACTL;
@@ -1771,7 +1828,7 @@ int mpu_set_bypass(unsigned char bypass_on)
         if (st->chip_cfg.latched_int)
             tmp |= BIT_LATCH_EN | BIT_ANY_RD_CLR;
         if (i2c_write(st->hw->addr, st->reg->int_pin_cfg, 1, &tmp))
-            return -1;
+            return -6;
     }
     st->chip_cfg.bypass_mode = bypass_on;
     return 0;
@@ -2263,7 +2320,7 @@ int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
     uint8_t *progBuffer;
     /* Must divide evenly into st->hw->bank_size to avoid bank crossings. */
 #define LOAD_CHUNK  (16)
-    unsigned char cur[LOAD_CHUNK], tmp[2];
+    uint8_t cur[LOAD_CHUNK], tmp[2];
 
     if (st->chip_cfg.dmp_loaded)
         /* DMP should only be loaded once. */
@@ -2294,6 +2351,14 @@ int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
             
         if (memcmp(progBuffer, cur, this_write)) {
 
+            for(int i =0; i < this_write; ++i){
+                SEGGER_RTT_printf(0, "Buffer: %d, Cur: %d\r\n", progBuffer[i], cur[i]);
+            }
+
+            // volatile a =0;
+            // while(1){
+            //     ++a;
+            // }
             return -5;
         }
     }

@@ -38,12 +38,6 @@ static unsigned char fifoCount;
 void tap_detect(unsigned char direction, unsigned char count){
 	tap_count += count;
 	SEGGER_RTT_printf(0, "TAP DETECTED%d\r\n", tap_count);
-	//Serial.print("TAP DETECTED ");
-	//Serial.println(tap_count);
-	//delay(500);
-	// Serial.println(direction);
-	// Serial.print(" ");
-	// Serial.println(count);
 	return;
 }
 
@@ -128,7 +122,7 @@ int mympu_update() {
 			3 - if frame corrupted
 		       <0 - if error
 		*/
-
+		 SEGGER_RTT_printf(0, "Ret: %d\r\n", ret);      
 		if (ret!=0) return ret; 
 	} while (fifoCount>1);
 
