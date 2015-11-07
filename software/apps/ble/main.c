@@ -5,17 +5,23 @@
 #include "nrf_gpio.h"
 #include "softdevice_handler.h"
 
-#include "green_dev_board.h"
+#include "nrf_delay.h"
+
 #include "timer_config.h"
 #include "ble_config.h"
 #include "heart_rate_service.h"
 #include "battery_service.h"
 #include "gps_service.h"
+#include "ped_service.h"
 
+#include "blue_dev_board.h"
+#include "gps.h"
 
+/*
 #define ADVERTISING_LED                 PIN_LED_0   // On when advertising 
 #define CONNECTED_LED                   PIN_LED_1   // On when connected
 #define ADVERTISING_BUTTON              PIN_BUTTON_0  // Activate advertising
+*/
 
 
 /**@brief Function for error handling, which is called when an error has occurred.
@@ -55,12 +61,22 @@ static void power_manage(void)
 
 void gpio_init(void)
 {
+    /*
     nrf_gpio_cfg_input(ADVERTISING_BUTTON, GPIO_PIN_CNF_PULL_Pullup);
     nrf_gpio_cfg_output(ADVERTISING_LED);
     nrf_gpio_cfg_output(CONNECTED_LED);
     nrf_gpio_pin_clear(ADVERTISING_LED);
     nrf_gpio_pin_clear(CONNECTED_LED);
+    */
+
+    //nrf_gpio_cfg_output(PIN_LED_0);
+    nrf_gpio_cfg_output(PIN_LED_1);
+    nrf_gpio_cfg_output(PIN_LED_2);
+    //nrf_gpio_pin_clear(PIN_LED_0);
+    nrf_gpio_pin_set(PIN_LED_1);
+    nrf_gpio_pin_set(PIN_LED_2);
 }
+
 
 
 /**
@@ -73,23 +89,41 @@ int main(void)
     ble_init();
 
     // Wait for button press
-    while (nrf_gpio_pin_read(ADVERTISING_BUTTON)) {}; 
+    //while (nrf_gpio_pin_read(ADVERTISING_BUTTON)) {}; 
+
+    //gps_init(PIN_LED_1);
+    gps_init();
+    nrf_delay_ms(1000);
+    gps_enable();
+    gps_config();
+
+    gps_info_t gps_info;
 
     advertising_start();
 
-    uint32_t gval = 0; // FIXME remove later
+    //uint32_t gval = 0; // FIXME remove later
+    uint8_t pstatus = 0x1; // FIXME remove later
     uint8_t gstatus = 0x1; // FIXME remove later
     uint32_t pval = 0; // FIXME remove later
-    uint8_t pstatus = 0x1; // FIXME remove later
-    while (1) {
-        power_manage();
+    
+    //char * info = NULL;
+    //uint32_t len;
 
+    while (1) {
+        //power_manage();
+        
         // FIXME remove later
+        nrf_delay_ms(100);
         bas_update();
         hrs_update();
+        
+        gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
+        ble_gps_update_location(gps_info.latitude, 16);
+        ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
+        ble_gps_update_location(gps_info.longitude, 16);
 
-        ble_gps_update_location(gval++);
-        ble_gps_update_speed(gval++);
+        //ble_gps_update_location(gval++);
+        //ble_gps_update_speed(gval++);
         gstatus ^= 0x1;
         ble_gps_update_status(gstatus);
 
