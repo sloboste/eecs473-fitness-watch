@@ -16,10 +16,10 @@
 #define PIN_LED_4 24
 
 // UART
-#define PIN_RX 11
-#define PIN_TX 9
-//#define PIN_RTS 0 // Doesn't matter, not used 
-//#define PIN_CTS 0 // Doesn't matter, not used
+#define PIN_RTS 8 
+#define PIN_TXD 9
+#define PIN_CTS 10
+#define PIN_RXD 11
 
 //#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
 
