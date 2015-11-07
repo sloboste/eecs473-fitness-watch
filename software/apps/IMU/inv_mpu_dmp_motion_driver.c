@@ -430,13 +430,13 @@ static const unsigned short sStartAddress = 0x0400;
 #define DMP_SAMPLE_RATE     (200)
 #define GYRO_SF             (46850825LL * 200 / DMP_SAMPLE_RATE)
 
-#define FIFO_CORRUPTION_CHECK
+/*#define FIFO_CORRUPTION_CHECK
 #ifdef FIFO_CORRUPTION_CHECK
 #define QUAT_ERROR_THRESH       (1L<<24)
 #define QUAT_MAG_SQ_NORMALIZED  (1L<<28)
 #define QUAT_MAG_SQ_MIN         (QUAT_MAG_SQ_NORMALIZED - QUAT_ERROR_THRESH)
 #define QUAT_MAG_SQ_MAX         (QUAT_MAG_SQ_NORMALIZED + QUAT_ERROR_THRESH)
-#endif
+#endif*/
 
 // struct dmp_s {
 //     void (*tap_cb)(unsigned char count, unsigned char direction);
@@ -1273,8 +1273,7 @@ int dmp_set_interrupt_mode(unsigned char mode)
  *  @param[out] more        Number of remaining packets.
  *  @return     0 if successful.
  */
-int dmp_read_fifo(short *gyro, short *accel, long *quat,
-	short *sensors, unsigned char *more)
+int dmp_read_fifo(unsigned char *more)
 {
     unsigned char fifo_data[MAX_PACKET_LENGTH];
     unsigned char ii = 0;
@@ -1283,67 +1282,67 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
     /* TODO: sensors[0] only changes when dmp_enable_feature is called. We can
      * cache this value and save some cycles.
      */
-    sensors[0] = 0;
+    //sensors[0] = 0;
     //SEGGER_RTT_printf(0, "Length: %d\r\n", dmp_packet_length);  
     /* Get a packet. */
     if ((errCode = mpu_read_fifo_stream(dmp_packet_length, fifo_data, more)))
         return errCode;
 
     /* Parse DMP packet. */
-    if (dmp_feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
-#ifdef FIFO_CORRUPTION_CHECK
-        long quat_q14[4], quat_mag_sq;
-#endif
-        quat[0] = ((long)fifo_data[0] << 24) | ((long)fifo_data[1] << 16) |
-            ((long)fifo_data[2] << 8) | fifo_data[3];
-        quat[1] = ((long)fifo_data[4] << 24) | ((long)fifo_data[5] << 16) |
-            ((long)fifo_data[6] << 8) | fifo_data[7];
-        quat[2] = ((long)fifo_data[8] << 24) | ((long)fifo_data[9] << 16) |
-            ((long)fifo_data[10] << 8) | fifo_data[11];
-        quat[3] = ((long)fifo_data[12] << 24) | ((long)fifo_data[13] << 16) |
-            ((long)fifo_data[14] << 8) | fifo_data[15];
-        ii += 16;
-#ifdef FIFO_CORRUPTION_CHECK
-        /* We can detect a corrupted FIFO by monitoring the quaternion data and
-         * ensuring that the magnitude is always normalized to one. This
-         * shouldn't happen in normal operation, but if an I2C error occurs,
-         * the FIFO reads might become misaligned.
-         *
-         * Let's start by scaling down the quaternion data to avoid long long
-         * math.
-         */
-        quat_q14[0] = quat[0] >> 16;
-        quat_q14[1] = quat[1] >> 16;
-        quat_q14[2] = quat[2] >> 16;
-        quat_q14[3] = quat[3] >> 16;
-        quat_mag_sq = quat_q14[0] * quat_q14[0] + quat_q14[1] * quat_q14[1] +
-            quat_q14[2] * quat_q14[2] + quat_q14[3] * quat_q14[3];
-        if ((quat_mag_sq < QUAT_MAG_SQ_MIN) ||
-            (quat_mag_sq > QUAT_MAG_SQ_MAX)) {
-            /* Quaternion is outside of the acceptable threshold. */
-            mpu_reset_fifo();
-            sensors[0] = 0;
-            return 3;
-        };
-        sensors[0] |= INV_WXYZ_QUAT;
-#endif
-    }
+//     if (dmp_feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
+// // #ifdef FIFO_CORRUPTION_CHECK
+// //         long quat_q14[4], quat_mag_sq;
+// // #endif
+//         // quat[0] = ((long)fifo_data[0] << 24) | ((long)fifo_data[1] << 16) |
+//         //     ((long)fifo_data[2] << 8) | fifo_data[3];
+//         // quat[1] = ((long)fifo_data[4] << 24) | ((long)fifo_data[5] << 16) |
+//         //     ((long)fifo_data[6] << 8) | fifo_data[7];
+//         // quat[2] = ((long)fifo_data[8] << 24) | ((long)fifo_data[9] << 16) |
+//         //     ((long)fifo_data[10] << 8) | fifo_data[11];
+//         // quat[3] = ((long)fifo_data[12] << 24) | ((long)fifo_data[13] << 16) |
+//         //     ((long)fifo_data[14] << 8) | fifo_data[15];
+//         ii += 16;
+// // #ifdef FIFO_CORRUPTION_CHECK
+// //         /* We can detect a corrupted FIFO by monitoring the quaternion data and
+// //          * ensuring that the magnitude is always normalized to one. This
+// //          * shouldn't happen in normal operation, but if an I2C error occurs,
+// //          * the FIFO reads might become misaligned.
+// //          *
+// //          * Let's start by scaling down the quaternion data to avoid long long
+// //          * math.
+// //          */
+// //         quat_q14[0] = quat[0] >> 16;
+// //         quat_q14[1] = quat[1] >> 16;
+// //         quat_q14[2] = quat[2] >> 16;
+// //         quat_q14[3] = quat[3] >> 16;
+// //         quat_mag_sq = quat_q14[0] * quat_q14[0] + quat_q14[1] * quat_q14[1] +
+// //             quat_q14[2] * quat_q14[2] + quat_q14[3] * quat_q14[3];
+// //         if ((quat_mag_sq < QUAT_MAG_SQ_MIN) ||
+// //             (quat_mag_sq > QUAT_MAG_SQ_MAX)) {
+// //             /* Quaternion is outside of the acceptable threshold. */
+// //             mpu_reset_fifo();
+// //             sensors[0] = 0;
+// //             return 3;
+// //         };
+// //         sensors[0] |= INV_WXYZ_QUAT;
+// // #endif
+//     }
 
-    if (dmp_feature_mask & DMP_FEATURE_SEND_RAW_ACCEL) {
-        accel[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
-        accel[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
-        accel[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
-        ii += 6;
-        sensors[0] |= INV_XYZ_ACCEL;
-    }
+    // if (dmp_feature_mask & DMP_FEATURE_SEND_RAW_ACCEL) {
+    //     accel[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
+    //     accel[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
+    //     accel[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
+    //     ii += 6;
+    //     sensors[0] |= INV_XYZ_ACCEL;
+    // }
 
-    if (dmp_feature_mask & DMP_FEATURE_SEND_ANY_GYRO) {
-        gyro[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
-        gyro[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
-        gyro[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
-        ii += 6;
-        sensors[0] |= INV_XYZ_GYRO;
-    }
+    // if (dmp_feature_mask & DMP_FEATURE_SEND_ANY_GYRO) {
+    //     gyro[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
+    //     gyro[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
+    //     gyro[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
+    //     ii += 6;
+    //     sensors[0] |= INV_XYZ_GYRO;
+    // }
 //#ifdef MPU_MAXIMAL
     /* Gesture data is at the end of the DMP packet. Parse it and call
      * the gesture callbacks (if registered).

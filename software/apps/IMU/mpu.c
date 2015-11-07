@@ -20,18 +20,18 @@
 
 struct s_mympu mympu;
 
-struct s_quat { float w, x, y, z; }; 
+///**/struct s_quat { float w, x, y, z; }; 
 
 unsigned int tap_count = 0;
 
-union u_quat {
+/*union u_quat {
 	struct s_quat _f;
 	long _l[4];
-} q;
+} q;*/
 
 static int ret;
-static short gyro[3];
-static short sensors;
+//static short gyro[3];
+//static short sensors;
 static unsigned char fifoCount;
 
 
@@ -48,13 +48,13 @@ int mympu_open(unsigned int rate) {
 	ret = mpu_init(NULL);
 	
 	ret = mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL); 
-    ret = mpu_set_gyro_fsr(FSR);
+    //ret = mpu_set_gyro_fsr(FSR);
 
-    ret = mpu_set_accel_fsr(2);
+    //ret = mpu_set_accel_fsr(2);
 
     mpu_get_power_state((unsigned char *)&ret);
 
-    ret = mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL);
+    //ret = mpu_configure_fifo(INV_XYZ_GYRO|INV_XYZ_ACCEL);
 
 	//dmp_select_device(0);
 	//dmp_init_structures();
@@ -65,56 +65,59 @@ int mympu_open(unsigned int rate) {
 
 	ret = mpu_set_dmp_state(1);
 
-	ret = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL|DMP_FEATURE_PEDOMETER|DMP_FEATURE_TAP );
-
+	//ret = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_SEND_CAL_GYRO|DMP_FEATURE_GYRO_CAL|DMP_FEATURE_PEDOMETER|DMP_FEATURE_TAP );
+	ret = dmp_enable_feature(DMP_FEATURE_PEDOMETER|DMP_FEATURE_TAP);
+	
 	ret = dmp_register_tap_cb(&tap_detect);
 
 	return 0;
 }
 
-static inline float rad2deg( float rad )
-{
-        //return (180.f/PI) * rad;
-	return 57.2957795131f * rad;
-}
+// static inline float rad2deg( float rad )
+// {
+//         //return (180.f/PI) * rad;
+// 	return 57.2957795131f * rad;
+// }
 
-static float test, sqy,sqz,sqw;
-static void quaternionToEuler( const struct s_quat *q, float* x, float* y, float* z )
-{
-        sqy = q->y * q->y;
-        sqz = q->z * q->z;
-        sqw = q->w * q->w;
+// static float test, sqy,sqz,sqw;
+// static void quaternionToEuler( const struct s_quat *q, float* x, float* y, float* z )
+// {
+//         sqy = q->y * q->y;
+//         sqz = q->z * q->z;
+//         sqw = q->w * q->w;
 
-        test = q->x * q->z - q->w * q->y;
+//         test = q->x * q->z - q->w * q->y;
 
-        if( test > 0.5f - EPSILON )
-        {
-                *x = 2.f * atan2( q->y, q->w );
-                *y = PI_2;
-                *z = 0;
-        }
-        else if( test < -0.5f + EPSILON )
-        {
-                *x = -2.f * atan2( q->y, q->w );
-                *y = -PI_2;
-                *z = 0;
-        }
-        else
-        {
-                *x = atan2( 2.f * ( q->x * q->w + q->y * q->z ), 1.f - 2.f * ( sqz + sqw ) );
-                *y = asin( 2.f * test );
-                *z = atan2( 2.f * ( q->x * q->y - q->z * q->w ), 1.f - 2.f * ( sqy + sqz ) );
-        }
-}
+//         if( test > 0.5f - EPSILON )
+//         {
+//                 *x = 2.f * atan2( q->y, q->w );
+//                 *y = PI_2;
+//                 *z = 0;
+//         }
+//         else if( test < -0.5f + EPSILON )
+//         {
+//                 *x = -2.f * atan2( q->y, q->w );
+//                 *y = -PI_2;
+//                 *z = 0;
+//         }
+//         else
+//         {
+//                 *x = atan2( 2.f * ( q->x * q->w + q->y * q->z ), 1.f - 2.f * ( sqz + sqw ) );
+//                 *y = asin( 2.f * test );
+//                 *z = atan2( 2.f * ( q->x * q->y - q->z * q->w ), 1.f - 2.f * ( sqy + sqz ) );
+//         }
+// }
 
-static inline float wrap_180(float x) {
-	return (x<-180.f?x+360.f:(x>180.f?x-180.f:x));
-}
+// static inline float wrap_180(float x) {
+// 	return (x<-180.f?x+360.f:(x>180.f?x-180.f:x));
+// }
 
 int mympu_update() {
 
 	do {
-		ret = dmp_read_fifo(gyro,NULL,q._l,&sensors,&fifoCount);
+		//ret = dmp_read_fifo(gyro,NULL,q._l,&sensors,&fifoCount);
+		//ret = dmp_read_fifo(gyro,NULL,&sensors,&fifoCount);
+		ret = dmp_read_fifo(&fifoCount);
 		/* will return:
 			0 - if ok
 			1 - no packet available
@@ -147,7 +150,7 @@ int mympu_update() {
 	// mympu.gyro[2] = (float)gyro[0] / GYRO_SENS;
 
 
-	dmp_get_pedometer_step_count(mympu.steps);
+	dmp_get_pedometer_step_count(steps);
 	return 0;
 }
 
