@@ -18,7 +18,7 @@
 
 //#define NULL 0
 
-struct s_mympu mympu;
+//struct s_mympu mympu;
 
 ///**/struct s_quat { float w, x, y, z; }; 
 
@@ -28,6 +28,8 @@ unsigned int tap_count = 0;
 	struct s_quat _f;
 	long _l[4];
 } q;*/
+
+unsigned long steps[1];
 
 static int ret;
 //static short gyro[3];

@@ -153,7 +153,7 @@ int main(void) {
     SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
     SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal Sample\r\n\r\n");
 
-    i2c_init();
+    //i2c_init();
 
     //
 	// mpu_select_device(0);
