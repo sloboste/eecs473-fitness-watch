@@ -195,9 +195,9 @@ int main(void) {
     int i = 0;
     while (1) {
     	mympu_update();
-    	//SEGGER_RTT_printf(0, ":%d\r\n", mympu.gyro[1]);
+    	//SEGGER_RTT_printf(0, ":%d\r\n", mympu.steps);
         //led_toggle(LED_PIN);
-        //nrf_delay_ms(3000); //wait 3 seconds
+        //nrf_delay_ms(1000); //wait 3 seconds
         ++i;
      }
 }

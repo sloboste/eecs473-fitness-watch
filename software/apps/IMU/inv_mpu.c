@@ -70,21 +70,21 @@ bool i2c_write(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t con
 bool i2c_read(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *data){
     slave_addr = slave_addr << 1;
     bool transfer_succeeded;
-    if(reg_addr == 0x74){
-        SEGGER_RTT_printf(0, "TS: %d\r\n", transfer_succeeded);
-    }
+    // if(reg_addr == 0x74){
+    //     SEGGER_RTT_printf(0, "TS: %d\r\n", transfer_succeeded);
+    // }
     transfer_succeeded  = twi_master_transfer(slave_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
-    if(reg_addr == 0x74){
-        SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
-    }
+    // if(reg_addr == 0x74){
+    //     SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
+    // }
     transfer_succeeded &= twi_master_transfer(slave_addr|TWI_READ_BIT, data, length, TWI_ISSUE_STOP);
-    if(reg_addr == 0x74){
-        SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
-        if(!transfer_succeeded == 1){
-            volatile int i = 0;
-            while(1) i++;
-        }
-    }
+    // if(reg_addr == 0x74){
+    //     SEGGER_RTT_printf(0, "TS: %d\r\n", !transfer_succeeded);
+    //     if(!transfer_succeeded == 1){
+    //         volatile int i = 0;
+    //         while(1) i++;
+    //     }
+    // }
     return !transfer_succeeded;
 }
 

@@ -122,7 +122,7 @@ int mympu_update() {
 			3 - if frame corrupted
 		       <0 - if error
 		*/
-		 SEGGER_RTT_printf(0, "Ret: %d\r\n", ret);      
+		 //SEGGER_RTT_printf(0, "Ret: %d\r\n", ret);      
 		if (ret!=0) return ret; 
 	} while (fifoCount>1);
 

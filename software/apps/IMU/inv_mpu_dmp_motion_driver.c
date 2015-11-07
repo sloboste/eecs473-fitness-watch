@@ -8,6 +8,7 @@
 #include "dmpKey.h"
 #include "dmpmap.h"
 #include "nrf_delay.h"
+#include "SEGGER_RTT.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -437,38 +438,45 @@ static const unsigned short sStartAddress = 0x0400;
 #define QUAT_MAG_SQ_MAX         (QUAT_MAG_SQ_NORMALIZED + QUAT_ERROR_THRESH)
 #endif
 
-struct dmp_s {
-    void (*tap_cb)(unsigned char count, unsigned char direction);
+// struct dmp_s {
+//     void (*tap_cb)(unsigned char count, unsigned char direction);
+//     //void (*android_orient_cb)(unsigned char orientation);
+//     unsigned short orient;
+//     unsigned short feature_mask;
+//     unsigned short fifo_rate;
+//     uint8_t packet_length;
+// };
+
+    void (*dmp_tap_cb)(unsigned char count, unsigned char direction);
     //void (*android_orient_cb)(unsigned char orientation);
-    unsigned short orient;
-    unsigned short feature_mask;
-    unsigned short fifo_rate;
-    uint8_t packet_length;
-};
+    unsigned short dmp_orient;
+    unsigned short dmp_feature_mask;
+    unsigned short dmp_fifo_rate;
+    uint8_t dmp_packet_length;
 
-struct dmp_s dmpArray[MPU_MAX_DEVICES];
+//struct dmp_s dmpArray[MPU_MAX_DEVICES];
 
-struct dmp_s *dmp;
+//struct dmp_s *dmp;
 static int deviceIndex = 0;
 
 int dmp_select_device(int device)
 {
-  if ((device < 0) || (device >= MPU_MAX_DEVICES))
-    return -1;
+  // if ((device < 0) || (device >= MPU_MAX_DEVICES))
+  //   return -1;
 
-  deviceIndex = device;
-  dmp = dmpArray + device;
+  // deviceIndex = device;
+  // dmp = dmpArray + device;
   return 0;
 }
 
 void dmp_init_structures()
 {
-  dmp->tap_cb = NULL;
-  //dmp->android_orient_cb = NULL;
-  dmp->orient = 0;
-  dmp->feature_mask = 0;
-  dmp->fifo_rate = 0;
-  dmp->packet_length = 0;
+  dmp_tap_cb = NULL;
+  //dmp_android_orient_cb = NULL;
+  dmp_orient = 0;
+  dmp_feature_mask = 0;
+  dmp_fifo_rate = 0;
+  dmp_packet_length = 0;
 }
 
 /**
@@ -482,7 +490,7 @@ int dmp_load_motion_driver_firmware(void)
 }
 
 /**
- *  @brief      Push gyro and accel orientation to the dmp->
+ *  @brief      Push gyro and accel orientation to the dmp_
  *  The orientation is represented here as the output of
  *  @e inv_orientation_matrix_to_scalar.
  *  @param[in]  orient  Gyro and accel orientation in body frame.
@@ -529,12 +537,12 @@ int dmp_set_orientation(unsigned short orient)
         return -1;
     if (mpu_write_mem(FCFG_7, 3, accel_regs))
         return -1;
-    dmp->orient = orient;
+    dmp_orient = orient;
     return 0;
 }
 
 /**
- *  @brief      Push gyro biases to the dmp->
+ *  @brief      Push gyro biases to the dmp_
  *  Because the gyro integration is handled in the DMP, any gyro biases
  *  calculated by the MPL should be pushed down to DMP memory to remove
  *  3-axis quaternion drift.
@@ -548,14 +556,14 @@ int dmp_set_gyro_bias(long *bias)
     long gyro_bias_body[3];
     unsigned char regs[4];
 
-    gyro_bias_body[0] = bias[dmp->orient & 3];
-    if (dmp->orient & 4)
+    gyro_bias_body[0] = bias[dmp_orient & 3];
+    if (dmp_orient & 4)
         gyro_bias_body[0] *= -1;
-    gyro_bias_body[1] = bias[(dmp->orient >> 3) & 3];
-    if (dmp->orient & 0x20)
+    gyro_bias_body[1] = bias[(dmp_orient >> 3) & 3];
+    if (dmp_orient & 0x20)
         gyro_bias_body[1] *= -1;
-    gyro_bias_body[2] = bias[(dmp->orient >> 6) & 3];
-    if (dmp->orient & 0x100)
+    gyro_bias_body[2] = bias[(dmp_orient >> 6) & 3];
+    if (dmp_orient & 0x100)
         gyro_bias_body[2] *= -1;
 
 #ifdef EMPL_NO_64BIT
@@ -590,7 +598,7 @@ int dmp_set_gyro_bias(long *bias)
 }
 
 /**
- *  @brief      Push accel biases to the dmp->
+ *  @brief      Push accel biases to the dmp_
  *  These biases will be removed from the DMP 6-axis quaternion.
  *  @param[in]  bias    Accel biases in q16.
  *  @return     0 if successful.
@@ -606,14 +614,14 @@ int dmp_set_accel_bias(long *bias)
     accel_sf = (long long)accel_sens << 15;
     delay_ms(1);
 
-    accel_bias_body[0] = bias[dmp->orient & 3];
-    if (dmp->orient & 4)
+    accel_bias_body[0] = bias[dmp_orient & 3];
+    if (dmp_orient & 4)
         accel_bias_body[0] *= -1;
-    accel_bias_body[1] = bias[(dmp->orient >> 3) & 3];
-    if (dmp->orient & 0x20)
+    accel_bias_body[1] = bias[(dmp_orient >> 3) & 3];
+    if (dmp_orient & 0x20)
         accel_bias_body[1] *= -1;
-    accel_bias_body[2] = bias[(dmp->orient >> 6) & 3];
-    if (dmp->orient & 0x100)
+    accel_bias_body[2] = bias[(dmp_orient >> 6) & 3];
+    if (dmp_orient & 0x100)
         accel_bias_body[2] *= -1;
 
 #ifdef EMPL_NO_64BIT
@@ -664,7 +672,7 @@ int dmp_set_fifo_rate(unsigned short rate)
     if (mpu_write_mem(CFG_6, 12, (unsigned char*)regs_end))
         return -1;
 
-    dmp->fifo_rate = rate;
+    dmp_fifo_rate = rate;
     return 0;
 }
 
@@ -675,7 +683,7 @@ int dmp_set_fifo_rate(unsigned short rate)
  */
 int dmp_get_fifo_rate(unsigned short *rate)
 {
-    rate[0] = dmp->fifo_rate;
+    rate[0] = dmp_fifo_rate;
     return 0;
 }
 
@@ -1067,31 +1075,31 @@ int dmp_enable_feature(unsigned short mask)
         dmp_enable_6x_lp_quat(0);
 
     /* Pedometer is always enabled. */
-    dmp->feature_mask = mask | DMP_FEATURE_PEDOMETER;
+    dmp_feature_mask = mask | DMP_FEATURE_PEDOMETER;
     mpu_reset_fifo();
 
-    SEGGER_RTT_printf(0, "Mask: %d\r\n", mask);
-    SEGGER_RTT_printf(0, "Feature: %d\r\n", DMP_FEATURE_TAP);
-    SEGGER_RTT_printf(0, "EN: %d\r\n", mask & (DMP_FEATURE_TAP));
-    dmp->packet_length = 0;
+    //SEGGER_RTT_printf(0, "Mask: %d\r\n", mask);
+    //SEGGER_RTT_printf(0, "Feature: %d\r\n", DMP_FEATURE_TAP);
+    //SEGGER_RTT_printf(0, "EN: %d\r\n", mask & (DMP_FEATURE_TAP));
+    dmp_packet_length = 0;
     int packet_length = 0;
     if (mask & DMP_FEATURE_SEND_RAW_ACCEL)
-        //dmp->packet_length += 6;
+        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & DMP_FEATURE_SEND_ANY_GYRO)
-        //dmp->packet_length += 6;
+        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT))
-        //dmp->packet_length += 16;
+        //dmp_packet_length += 16;
         packet_length += 16;
     //if (mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
     if (mask & (DMP_FEATURE_TAP))
-        //dmp->packet_length += 4;
+        //dmp_packet_length += 4;
         packet_length += 4;
 
-    dmp->packet_length = packet_length;
-    SEGGER_RTT_printf(0, "packet_length:%d\r\n", packet_length);
-    SEGGER_RTT_printf(0, "packet_length INIT:%d\r\n", dmp->packet_length);
+    dmp_packet_length = packet_length;
+    //SEGGER_RTT_printf(0, "packet_length:%d\r\n", packet_length);
+    //SEGGER_RTT_printf(0, "packet_length INIT:%d\r\n", dmp_packet_length);
     return 0;
 } 
 
@@ -1102,12 +1110,12 @@ int dmp_enable_feature(unsigned short mask)
  */
 int dmp_get_enabled_features(unsigned short *mask)
 {
-    mask[0] = dmp->feature_mask;
+    mask[0] = dmp_feature_mask;
     return 0;
 }
 
 /**
- *  @brief      Calibrate the gyro data in the dmp->
+ *  @brief      Calibrate the gyro data in the dmp_
  *  After eight seconds of no motion, the DMP will compute gyro biases and
  *  subtract them from the quaternion output. If @e dmp_enable_feature is
  *  called with @e DMP_FEATURE_SEND_CAL_GYRO, the biases will also be
@@ -1127,7 +1135,7 @@ int dmp_enable_gyro_cal(unsigned char enable)
 }
 
 /**
- *  @brief      Generate 3-axis quaternions from the dmp->
+ *  @brief      Generate 3-axis quaternions from the dmp_
  *  In this driver, the 3-axis and 6-axis DMP quaternion features are mutually
  *  exclusive.
  *  @param[in]  enable  1 to enable 3-axis quaternion.
@@ -1151,7 +1159,7 @@ int dmp_enable_lp_quat(unsigned char enable)
 }
 
 /**
- *  @brief       Generate 6-axis quaternions from the dmp->
+ *  @brief       Generate 6-axis quaternions from the dmp_
  *  In this driver, the 3-axis and 6-axis DMP quaternion features are mutually
  *  exclusive.
  *  @param[in]   enable  1 to enable 6-axis quaternion.
@@ -1181,6 +1189,12 @@ int dmp_enable_6x_lp_quat(unsigned char enable)
  */
 static int decode_gesture(unsigned char *gesture)
 {
+    // SEGGER_RTT_printf(0, "Gestures: %d ", gesture[0]);
+    // SEGGER_RTT_printf(0, "%d ", gesture[1]);
+    // SEGGER_RTT_printf(0, "%d ", gesture[2]);
+    // SEGGER_RTT_printf(0, "%d\r\n", gesture[3]);
+
+
     unsigned char tap;
     // android_orient;
 
@@ -1191,13 +1205,13 @@ static int decode_gesture(unsigned char *gesture)
         unsigned char direction, count;
         direction = tap >> 3;
         count = (tap % 8) + 1;
-        if (dmp->tap_cb)
-            dmp->tap_cb(direction, count);
+        if (dmp_tap_cb)
+            dmp_tap_cb(direction, count);
     }
 
     // if (gesture[1] & INT_SRC_ANDROID_ORIENT) {
-    //     // if (dmp->android_orient_cb)
-    //     //     dmp->android_orient_cb(android_orient >> 6);
+    //     // if (dmp_android_orient_cb)
+    //     //     dmp_android_orient_cb(android_orient >> 6);
     // }
 
     return 0;
@@ -1263,13 +1277,13 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
      * cache this value and save some cycles.
      */
     sensors[0] = 0;
-    SEGGER_RTT_printf(0, "Length: %d\r\n", dmp->packet_length);  
+    //SEGGER_RTT_printf(0, "Length: %d\r\n", dmp_packet_length);  
     /* Get a packet. */
-    if ((errCode = mpu_read_fifo_stream(dmp->packet_length, fifo_data, more)))
+    if ((errCode = mpu_read_fifo_stream(dmp_packet_length, fifo_data, more)))
         return errCode;
 
     /* Parse DMP packet. */
-    if (dmp->feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
+    if (dmp_feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
 #ifdef FIFO_CORRUPTION_CHECK
         long quat_q14[4], quat_mag_sq;
 #endif
@@ -1308,7 +1322,7 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
 #endif
     }
 
-    if (dmp->feature_mask & DMP_FEATURE_SEND_RAW_ACCEL) {
+    if (dmp_feature_mask & DMP_FEATURE_SEND_RAW_ACCEL) {
         accel[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
         accel[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
         accel[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
@@ -1316,7 +1330,7 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
         sensors[0] |= INV_XYZ_ACCEL;
     }
 
-    if (dmp->feature_mask & DMP_FEATURE_SEND_ANY_GYRO) {
+    if (dmp_feature_mask & DMP_FEATURE_SEND_ANY_GYRO) {
         gyro[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
         gyro[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
         gyro[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
@@ -1327,12 +1341,18 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
     /* Gesture data is at the end of the DMP packet. Parse it and call
      * the gesture callbacks (if registered).
      */
-    //if (dmp->feature_mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
-    if (dmp->feature_mask & (DMP_FEATURE_TAP))
+    //if (dmp_feature_mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
+    if (dmp_feature_mask & (DMP_FEATURE_TAP))
         decode_gesture(fifo_data + ii);
 //#endif // MPU_MAXIMAL
     //if (timestamp)
 	//get_ms(timestamp);
+
+    // SEGGER_RTT_WriteString(0, "FIFO DATA: ");
+    // for(int i = 0; i < MAX_PACKET_LENGTH; ++i){
+    //     SEGGER_RTT_printf(0, "%d ", fifo_data[i]);
+    // }
+    // SEGGER_RTT_WriteString(0, "\r\n");
     return 0;
 }
 
@@ -1351,7 +1371,7 @@ int dmp_read_fifo(short *gyro, short *accel, long *quat,
  */
 int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
 {
-    dmp->tap_cb = func;
+    dmp_tap_cb = func;
     return 0;
 }
 
@@ -1362,7 +1382,7 @@ int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
  */
 // int dmp_register_android_orient_cb(void (*func)(unsigned char))
 // {
-//     dmp->android_orient_cb = func;
+//     dmp_android_orient_cb = func;
 //     return 0;
 // }
 //#endif // MPU_MAXIMAL

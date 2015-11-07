@@ -33,15 +33,6 @@
 
 #define INV_WXYZ_QUAT       (0x100)
 
-struct dmp_s {
-    void (*tap_cb)(unsigned char count, unsigned char direction);
-    //void (*android_orient_cb)(unsigned char orientation);
-    unsigned short orient;
-    unsigned short feature_mask;
-    unsigned short fifo_rate;
-    uint8_t packet_length;
-};
-
 /* Set up functions. */
 void dmp_init_structures();
 int dmp_select_device(int device);
