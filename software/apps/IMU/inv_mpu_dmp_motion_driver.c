@@ -892,8 +892,15 @@ int dmp_get_pedometer_step_count(unsigned long *count)
     if (mpu_read_mem(D_PEDSTD_STEPCTR, 4, tmp))
         return -1;
 
+    // SEGGER_RTT_printf(0, "STEP DATA: %d ", tmp[0]);
+    // SEGGER_RTT_printf(0, "%d ", tmp[1]);
+    // SEGGER_RTT_printf(0, "%d ", tmp[2]);
+    // SEGGER_RTT_printf(0, "%d\r\n", tmp[3]);
+
     count[0] = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
         ((unsigned long)tmp[2] << 8) | tmp[3];
+
+        SEGGER_RTT_printf(0, "Count: %d\r\n", count[0]);
     return 0;
 }
 
