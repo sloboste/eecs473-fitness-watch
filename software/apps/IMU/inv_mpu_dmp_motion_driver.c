@@ -8,7 +8,7 @@
 #include "dmpKey.h"
 #include "dmpmap.h"
 #include "nrf_delay.h"
-#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -668,25 +668,21 @@ int dmp_set_shake_reject_timeout(unsigned short time)
  *  @param[out] count   Number of steps detected.
  *  @return     0 if successful.
  */
-int dmp_get_pedometer_step_count(unsigned long *count)
+unsigned long dmp_get_pedometer_step_count()
 {
     unsigned char tmp[4];
-    if (!count)
-        return -1;
+    unsigned long count;
+    // if (!count)
+    //     return -1;
 
     if (mpu_read_mem(D_PEDSTD_STEPCTR, 4, tmp))
         return -1;
 
-    // SEGGER_RTT_printf(0, "STEP DATA: %d ", tmp[0]);
-    // SEGGER_RTT_printf(0, "%d ", tmp[1]);
-    // SEGGER_RTT_printf(0, "%d ", tmp[2]);
-    // SEGGER_RTT_printf(0, "%d\r\n", tmp[3]);
-
-    count[0] = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
+    count = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
         ((unsigned long)tmp[2] << 8) | tmp[3];
 
-        SEGGER_RTT_printf(0, "Count: %d\r\n", count[0]);
-    return 0;
+        //SEGGER_RTT_printf(0, "Count: %d\r\n", count[0]);
+    return count;
 }
 
 /**
@@ -830,7 +826,7 @@ int dmp_enable_feature(unsigned short mask)
         mpu_write_mem(CFG_20, 1, tmp);
         dmp_set_tap_thresh(TAP_XYZ, 250);
         dmp_set_tap_axes(TAP_XYZ);
-        dmp_set_tap_count(1);
+        dmp_set_tap_count(2);
         dmp_set_tap_time(100);
         dmp_set_tap_time_multi(500);
 
@@ -849,16 +845,12 @@ int dmp_enable_feature(unsigned short mask)
     dmp_packet_length = 0;
     int packet_length = 0;
     if (mask & DMP_FEATURE_SEND_RAW_ACCEL)
-        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & DMP_FEATURE_SEND_ANY_GYRO)
-        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT))
-        //dmp_packet_length += 16;
         packet_length += 16;
     if (mask & (DMP_FEATURE_TAP))
-        //dmp_packet_length += 4;
         packet_length += 4;
 
     dmp_packet_length = packet_length;
@@ -908,6 +900,34 @@ static int decode_gesture(unsigned char *gesture)
     }
 
     return 0;
+}
+
+/**
+ *  @brief      Specify when a DMP interrupt should occur.
+ *  A DMP interrupt can be configured to trigger on either of the two
+ *  conditions below:
+ *  \n a. One FIFO period has elapsed (set by @e mpu_set_sample_rate).
+ *  \n b. A tap event has been detected.
+ *  @param[in]  mode    DMP_INT_GESTURE or DMP_INT_CONTINUOUS.
+ *  @return     0 if successful.
+ */
+int dmp_set_interrupt_mode(unsigned char mode)
+{
+    const unsigned char regs_continuous[11] =
+        {0xd8, 0xb1, 0xb9, 0xf3, 0x8b, 0xa3, 0x91, 0xb6, 0x09, 0xb4, 0xd9};
+    const unsigned char regs_gesture[11] =
+        {0xda, 0xb1, 0xb9, 0xf3, 0x8b, 0xa3, 0x91, 0xb6, 0xda, 0xb4, 0xda};
+
+    switch (mode) {
+    case DMP_INT_CONTINUOUS:
+        return mpu_write_mem(CFG_FIFO_ON_EVENT, 11,
+            (unsigned char*)regs_continuous);
+    case DMP_INT_GESTURE:
+        return mpu_write_mem(CFG_FIFO_ON_EVENT, 11,
+            (unsigned char*)regs_gesture);
+    default:
+        return -1;
+    }
 }
 
 /**

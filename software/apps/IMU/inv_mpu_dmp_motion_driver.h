@@ -29,7 +29,6 @@
 
 /* Set up functions. */
 void dmp_init_structures();
-//int dmp_select_device(int device);
 int dmp_load_motion_driver_firmware(void);
 int dmp_set_fifo_rate(unsigned short rate);
 int dmp_enable_feature(unsigned short mask);
@@ -47,12 +46,12 @@ int dmp_set_shake_reject_time(unsigned short time);
 int dmp_set_shake_reject_timeout(unsigned short time);
 
 /* Pedometer functions. */
-int dmp_get_pedometer_step_count(unsigned long *count);
+unsigned long dmp_get_pedometer_step_count();
 int dmp_set_pedometer_step_count(unsigned long count);
 int dmp_get_pedometer_walk_time(unsigned long *time);
 int dmp_set_pedometer_walk_time(unsigned long time);
 
-
+int dmp_set_interrupt_mode(unsigned char mode);
 int dmp_read_fifo(unsigned char *more);
 
 #endif  /* #ifndef _INV_MPU_DMP_MOTION_DRIVER_H_ */

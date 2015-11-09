@@ -588,15 +588,17 @@ static int setup_compass(void);
 static int set_int_enable(unsigned char enable)
 {
     unsigned char tmp;
-
+    SEGGER_RTT_printf(0, "IZ DMP ON: %d\r\n", st->chip_cfg.dmp_on);
     if (st->chip_cfg.dmp_on) {
         if (enable)
-            tmp = BIT_DMP_INT_EN;
+            //tmp = BIT_DMP_INT_EN;
+            tmp = BIT_MOT_INT_EN;
         else
             tmp = 0x00;
         if (i2c_write(st->hw->addr, st->reg->int_enable, 1, &tmp))
             return -1;
         st->chip_cfg.int_enable = tmp;
+        SEGGER_RTT_printf(0, "int_EN: %d\r\n", st->chip_cfg.int_enable);
     } else {
         if (!st->chip_cfg.sensors)
             return -1;
@@ -626,8 +628,8 @@ int mpu_reg_dump(void)
         if (ii == st->reg->fifo_r_w || ii == st->reg->mem_r_w)
             continue;
         if (i2c_read(st->hw->addr, ii, 1, &data)){
-            SEGGER_RTT_printf(0, "Reg: %d\r\n", ii);
-            SEGGER_RTT_printf(0, "Data: %d\r\n", data);
+            //SEGGER_RTT_printf(0, "Reg: %d\r\n", ii);
+            //SEGGER_RTT_printf(0, "Data: %d\r\n", data);
             return -1;
         }
 //      log_i("%#5x: %#5x\r\n", ii, data);
@@ -1535,8 +1537,8 @@ int mpu_set_bypass(unsigned char bypass_on)
             tmp &= ~BIT_AUX_IF_EN;
         if (i2c_write(st->hw->addr, st->reg->user_ctrl, 1, &tmp)) //!!!
             {
-                SEGGER_RTT_printf(0, "From: %d\r\n", st->reg->user_ctrl);
-                SEGGER_RTT_printf(0, "Sending: %d\r\n", tmp);
+                //SEGGER_RTT_printf(0, "From: %d\r\n", st->reg->user_ctrl);
+                //SEGGER_RTT_printf(0, "Sending: %d\r\n", tmp);
             return -5;
             }
         delay_ms(3);

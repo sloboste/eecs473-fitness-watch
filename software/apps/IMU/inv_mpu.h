@@ -72,6 +72,7 @@ int mpu_get_power_state(unsigned char *power_on);
 int mpu_set_sensors(unsigned char sensors);
 
 int mpu_get_int_status(short *status);
+
 int mpu_read_fifo(short *gyro, short *accel,
     unsigned char *sensors, unsigned char *more);
 int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
