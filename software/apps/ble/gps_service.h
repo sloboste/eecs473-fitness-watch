@@ -55,7 +55,8 @@ extern uint32_t ble_gps_init(void);
 extern void ble_gps_on_ble_evt(ble_evt_t * evt_ptr);
 
 // Call to update location characteristic
-extern uint32_t ble_gps_update_location(uint32_t location);
+uint32_t ble_gps_update_location(char * location, uint32_t len);
+//extern uint32_t ble_gps_update_location(uint32_t location);
 
 // Call to update speed characteristic
 extern uint32_t ble_gps_update_speed(uint32_t speed);
