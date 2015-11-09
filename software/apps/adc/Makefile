@@ -14,8 +14,6 @@ APPLICATION_SRCS += nrf_drv_gpiote.c
 APPLICATION_SRCS += nrf_drv_twi.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += app_scheduler.c
-APPLICATION_SRCS += app_uart.c
-
 
 ifndef TARGET
     TARGET = BLEES

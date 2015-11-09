@@ -15,8 +15,6 @@
 //#include "blees.h"
 #include "led.h"
 
-#include "GPS.h"
-
 
 /*******************************************************************************
  *   DEFINES
@@ -29,8 +27,7 @@
 #define BLINK_RATE  APP_TIMER_TICKS(500, BLINK_TIMER_PRESCALER) // Blink every 0.5 seconds
 
 // NOTE: added this
-#define LED_PIN 18 // led 0 on the green board
-#define LED_PIN2 19 // led 0 on the green board
+#define LED_PIN 21 // led 0 on the green board
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -151,17 +148,6 @@ int main(void) {
     // Initialization
     led_init(LED_PIN);
     led_on(LED_PIN);
-
-    led_init(LED_PIN2);
-    led_on(LED_PIN2); // actually off
-
-    // nrf_gpio_pin_dir_set( 9, NRF_GPIO_PIN_DIR_OUTPUT);  
-    // nrf_gpio_pin_dir_set( 11, NRF_GPIO_PIN_DIR_OUTPUT);  
-    GPS_init();
-
-    GPS_sendMsg(PMTK_STANDBY, 13);
-    nrf_delay_ms(4000);
-    GPS_sendMsg(PGCMD_ANTENNA, 14);
 
     // Setup clock
     SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,

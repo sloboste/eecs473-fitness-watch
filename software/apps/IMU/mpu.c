@@ -38,12 +38,6 @@ static unsigned char fifoCount;
 void tap_detect(unsigned char direction, unsigned char count){
 	tap_count += count;
 	SEGGER_RTT_printf(0, "TAP DETECTED%d\r\n", tap_count);
-	//Serial.print("TAP DETECTED ");
-	//Serial.println(tap_count);
-	//delay(500);
-	// Serial.println(direction);
-	// Serial.print(" ");
-	// Serial.println(count);
 	return;
 }
 
@@ -128,29 +122,29 @@ int mympu_update() {
 			3 - if frame corrupted
 		       <0 - if error
 		*/
-
+		 //SEGGER_RTT_printf(0, "Ret: %d\r\n", ret);      
 		if (ret!=0) return ret; 
 	} while (fifoCount>1);
 
-	q._f.w = (float)q._l[0] / (float)QUAT_SENS;
-	q._f.x = (float)q._l[1] / (float)QUAT_SENS;
-	q._f.y = (float)q._l[2] / (float)QUAT_SENS;
-	q._f.z = (float)q._l[3] / (float)QUAT_SENS;
+	// q._f.w = (float)q._l[0] / (float)QUAT_SENS;
+	// q._f.x = (float)q._l[1] / (float)QUAT_SENS;
+	// q._f.y = (float)q._l[2] / (float)QUAT_SENS;
+	// q._f.z = (float)q._l[3] / (float)QUAT_SENS;
 
 
-	quaternionToEuler( &q._f, &mympu.ypr[2], &mympu.ypr[1], &mympu.ypr[0] );
+	// quaternionToEuler( &q._f, &mympu.ypr[2], &mympu.ypr[1], &mympu.ypr[0] );
 	
-	/* need to adjust signs and do the wraps depending on the MPU mount orientation */ 
-	/* if axis is no centered around 0 but around i.e 90 degree due to mount orientation */
-	/* then do:  mympu.ypr[x] = wrap_180(90.f+rad2deg(mympu.ypr[x])); */
-	mympu.ypr[0] = rad2deg(mympu.ypr[0]);
-	mympu.ypr[1] = rad2deg(mympu.ypr[1]);
-	mympu.ypr[2] = rad2deg(mympu.ypr[2]);
+	// /* need to adjust signs and do the wraps depending on the MPU mount orientation */ 
+	//  if axis is no centered around 0 but around i.e 90 degree due to mount orientation 
+	// /* then do:  mympu.ypr[x] = wrap_180(90.f+rad2deg(mympu.ypr[x])); */
+	// mympu.ypr[0] = rad2deg(mympu.ypr[0]);
+	// mympu.ypr[1] = rad2deg(mympu.ypr[1]);
+	// mympu.ypr[2] = rad2deg(mympu.ypr[2]);
 
-	/* need to adjust signs depending on the MPU mount orientation */ 
-	mympu.gyro[0] = -(float)gyro[2] / GYRO_SENS;
-	mympu.gyro[1] = (float)gyro[1] / GYRO_SENS;
-	mympu.gyro[2] = (float)gyro[0] / GYRO_SENS;
+	// /* need to adjust signs depending on the MPU mount orientation */ 
+	// mympu.gyro[0] = -(float)gyro[2] / GYRO_SENS;
+	// mympu.gyro[1] = (float)gyro[1] / GYRO_SENS;
+	// mympu.gyro[2] = (float)gyro[0] / GYRO_SENS;
 
 
 	dmp_get_pedometer_step_count(mympu.steps);

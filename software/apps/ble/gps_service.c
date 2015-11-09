@@ -13,8 +13,9 @@
 static ble_gps_t ble_gps_object;
 
 // Location characteristic
-#define LOCATION_LEN 4
-static char location_buf[LOCATION_LEN] = {0x01, 0x02, 0x03, 0x04};
+//#define LOCATION_LEN 4
+#define LOCATION_LEN 16
+static char location_buf[LOCATION_LEN]; //= {0x01, 0x02, 0x03, 0x04};
 static char * location_name = "GPS Location";
 static bool location_notifications_enabled = false; 
 
@@ -30,7 +31,8 @@ static char status_buf[STATUS_LEN] = {0x0F};
 static char * status_name = "GPS Status";
 
 
-uint32_t ble_gps_update_location(uint32_t location)
+uint32_t ble_gps_update_location(char * location, uint32_t len)
+//uint32_t ble_gps_update_location(uint32_t location)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -39,7 +41,8 @@ uint32_t ble_gps_update_location(uint32_t location)
     
     gatts_value.len = LOCATION_LEN; 
     gatts_value.offset = 0;
-    gatts_value.p_value = (uint8_t *) &location; 
+    gatts_value.p_value = (uint8_t *) location; 
+    //gatts_value.p_value = (uint8_t *) &location; 
     
     err_code = sd_ble_gatts_value_set(
         ble_gps_object.conn_handle,
@@ -70,13 +73,21 @@ uint32_t ble_gps_update_location(uint32_t location)
 uint32_t ble_gps_update_speed(uint32_t speed)
 {
     uint32_t err_code = NRF_SUCCESS;
+    
+    // Must send the bytes over in reverse order...
+    uint8_t speed_reversed[4] = {
+        ((uint8_t *) &speed)[3],
+        ((uint8_t *) &speed)[2],
+        ((uint8_t *) &speed)[1],
+        ((uint8_t *) &speed)[0],
+    };
 
     ble_gatts_value_t gatts_value;
     memset(&gatts_value, 0, sizeof(gatts_value));
     
     gatts_value.len = SPEED_LEN; 
     gatts_value.offset = 0;
-    gatts_value.p_value = (uint8_t *) &speed; 
+    gatts_value.p_value = (uint8_t *) &speed_reversed; 
     
     err_code = sd_ble_gatts_value_set(
         ble_gps_object.conn_handle,

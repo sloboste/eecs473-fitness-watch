@@ -53,7 +53,7 @@ extern uint32_t ble_ped_init(void);
 extern void ble_ped_on_ble_evt(ble_evt_t * evt_ptr);
 
 // Call to update step_count characteristic
-extern uint32_t ble_ped_update_location(uint32_t step_count);
+extern uint32_t ble_ped_update_step_count(uint32_t step_count);
 
 // Call to update status characteristic
 extern uint32_t ble_ped_update_status(uint8_t status);
