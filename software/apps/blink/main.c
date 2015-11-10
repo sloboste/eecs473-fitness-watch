@@ -24,10 +24,10 @@
 #define BLINK_TIMER_PRESCALER       0   // Value of RTC1 PRESCALER register
 #define BLINK_TIMER_MAX_TIMERS      4   // Maximum number of simultaneous timers
 #define BLINK_TIMER_OP_QUEUE_SIZE   4   // Size of timer operation queues
-#define BLINK_RATE  APP_TIMER_TICKS(500, BLINK_TIMER_PRESCALER) // Blink every 0.5 seconds
+#define BLINK_RATE  APP_TIMER_TICKS(10, BLINK_TIMER_PRESCALER) // Blink every 0.01 seconds
 
 // NOTE: added this
-#define LED_PIN 18 // led 0 on the green board
+#define LED_PIN 21 // led 0 on the green board
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -100,7 +100,14 @@ static void sys_evt_dispatch(uint32_t sys_evt) {
 
 // Timer fired handler
 static void timer_handler (void* p_context) {
-    led_toggle(LED_PIN);
+    uint8_t heartbeat;
+    nrf_gpio_port_read(1);
+    if(heartbeat > 128){
+	led_on(LED_PIN);
+    }
+    else{
+	led_off(LED_PIN):
+    }
 }
 
 
@@ -147,7 +154,8 @@ int main(void) {
 
     // Initialization
     led_init(LED_PIN);
-    led_on(LED_PIN);
+    nrf_gpio_cfg_input(1, NRF_GPIO_PIN_NOPULL);
+    led_off(LED_PIN);
 
     // Setup clock
     SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
