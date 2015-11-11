@@ -26,6 +26,8 @@ APPLICATION_SRCS += gps_service.c
 APPLICATION_SRCS += heart_rate_service.c 
 APPLICATION_SRCS += ped_service.c 
 
+APPLICATION_SRCS += timer_config.c 
+
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
@@ -54,6 +56,8 @@ SOURCE_PATHS += ../../lib/ble/
 #SOURCE_PATHS += ../../lib/lcd/
 #LIBRARY_PATHS += ../../lib/spi/
 #SOURCE_PATHS += ../../lib/spi/
+LIBRARY_PATHS += ../../lib/timer/
+SOURCE_PATHS += ../../lib/timer/
 #LIBRARY_PATHS += ../../lib/uart/
 #SOURCE_PATHS += ../../lib/uart/
 
