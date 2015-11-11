@@ -198,9 +198,9 @@ void ble_gps_on_ble_evt(ble_evt_t * evt_ptr)
         case BLE_GAP_EVT_DISCONNECTED:
             on_disconnect(evt_ptr);
             break;
-        case BLE_GATTS_EVT_WRITE:
-            on_write(evt_ptr);
-            break;
+        //case BLE_GATTS_EVT_WRITE:
+        //    on_write(evt_ptr);
+        //    break;
     }
 }
 
