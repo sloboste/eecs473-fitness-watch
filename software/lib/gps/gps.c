@@ -1,6 +1,3 @@
-/*
- */
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -19,29 +16,23 @@
 #define MAX_SENTENCE_LEN 128
 
 
-//static uint32_t enable;
 static char gps_buffer[MAX_SENTENCE_LEN];
 
-//void gps_init(uint32_t pin_enable)
 void gps_init()
 {
-    //enable = pin_enable; 
-
-    // FIXME we really don't want to have the gps module be dependent on the pins
-    // used for uart_init... Find a way to pass in the uart_adapter stuff
+    // FIXME we really don't want to have the gps module be dependent on the
+    // pins used for uart_init... Find a way to pass in the uart_adapter stuff
     uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
     gps_disable();
 }
 
 void gps_enable()
 {
-    //nrf_gpio_pin_set(enable);
     gps_send_msg(PMTK_AWAKE);
 }
 
 void gps_disable()
 {
-    //nrf_gpio_pin_clear(enable);
     gps_send_msg(PMTK_STANDBY);
 }
 
