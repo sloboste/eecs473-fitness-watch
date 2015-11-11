@@ -10,7 +10,11 @@
 
 #include "gps.h"
 #include "uart_adapter.h"
+
+// FIXME we really don't want to have the gps module be dependent on the pins
+// used for uart_init... Find a way to pass in the uart_adapter stuff
 #include "blue_dev_board.h"
+//#include "green_dev_board.h"
 
 #define MAX_SENTENCE_LEN 128
 
@@ -22,6 +26,9 @@ static char gps_buffer[MAX_SENTENCE_LEN];
 void gps_init()
 {
     //enable = pin_enable; 
+
+    // FIXME we really don't want to have the gps module be dependent on the pins
+    // used for uart_init... Find a way to pass in the uart_adapter stuff
     uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
     gps_disable();
 }
