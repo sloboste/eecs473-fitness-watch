@@ -1,6 +1,3 @@
-/*
- */
-
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -14,7 +11,10 @@
 #define UART_RX_BUF_SIZE 256
 
 
-// This doesn't have to do anything for our use case
+/**
+ * Handle a UART event.
+ * NOTE: This doesn't have to do anything for our use case.
+ */
 static void uart_event_handler(app_uart_evt_t * p_event)
 {
     /*
@@ -36,6 +36,7 @@ void uart_adapter_init(uint32_t pin_rxd, uint32_t pin_txd, uint32_t pin_rts,
 {
 	uint32_t err_code;
 
+    // Set up the UART connetion parameters.
 	const app_uart_comm_params_t comm_params = {
         pin_rxd,
         pin_txd,
@@ -46,6 +47,7 @@ void uart_adapter_init(uint32_t pin_rxd, uint32_t pin_txd, uint32_t pin_rts,
         UART_BAUDRATE_BAUDRATE_Baud9600
     };
 			
+    // Initialzie the UART module with a FIFO buffer.
     APP_UART_FIFO_INIT(
         &comm_params, UART_RX_BUF_SIZE, UART_TX_BUF_SIZE, uart_event_handler,
         APP_IRQ_PRIORITY_LOW, err_code);
@@ -79,5 +81,5 @@ void uart_adapter_read(char * buf, uint32_t len)
 
 void uart_adapter_stop()
 {
-    // TODO    
+    // TODO finish writing this!!!!!! 
 }
