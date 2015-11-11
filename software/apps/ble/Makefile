@@ -27,6 +27,7 @@ APPLICATION_SRCS += heart_rate_service.c
 APPLICATION_SRCS += ped_service.c 
 
 APPLICATION_SRCS += timer_config.c 
+APPLICATION_SRCS += uart_adapter.c 
 
 
 ifndef TARGET
@@ -58,8 +59,8 @@ SOURCE_PATHS += ../../lib/ble/
 #SOURCE_PATHS += ../../lib/spi/
 LIBRARY_PATHS += ../../lib/timer/
 SOURCE_PATHS += ../../lib/timer/
-#LIBRARY_PATHS += ../../lib/uart/
-#SOURCE_PATHS += ../../lib/uart/
+LIBRARY_PATHS += ../../lib/uart/
+SOURCE_PATHS += ../../lib/uart/
 
 NRF_BASE_PATH ?= ../../nrf5x-base/
 TEMPLATE_PATH ?= $(NRF_BASE_PATH)/nrf51-pure-gcc-setup/template/
