@@ -107,6 +107,7 @@ int main(void)
     uint8_t gstatus = 0x1; // FIXME remove later
     uint32_t pval = 0; // FIXME remove later
     uint8_t battery_level = 100;
+    uint16_t heart_rate_bpm = 1000;
     
     //char * info = NULL;
     //uint32_t len;
@@ -117,7 +118,7 @@ int main(void)
         // FIXME remove later
         nrf_delay_ms(100);
         bas_update(battery_level--);
-        hrs_update();
+        hrs_update(heart_rate_bpm++);
         
         //gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
         //ble_gps_update_location(gps_info.latitude, 16);

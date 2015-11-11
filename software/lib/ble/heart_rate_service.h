@@ -1,8 +1,9 @@
-/*  Configuration for the BLE standard Heart Rate Service. Uses the Nordic
- *  implementation of the service.
+/**
+ * Configuration for the BLE standard Heart Rate Service. Uses the Nordic
+ * implementation of the service.
  * 
- *  NOTE: The application must call the following function in the function that
- *        handles BLE stack events.
+ * NOTE: The application must call the following function in the function that
+ *       handles BLE stack events.
  *              
  *           ble_hrs_on_ble_evt(ble_evt_t *)
  */
@@ -24,7 +25,11 @@ extern uint32_t hrs_init(void);
 ble_hrs_t hrs_handle;
 
 
-// FIXME: Get rid of this later when we have real data...
-extern void hrs_update(void);
+/**
+ * Update the heart rate characteristic value.
+ *
+ * heart_rate_bpm -- the heart rate in beats per minute.
+ */
+extern void hrs_update(uint16_t heart_rate_bpm);
 
 #endif

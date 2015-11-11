@@ -35,9 +35,7 @@ uint32_t hrs_init(void)
     return err_code;
 }
 
-// FIXME: Get rid of this later when we have real data...
-void hrs_update(void)
+void hrs_update(uint16_t heart_rate_bpm)
 {
-    static uint16_t rate_in_bpm = 0;
-    ble_hrs_heart_rate_measurement_send(&hrs_handle, rate_in_bpm++);
+    ble_hrs_heart_rate_measurement_send(&hrs_handle, heart_rate_bpm);
 }
