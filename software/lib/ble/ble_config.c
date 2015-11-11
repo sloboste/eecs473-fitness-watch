@@ -6,7 +6,6 @@
 #include "ble_advdata.h"
 #include "ble_conn_params.h"
 #include "softdevice_handler.h"
-//#include "ble_advdata.h"
 //#include "nordic_common.h"
 //#include "softdevice_handler.h"
 //#include "ble_debug_assert_handler.h"
@@ -41,8 +40,9 @@ static ble_gap_adv_params_t m_adv_params;
  *
  * @details This function will be called in case of an assert in the SoftDevice.
  *
- * @warning This handler is an example only and does not fit a final product. You need to analyze
- *          how your product is supposed to react in case of Assert.
+ * @warning This handler is an example only and does not fit a final product.
+ *          You need to analyze how your product is supposed to react in case
+ *          of Assert.
  * @warning On assert from the SoftDevice, the system can only recover on reset.
  *
  * @param[in]   line_num   Line number of the failing ASSERT call.
@@ -54,7 +54,10 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 }
 
 
-// Setup TX power and the device name
+/**
+ * Setup GAP paramters (signal strength, name, appearance, preferred connection
+ * parameters) on the softdevice.
+ */
 static void gap_params_init(void)
 {
     uint32_t                err_code;
@@ -73,7 +76,8 @@ static void gap_params_init(void)
     // Set device appearance
     err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_WATCH_SPORTS_WATCH);
 
-    // Set preferred peripheral connection parameters
+    // Set preferred peripheral connection parameters. The client may not use
+    // these but if it did, that would be nice for us.
     ble_gap_conn_params_t conn_params;
     memset(&conn_params, 0, sizeof(conn_params));
     conn_params.min_conn_interval = CONN_INTERVAL_MIN;
@@ -86,9 +90,8 @@ static void gap_params_init(void)
 }
 
 
-/**@brief Function for initializing the Advertising functionality.
- *
- * @details Encodes the required advertising data and passes it to the stack.
+/**
+ * Setup the advertising functionality of the softdevice.
  */
 static void advertising_init(void)
 {
@@ -99,19 +102,23 @@ static void advertising_init(void)
         {bas_UUID, BLE_UUID_TYPE_BLE},
         //{ble_gps_UUID, BLE_UUID_TYPE_VENDOR_BEGIN},
     };
-    // TODO: can't advertise custom 128 bit uuids but will exceed byte limit anyway... 
+    // TODO: Can't advertise custom 128 bit uuids without changing nordic code.
+    //       doing that would exceed advertising packet byte limit anyway so why
+    //       do it? 
 
-    // Build and set advertising and scan response data.
+    // Build advertising data.
     memset(&advdata, 0, sizeof(advdata));
     advdata.name_type = BLE_ADVDATA_FULL_NAME;
     advdata.include_appearance = true;
-    advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; // TODO want to be le_only_limited_disc
+    // TODO Do we want it to be le_only_limited_disc?
+    advdata.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
-
+    // Bulid scan response data. 
     memset(&srdata, 0, sizeof(srdata));
     srdata.uuids_complete.uuid_cnt = sizeof(adv_uuids) / sizeof(adv_uuids[0]);
     srdata.uuids_complete.p_uuids = adv_uuids;
 
+    // Set advertising and scan response data in the softdevice.
     err_code = ble_advdata_set(&advdata, &srdata);
     APP_ERROR_CHECK(err_code);
 
@@ -122,11 +129,11 @@ static void advertising_init(void)
     m_adv_params.fp = BLE_GAP_ADV_FP_ANY;
     m_adv_params.interval = APP_ADV_INTERVAL;
     m_adv_params.timeout = APP_ADV_TIMEOUT_SECONDS;
-    
 }
 
 
-/**@brief Function for starting advertising.
+/**
+ * Start the BLE advertising procedure. 
  */
 void advertising_start(void)
 {
@@ -134,7 +141,6 @@ void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&m_adv_params);
     APP_ERROR_CHECK(err_code);
-    //nrf_gpio_pin_set(ADVERTISING_LED);
 }
 
 
@@ -145,21 +151,29 @@ static void conn_params_error_handler(uint32_t nrf_error)
 
 
 // FIXME
-// Function for handling the connection parameters module
-// This will be called for all events in the connection parameters module which
-// are passed to the application.
-static void on_conn_params_evt(ble_conn_params_evt_t * evt_ptr)
+/**
+ * Function for handling the connection parameters module.
+ * This will be called for all events in the connection parameters module which
+ * are passed to the application.
+ * 
+ * NOTE: usually not necessary if we set disconnect on fail to true in the
+ *       connection params init.
+ */
+/*static void on_conn_params_evt(ble_conn_params_evt_t * evt_ptr)
 {
     uint32_t err_code;
 
     if (evt_ptr->evt_type == BLE_CONN_PARAMS_EVT_FAILED) {
-        err_code = sd_ble_gap_disconnect(ble_current_conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
+        err_code = sd_ble_gap_disconnect(
+            ble_current_conn_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
         APP_ERROR_CHECK(err_code);
     }
-}
+}*/
 
 
-// Initialize the connection parameters module
+/**
+ * Initialize the BLE connection parameters on the softdevice.
+ */
 static void conn_params_init(void)
 {
     uint32_t err_code;
@@ -168,12 +182,15 @@ static void conn_params_init(void)
     memset(&cp_init, 0, sizeof(cp_init));
 
     cp_init.p_conn_params                   = NULL;
-    cp_init.first_conn_params_update_delay  = APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER);
-    cp_init.next_conn_params_update_delay   = APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER); // 30 seconds
+    cp_init.first_conn_params_update_delay  =
+        APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER);
+    cp_init.next_conn_params_update_delay   =
+        APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER); // 30 seconds
     cp_init.max_conn_params_update_count    = 3;
-    cp_init.start_on_notify_cccd_handle     = BLE_GATT_HANDLE_INVALID;  // Start procedure on connection
-    cp_init.disconnect_on_fail              = false; // FIXME
-    cp_init.evt_handler                     = on_conn_params_evt;
+    cp_init.start_on_notify_cccd_handle     =
+        BLE_GATT_HANDLE_INVALID;  // Start procedure on connection
+    cp_init.disconnect_on_fail              = true; //false;
+    cp_init.evt_handler                     = NULL; //on_conn_params_evt;
     cp_init.error_handler                   = conn_params_error_handler;
 
     err_code = ble_conn_params_init(&cp_init);
@@ -181,31 +198,31 @@ static void conn_params_init(void)
 }
 
 
+/**
+ * General handler for a BLE stack event.
+ */
 static void on_ble_evt(ble_evt_t * ble_evt_ptr)
 {
-    //uint32_t err_code;    
-
     switch (ble_evt_ptr->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
             ble_current_conn_handle = ble_evt_ptr->evt.gap_evt.conn_handle;
-            //nrf_gpio_pin_set(CONNECTED_LED);
-            //nrf_gpio_pin_clear(ADVERTISING_LED);
             break;
         case BLE_GAP_EVT_DISCONNECTED:
             ble_current_conn_handle = BLE_CONN_HANDLE_INVALID;
-            //nrf_gpio_pin_clear(CONNECTED_LED);
-            advertising_start(); // FIXME don't want to do this all the time
+            // FIXME Probably don't want to restart advertising all the time
+            advertising_start(); 
             break;
-        // TODO: add more if needed
         default:
             break;
     }
 }
 
 
-// Function that dispatches a BLE stack event to all modules with a handler.
-// This function is called from the BLE stack event interrupt handler after a
-// a BLE stack event as been received.
+/**
+ * Function that dispatches a BLE stack event to all modules with a handler.
+ * This function is called from the BLE stack event interrupt handler after a
+ * a BLE stack event as been received.
+ */
 static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
     on_ble_evt(ble_evt_ptr);
@@ -217,11 +234,13 @@ static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 }
 
 
-// Initializes the BLE stack. Initializes the SoftDevice and the BLE interrupt
-// event.
+/**
+ * Initializes the BLE stack. Initializes the SoftDevice and the BLE interrupt
+ * event.
+ */
 static void ble_stack_init(void)
 {
-
+    // TODO Do we want a better clock?
     // Initialize the SoftDevice handler module.
     // Use a really crappy clock because we want fast start
     SOFTDEVICE_HANDLER_INIT(
@@ -240,7 +259,9 @@ static void ble_stack_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
-
+/**
+ * Initialize all of the services for the watch.
+ */
 static void services_init(void)
 {
     uint32_t err_code;
@@ -263,6 +284,9 @@ static void services_init(void)
 }
 
 
+/**
+ * Initialize all of the BLE functionality for the watch.
+ */
 void ble_init(void)
 {
     ble_stack_init();
