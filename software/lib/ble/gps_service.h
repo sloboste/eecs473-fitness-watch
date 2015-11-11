@@ -1,4 +1,5 @@
-/*  Configuration/implementation for a BLE custom GPS service.
+/**
+ * Configuration/implementation for a BLE custom GPS service.
  */
 
 #ifndef __BLE_GPS_H
@@ -13,7 +14,9 @@
 #include "ble_gatts.h"
 
 
+// Following is a random UUID for the  GPS service.
 // 58c1XXXX-801a-11e5-8bcf-feff819cdc9f
+// Replace the Xs with the 16 bit UUIDS for each characteristic.
 #define ble_gps_BASE_UUID {0x9f, 0xdc, 0x9c, 0x81, 0xff, 0xfe, 0xcf, 0x8b, 0xe5, 0x11, 0x1a, 0x80, 0x00, 0x00, 0xc1, 0x58}
 #define ble_gps_UUID 0x0001
 #define ble_gps_UUID_LOCATION 0x0002
@@ -48,20 +51,29 @@ struct ble_gps_struct {
     ble_gps_evt_handler_t evt_handler; // TODO we might not need this
 };
 
-// Initialize the gps service
+/**
+ * Set up the gps service.
+ */
 extern uint32_t ble_gps_init(void);
 
-// Call whenever a BLE stack event is received by the application 
+/**
+ * Call whenever a BLE stack event is received by the application. 
+ */
 extern void ble_gps_on_ble_evt(ble_evt_t * evt_ptr);
 
-// Call to update location characteristic
+/**
+ * Update the location characteristic value.
+ */
 uint32_t ble_gps_update_location(char * location, uint32_t len);
-//extern uint32_t ble_gps_update_location(uint32_t location);
 
-// Call to update speed characteristic
+/**
+ * Update the speed characteristic value.
+ */
 extern uint32_t ble_gps_update_speed(uint32_t speed);
 
-// Call to update status characteristic
+/**
+ * Update the status characteristic value.
+ */
 extern uint32_t ble_gps_update_status(uint8_t status);
 
 #endif
