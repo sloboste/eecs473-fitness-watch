@@ -16,7 +16,8 @@
 #include "heart_rate_service.h"
 #include "gps_service.h"
 #include "ped_service.h"
-#include "timer_config.h"
+//#include "timer_config.h" // FIXME APP_TIMER_PRESCALER...
+#define APP_TIMER_PRESCALER 0
 
 
 // Name that the device will advertise
