@@ -1,10 +1,11 @@
-/*  Configuration for the BLE standard Battery Service. Uses the Nordic
- *  implementation of the service.
+/**
+ * Configuration for the BLE standard Battery Service. Uses the Nordic
+ * implementation of the service.
  * 
- *  NOTE: The application must call the following function in the function that
- *        handles BLE stack events.
+ * NOTE: The application must call the following function in the function that
+ *       handles BLE stack events.
  *              
- *           ble_bas_on_ble_evt(ble_evt_t *)
+ *          ble_bas_on_ble_evt(ble_evt_t *)
  */
 
 #ifndef __BLE_BAS_H
@@ -20,10 +21,16 @@
 // Handle for the service
 ble_bas_t bas_handle;
 
-// Initialization for heart rate service
+/**
+ * Initialize the heart rate service.
+ */
 extern uint32_t bas_init(void);
 
-// FIXME: Get rid of this later when we have real data...
-extern void bas_update(void);
+/**
+ * Update the battery level characteristic value.
+ *
+ * battery_level -- The battery level as a percentage (0% to 100%)
+ */
+extern void bas_update(uint8_t battery_level);
 
 #endif

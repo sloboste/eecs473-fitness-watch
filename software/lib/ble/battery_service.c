@@ -39,9 +39,7 @@ uint32_t bas_init(void)
     return err_code;
 }
 
-// FIXME: Get rid of this later when we have real data...
-void bas_update(void)
+void bas_update(uint8_t battery_level)
 {
-    static uint8_t level = 100;
-    ble_bas_battery_level_update(&bas_handle, level--);
+    ble_bas_battery_level_update(&bas_handle, battery_level);
 }

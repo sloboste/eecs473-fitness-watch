@@ -14,7 +14,8 @@
 #include "gps_service.h"
 #include "ped_service.h"
 
-#include "blue_dev_board.h"
+//#include "blue_dev_board.h"
+#include "green_dev_board.h"
 #include "gps.h"
 
 /*
@@ -70,11 +71,11 @@ void gpio_init(void)
     */
 
     //nrf_gpio_cfg_output(PIN_LED_0);
-    nrf_gpio_cfg_output(PIN_LED_1);
-    nrf_gpio_cfg_output(PIN_LED_2);
+    //nrf_gpio_cfg_output(PIN_LED_1);
+    //nrf_gpio_cfg_output(PIN_LED_2);
     //nrf_gpio_pin_clear(PIN_LED_0);
-    nrf_gpio_pin_set(PIN_LED_1);
-    nrf_gpio_pin_set(PIN_LED_2);
+    //nrf_gpio_pin_set(PIN_LED_1);
+    //nrf_gpio_pin_set(PIN_LED_2);
 }
 
 
@@ -105,6 +106,7 @@ int main(void)
     uint8_t pstatus = 0x1; // FIXME remove later
     uint8_t gstatus = 0x1; // FIXME remove later
     uint32_t pval = 0; // FIXME remove later
+    uint8_t battery_level = 100;
     
     //char * info = NULL;
     //uint32_t len;
@@ -114,13 +116,13 @@ int main(void)
         
         // FIXME remove later
         nrf_delay_ms(100);
-        bas_update();
+        bas_update(battery_level--);
         hrs_update();
         
-        gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
-        ble_gps_update_location(gps_info.latitude, 16);
-        ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
-        ble_gps_update_location(gps_info.longitude, 16);
+        //gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
+        //ble_gps_update_location(gps_info.latitude, 16);
+        //ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
+        //ble_gps_update_location(gps_info.longitude, 16);
 
         //ble_gps_update_location(gval++);
         //ble_gps_update_speed(gval++);
