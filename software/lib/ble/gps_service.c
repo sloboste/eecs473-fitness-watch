@@ -13,11 +13,17 @@
 // Object to represent the gps service
 static ble_gps_t ble_gps_object;
 
-// Location characteristic
-#define LOCATION_LEN 16
-static char location_buf[LOCATION_LEN];
-static char * location_name = "GPS Location";
-static bool location_notifications_enabled = false; 
+// Latitude characteristic
+#define LATITUDE_LEN 16
+static char latitude_buf[LATITUDE_LEN];
+static char * latitude_name = "GPS Latutude";
+static bool latitude_notifications_enabled = false; 
+
+// Longitude characteristic
+#define LONGITUDE_LEN 16
+static char longitude_buf[LONGITUDE_LEN];
+static char * longitude_name = "GPS Longitude";
+static bool longitude_notifications_enabled = false; 
 
 // Speed characteristic
 #define SPEED_LEN 4
@@ -31,7 +37,7 @@ static char status_buf[STATUS_LEN];
 static char * status_name = "GPS Status";
 
 
-uint32_t ble_gps_update_location(char * location, uint32_t len)
+uint32_t ble_gps_update_latitude(char * location, uint32_t len)
 {
     uint32_t err_code = NRF_SUCCESS;
 
@@ -39,14 +45,14 @@ uint32_t ble_gps_update_location(char * location, uint32_t len)
     ble_gatts_value_t gatts_value;
     memset(&gatts_value, 0, sizeof(gatts_value));
     
-    gatts_value.len = LOCATION_LEN; 
+    gatts_value.len = LATITUDE_LEN; 
     gatts_value.offset = 0;
     gatts_value.p_value = (uint8_t *) location; 
     
     // Set the new characteristic value
     err_code = sd_ble_gatts_value_set(
         ble_gps_object.conn_handle,
-        ble_gps_object.location_char_handles.value_handle,
+        ble_gps_object.latitude_char_handles.value_handle,
         &gatts_value);
 
     if (err_code != NRF_SUCCESS) {
@@ -58,7 +64,46 @@ uint32_t ble_gps_update_location(char * location, uint32_t len)
         ble_gatts_hvx_params_t hvx_params;
         memset(&hvx_params, 0, sizeof(hvx_params));
         
-        hvx_params.handle = ble_gps_object.location_char_handles.value_handle,
+        hvx_params.handle = ble_gps_object.latitude_char_handles.value_handle,
+        hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
+        hvx_params.offset = gatts_value.offset;
+        hvx_params.p_len = &gatts_value.len;
+        hvx_params.p_data = gatts_value.p_value;
+
+        err_code = sd_ble_gatts_hvx(ble_gps_object.conn_handle, &hvx_params);
+    }
+    
+    return err_code;
+}
+
+uint32_t ble_gps_update_longitude(char * location, uint32_t len)
+{
+    uint32_t err_code = NRF_SUCCESS;
+
+    // Build a characteristic value
+    ble_gatts_value_t gatts_value;
+    memset(&gatts_value, 0, sizeof(gatts_value));
+    
+    gatts_value.len = LONGITUDE_LEN; 
+    gatts_value.offset = 0;
+    gatts_value.p_value = (uint8_t *) location; 
+    
+    // Set the new characteristic value
+    err_code = sd_ble_gatts_value_set(
+        ble_gps_object.conn_handle,
+        ble_gps_object.longitude_char_handles.value_handle,
+        &gatts_value);
+
+    if (err_code != NRF_SUCCESS) {
+        return err_code;
+    }
+
+    // Send notification if needed
+    if (ble_gps_object.conn_handle != BLE_CONN_HANDLE_INVALID) {
+        ble_gatts_hvx_params_t hvx_params;
+        memset(&hvx_params, 0, sizeof(hvx_params));
+        
+        hvx_params.handle = ble_gps_object.longitude_char_handles.value_handle,
         hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
         hvx_params.offset = gatts_value.offset;
         hvx_params.p_len = &gatts_value.len;
@@ -299,11 +344,17 @@ uint32_t ble_gps_init(void)
         &service_uuid,
         &(ble_gps_object.service_handle));
 
-    // Register the location characteristic with the softdevice 
+    // Register the latitude characteristic with the softdevice 
     err_code = char_add(
-        ble_gps_UUID_LOCATION, LOCATION_LEN, &location_buf,
-        strlen(location_name), location_name, 1, 0, 1,
-        &ble_gps_object.location_char_handles);
+        ble_gps_UUID_LATITUDE, LATITUDE_LEN, &latitude_buf,
+        strlen(latitude_name), latitude_name, 1, 0, 1,
+        &ble_gps_object.latitude_char_handles);
+
+    // Register the longitude characteristic with the softdevice 
+    err_code = char_add(
+        ble_gps_UUID_LONGITUDE, LONGITUDE_LEN, &longitude_buf,
+        strlen(longitude_name), longitude_name, 1, 0, 1,
+        &ble_gps_object.longitude_char_handles);
 
     // Register the speed characteristic with the softdevice 
     err_code = char_add(

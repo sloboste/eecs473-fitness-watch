@@ -19,9 +19,10 @@
 // Replace the Xs with the 16 bit UUIDS for each characteristic.
 #define ble_gps_BASE_UUID {0x9f, 0xdc, 0x9c, 0x81, 0xff, 0xfe, 0xcf, 0x8b, 0xe5, 0x11, 0x1a, 0x80, 0x00, 0x00, 0xc1, 0x58}
 #define ble_gps_UUID 0x0001
-#define ble_gps_UUID_LOCATION 0x0002
-#define ble_gps_UUID_SPEED 0x0003
-#define ble_gps_UUID_STATUS 0x0004
+#define ble_gps_UUID_LATITUDE 0x0002
+#define ble_gps_UUID_LONGITUDE 0x0003
+#define ble_gps_UUID_SPEED 0x0004
+#define ble_gps_UUID_STATUS 0x0005
 
 // TODO we might not need this...
 // The types of events that may occur in the GPS service.
@@ -45,7 +46,8 @@ typedef void (*ble_gps_evt_handler_t) (ble_gps_evt_t * evt_ptr);
 struct ble_gps_struct {
     uint16_t service_handle;
     uint16_t conn_handle;
-    ble_gatts_char_handles_t location_char_handles;
+    ble_gatts_char_handles_t latitude_char_handles;
+    ble_gatts_char_handles_t longitude_char_handles;
     ble_gatts_char_handles_t speed_char_handles;
     ble_gatts_char_handles_t status_char_handles;
     ble_gps_evt_handler_t evt_handler; // TODO we might not need this
@@ -62,9 +64,14 @@ extern uint32_t ble_gps_init(void);
 extern void ble_gps_on_ble_evt(ble_evt_t * evt_ptr);
 
 /**
- * Update the location characteristic value.
+ * Update the latitude characteristic value.
  */
-uint32_t ble_gps_update_location(char * location, uint32_t len);
+uint32_t ble_gps_update_latitude(char * latitude, uint32_t len);
+
+/**
+ * Update the latitude characteristic value.
+ */
+uint32_t ble_gps_update_longitude(char * longitude, uint32_t len);
 
 /**
  * Update the speed characteristic value.

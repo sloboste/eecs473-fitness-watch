@@ -11,16 +11,9 @@ APPLICATION_SRCS += app_util_platform.c
 APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
+APPLICATION_SRCS += nrf_drv_twi.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += app_scheduler.c
-APPLICATION_SRCS += twi_hw_master.c
-APPLICATION_SRCS += SEGGER_RTT.c
-APPLICATION_SRCS += SEGGER_RTT_printf.c
-
-APPLICATION_SRCS += inv_mpu.c
-APPLICATION_SRCS += inv_mpu_dmp_motion_driver.c
-APPLICATION_SRCS += mpu.c
-
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
@@ -34,18 +27,6 @@ APPLICATION_SRCS += $(TARGET_LOWER).c
 
 LIBRARY_PATHS += ./ ../../platform/
 SOURCE_PATHS += ../../platform/
-
-LIBRARY_PATHS += ./ ../../lib/imu
-SOURCE_PATHS += ../../lib/imu
-
-LIBRARY_PATHS += ./ ../../platform/RTT/
-SOURCE_PATHS += ../../platform/RTT/
-
-LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
-SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
-
-LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
-SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
 
 NRF_BASE_PATH ?= ../../nrf5x-base/
 TEMPLATE_PATH ?= $(NRF_BASE_PATH)/nrf51-pure-gcc-setup/template/
