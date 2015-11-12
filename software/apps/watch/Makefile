@@ -32,6 +32,14 @@ APPLICATION_SRCS += scheduler_config.c
 #APPLICATION_SRCS += gps.c 
 #APPLICATION_SRCS += uart_adapter.c 
 
+APPLICATION_SRCS += twi_hw_master.c
+APPLICATION_SRCS += inv_mpu.c
+APPLICATION_SRCS += inv_mpu_dmp_motion_driver.c
+APPLICATION_SRCS += mpu.c
+
+#APPLICATION_SRCS += SEGGER_RTT.c
+#APPLICATION_SRCS += SEGGER_RTT_printf.c
+
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
@@ -43,8 +51,17 @@ BOARD = BOARD_$(TARGET_UPPER)
 
 APPLICATION_SRCS += $(TARGET_LOWER).c
 
+LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
+SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
+
+LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
+SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
+
 LIBRARY_PATHS += ./ ../../platform/
 SOURCE_PATHS += ../../platform/
+
+#LIBRARY_PATHS += ./ ../../platform/RTT/
+#SOURCE_PATHS += ../../platform/RTT/
 
 LIBRARY_PATHS += ../../lib/ble/
 SOURCE_PATHS += ../../lib/ble/
@@ -54,8 +71,8 @@ SOURCE_PATHS += ../../lib/ble/
 #SOURCE_PATHS += ../../lib/hrm/
 #LIBRARY_PATHS += ../../lib/i2c/
 #SOURCE_PATHS += ../../lib/i2c/
-#LIBRARY_PATHS += ../../lib/imu/
-#SOURCE_PATHS += ../../lib/imu/
+LIBRARY_PATHS += ../../lib/imu/
+SOURCE_PATHS += ../../lib/imu/
 #LIBRARY_PATHS += ../../lib/lcd/
 #SOURCE_PATHS += ../../lib/lcd/
 LIBRARY_PATHS += ../../lib/scheduler/

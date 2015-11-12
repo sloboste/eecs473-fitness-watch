@@ -19,6 +19,10 @@
 #include "gps_service.h"
 #include "ped_service.h"
 
+#include "mpu.h"
+//#include "inv_mpu.h" // FIXME remove
+//#include "SEGGER_RTT.h" // FIXME remove
+
 //#include "gps.h"
 
 /**
@@ -107,12 +111,18 @@ void gpio_init(void)
 
 void ble_update_task(void * arg)
 {
-    // FIXME
-    // Nonesense to test 
     static uint8_t battery_level = 100;
-    static uint16_t heart_rate_bpm = 1000;
     bas_update(battery_level--);
+
+    static uint16_t heart_rate_bpm = 1000;
     hrs_update(heart_rate_bpm++);
+
+    static uint32_t step_count = 0;
+    //ble_ped_update_step_count(step_count++);
+    step_count = get_steps();
+    //SEGGER_RTT_printf(0, "Steps: %d\r\n", step_count);
+    ble_ped_update_step_count(step_count);
+    //ble_ped_update_step_count(mpu_reg_dump());
 }
 
 
@@ -130,10 +140,16 @@ void task_500_milli_hz(void * arg_ptr)
  */
 int main(void)
 {
+    // FIXME remove
+    //SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
+    //SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal Sample\r\n\r\n"); 
+
     // Component initialization
     gpio_init();
-    timer_init(true);
+    timers_init(true);
     scheduler_init();
+    ble_init();
+    mympu_open(200);
 
     app_timer_create(&timer_id_500_milli_hz, APP_TIMER_MODE_REPEATED,
                      task_500_milli_hz);
@@ -141,7 +157,6 @@ int main(void)
                     APP_TIMER_TICKS(500, APP_TIMER_PRESCALER),
                     app_timer_evt_schedule);
 
-    ble_init();
 
     // Begin BLE advertisement
     advertising_start();
