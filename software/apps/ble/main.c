@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -102,21 +103,29 @@ int main(void)
 
     advertising_start();
 
-    //uint32_t gval = 0; // FIXME remove later
+    uint32_t gval = 0; // FIXME remove later
     uint8_t pstatus = 0x1; // FIXME remove later
     uint8_t gstatus = 0x1; // FIXME remove later
     uint32_t pval = 0; // FIXME remove later
     uint8_t battery_level = 100;
     uint16_t heart_rate_bpm = 1000;
     
+    char * lat1 = "12 34.5678 N";
+    char * lat2 = "90 87.1234 S";
+    
+    char * long1 = "012 34.5678 E";
+    char * long2 = "180 87.1234 W";
+    
     //char * info = NULL;
     //uint32_t len;
 
+    int x = 0;
     while (1) {
+        x ^= 1;
         //power_manage();
         
         // FIXME remove later
-        nrf_delay_ms(100);
+        nrf_delay_ms(500);
         bas_update(battery_level--);
         hrs_update(heart_rate_bpm++);
         
@@ -125,8 +134,14 @@ int main(void)
         //ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
         //ble_gps_update_location(gps_info.longitude, 16);
 
-        //ble_gps_update_location(gval++);
-        //ble_gps_update_speed(gval++);
+        if (x) {
+            ble_gps_update_latitude(lat1, strlen(lat1));
+            ble_gps_update_longitude(long1, strlen(long1));
+        } else {
+            ble_gps_update_latitude(lat2, strlen(lat2));
+            ble_gps_update_longitude(long2, strlen(long2));
+        }
+        ble_gps_update_speed(gval++);
         gstatus ^= 0x1;
         ble_gps_update_status(gstatus);
 
