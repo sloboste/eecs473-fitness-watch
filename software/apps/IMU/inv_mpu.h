@@ -1,51 +1,13 @@
-/*
- $License:
-    Copyright (C) 2011-2012 InvenSense Corporation, All Rights Reserved.
-    See included License.txt for License information.
- $
- */
-/**
- *  @addtogroup  DRIVERS Sensor Driver Layer
- *  @brief       Hardware drivers to communicate with sensors via I2C.
- *
- *  @{
- *      @file       inv_mpu.h
- *      @brief      An I2C-based driver for Invensense gyroscopes.
- *      @details    This driver currently works for the following devices:
- *                  MPU6050
- *                  MPU6500
- *                  MPU9150 (or MPU6050 w/ AK8975 on the auxiliary bus)
- *                  MPU9250 (or MPU6500 w/ AK8963 on the auxiliary bus)
- */
-
 #ifndef _INV_MPU_H_
 #define _INV_MPU_H_
 
-//#include "I2Cdev.h"
-
-//  Define this symbol to get debug messages
-
-//#define  MPU_DEBUG
-
-//  Define this symbol to enable rarely-used functions from library
-
-//#define MPU_MAXIMAL
-
 //  This symbol defines how many devices are supported
-
 #define MPU_MAX_DEVICES 2
 
 //  Call this function before using the MPU to select the correct device
-
 int mpu_select_device(int device);
 
-// inline void get_ms(long unsigned int *timestamp)
-// {
-//     *timestamp = millis(); 
-// }
-
 //  IMU hardware device defines
-
 #define INV_X_GYRO      (0x40)
 #define INV_Y_GYRO      (0x20)
 #define INV_Z_GYRO      (0x10)
@@ -75,24 +37,18 @@ struct int_param_s {
 #define MPU_INT_STATUS_DMP_4            (0x1000)
 #define MPU_INT_STATUS_DMP_5            (0x2000)
 
-void i2c_init();
-
 /* Set up APIs */
 void mpu_init_structures();
 
 int mpu_init(struct int_param_s *int_param);
-int mpu_init_slave(void);
+//int mpu_init_slave(void);
 int mpu_set_bypass(unsigned char bypass_on);
 
 /* Configuration APIs */
 int mpu_lp_accel_mode(unsigned char rate);
-int mpu_lp_motion_interrupt(unsigned short thresh, unsigned char time,
-    unsigned char lpa_freq);
-int mpu_set_int_level(unsigned char active_low);
 int mpu_set_int_latched(unsigned char enable);
 
 int mpu_set_dmp_state(unsigned char enable);
-int mpu_get_dmp_state(unsigned char *enabled);
 
 int mpu_get_lpf(unsigned short *lpf);
 int mpu_set_lpf(unsigned short lpf);
@@ -103,15 +59,11 @@ int mpu_set_gyro_fsr(unsigned short fsr);
 int mpu_get_accel_fsr(unsigned char *fsr);
 int mpu_set_accel_fsr(unsigned char fsr);
 
-int mpu_get_compass_fsr(unsigned short *fsr);
-
 int mpu_get_gyro_sens(float *sens);
 int mpu_get_accel_sens(unsigned short *sens);
 
 int mpu_get_sample_rate(unsigned short *rate);
 int mpu_set_sample_rate(unsigned short rate);
-int mpu_get_compass_sample_rate(unsigned short *rate);
-int mpu_set_compass_sample_rate(unsigned short rate);
 
 int mpu_get_fifo_config(unsigned char *sensors);
 int mpu_configure_fifo(unsigned char sensors);
@@ -119,15 +71,8 @@ int mpu_configure_fifo(unsigned char sensors);
 int mpu_get_power_state(unsigned char *power_on);
 int mpu_set_sensors(unsigned char sensors);
 
-int mpu_set_accel_bias(const long *accel_bias);
-
-/* Data getter/setter APIs */
-int mpu_get_gyro_reg(short *data);
-int mpu_get_accel_reg(short *data);
-int mpu_get_compass_reg(short *data);
-int mpu_get_temperature(long *data);
-
 int mpu_get_int_status(short *status);
+
 int mpu_read_fifo(short *gyro, short *accel,
     unsigned char *sensors, unsigned char *more);
 int mpu_read_fifo_stream(unsigned short length, unsigned char *data,
@@ -142,12 +87,7 @@ int mpu_load_firmware(unsigned short length, const unsigned char *firmware,
     unsigned short start_addr, unsigned short sample_rate);
 
 int mpu_reg_dump(void);
-int mpu_read_reg(unsigned char reg, unsigned char *data);
-
-//#ifdef MPU_MAXIMAL
-int mpu_run_self_test(long *gyro, long *accel);
 int mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
-//#endif // MPU_MAXIMAL
 
 #endif  /* #ifndef _INV_MPU_H_ */
 

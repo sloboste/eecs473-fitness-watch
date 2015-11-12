@@ -1,16 +1,23 @@
 #ifndef MPU_H
 #define MPU_H
 
-struct s_mympu {
-	float ypr[3];
-	float gyro[3];
-	unsigned long steps[1];
-};
+//DONT FORGET TO CHOOSE PINS IN nrf_drv_Config
 
-extern struct s_mympu mympu;
-
+//Run this at the start. Rate should be 200
 int mympu_open(unsigned int rate);
-int mympu_update();
-void tap_detect(unsigned char direction, unsigned char count);
+
+//returns number of steps
+uint32_t get_steps();
+
+//will most likely set steps to 0
+void reset_steps();
+
+//returns walk time in ms
+uint32_t get_walktime();
+
+//will most likely set walk time to 0
+void reset_walktime();
+
+//void tap_detect(unsigned char direction, unsigned char count);
 #endif
 

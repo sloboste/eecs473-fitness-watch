@@ -8,7 +8,7 @@
 #include "dmpKey.h"
 #include "dmpmap.h"
 #include "nrf_delay.h"
-#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -76,7 +76,6 @@
 #define CFG_MOTION_BIAS         (1208)
 #define X_GRT_Y                 (1408)
 #define TEMPLABEL               (2324)
-// #define CFG_ANDROID_ORIENT_INT  (1853)
 #define CFG_GYRO_RAW_DATA       (2722)
 #define X_GRT_Y_TMP2            (1379)
 
@@ -203,11 +202,8 @@
 
 #define DMP_CODE_SIZE           (3062)
 
-//#ifdef __SAM3X8E__
+
 const uint8_t dmp_memory[DMP_CODE_SIZE] = {
-//#else
-//const unsigned char dmp_memory[DMP_CODE_SIZE] = {
-//#endif
     /* bank # 0 */
     0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00, 0x24, 0x00, 0x00, 0x00, 0x02, 0x00, 0x03, 0x00, 0x00,
     0x00, 0x65, 0x00, 0x54, 0xff, 0xef, 0x00, 0x00, 0xfa, 0x80, 0x00, 0x0b, 0x12, 0x82, 0x00, 0x01,
@@ -420,7 +416,6 @@ static const unsigned short sStartAddress = 0x0400;
 /* END OF SECTION COPIED FROM dmpDefaultMPU6050.c */
 
 #define INT_SRC_TAP             (0x01)
-// #define INT_SRC_ANDROID_ORIENT  (0x08)
 
 #define DMP_FEATURE_SEND_ANY_GYRO   (DMP_FEATURE_SEND_RAW_GYRO | \
                                      DMP_FEATURE_SEND_CAL_GYRO)
@@ -430,49 +425,17 @@ static const unsigned short sStartAddress = 0x0400;
 #define DMP_SAMPLE_RATE     (200)
 #define GYRO_SF             (46850825LL * 200 / DMP_SAMPLE_RATE)
 
-#define FIFO_CORRUPTION_CHECK
-#ifdef FIFO_CORRUPTION_CHECK
-#define QUAT_ERROR_THRESH       (1L<<24)
-#define QUAT_MAG_SQ_NORMALIZED  (1L<<28)
-#define QUAT_MAG_SQ_MIN         (QUAT_MAG_SQ_NORMALIZED - QUAT_ERROR_THRESH)
-#define QUAT_MAG_SQ_MAX         (QUAT_MAG_SQ_NORMALIZED + QUAT_ERROR_THRESH)
-#endif
 
-// struct dmp_s {
-//     void (*tap_cb)(unsigned char count, unsigned char direction);
-//     //void (*android_orient_cb)(unsigned char orientation);
-//     unsigned short orient;
-//     unsigned short feature_mask;
-//     unsigned short fifo_rate;
-//     uint8_t packet_length;
-// };
 
-    void (*dmp_tap_cb)(unsigned char count, unsigned char direction);
-    //void (*android_orient_cb)(unsigned char orientation);
-    unsigned short dmp_orient;
-    unsigned short dmp_feature_mask;
-    unsigned short dmp_fifo_rate;
-    uint8_t dmp_packet_length;
-
-//struct dmp_s dmpArray[MPU_MAX_DEVICES];
-
-//struct dmp_s *dmp;
-static int deviceIndex = 0;
-
-int dmp_select_device(int device)
-{
-  // if ((device < 0) || (device >= MPU_MAX_DEVICES))
-  //   return -1;
-
-  // deviceIndex = device;
-  // dmp = dmpArray + device;
-  return 0;
-}
+void (*dmp_tap_cb)(unsigned char count, unsigned char direction);
+unsigned short dmp_orient;
+unsigned short dmp_feature_mask;
+unsigned short dmp_fifo_rate;
+uint8_t dmp_packet_length;
 
 void dmp_init_structures()
 {
   dmp_tap_cb = NULL;
-  //dmp_android_orient_cb = NULL;
   dmp_orient = 0;
   dmp_feature_mask = 0;
   dmp_fifo_rate = 0;
@@ -489,172 +452,6 @@ int dmp_load_motion_driver_firmware(void)
         DMP_SAMPLE_RATE);
 }
 
-/**
- *  @brief      Push gyro and accel orientation to the dmp_
- *  The orientation is represented here as the output of
- *  @e inv_orientation_matrix_to_scalar.
- *  @param[in]  orient  Gyro and accel orientation in body frame.
- *  @return     0 if successful.
- */
-int dmp_set_orientation(unsigned short orient)
-{
-    unsigned char gyro_regs[3], accel_regs[3];
-    const unsigned char gyro_axes[3] = {DINA4C, DINACD, DINA6C};
-    const unsigned char accel_axes[3] = {DINA0C, DINAC9, DINA2C};
-    const unsigned char gyro_sign[3] = {DINA36, DINA56, DINA76};
-    const unsigned char accel_sign[3] = {DINA26, DINA46, DINA66};
-
-    gyro_regs[0] = gyro_axes[orient & 3];
-    gyro_regs[1] = gyro_axes[(orient >> 3) & 3];
-    gyro_regs[2] = gyro_axes[(orient >> 6) & 3];
-    accel_regs[0] = accel_axes[orient & 3];
-    accel_regs[1] = accel_axes[(orient >> 3) & 3];
-    accel_regs[2] = accel_axes[(orient >> 6) & 3];
-
-    /* Chip-to-body, axes only. */
-    if (mpu_write_mem(FCFG_1, 3, gyro_regs))
-        return -1;
-    if (mpu_write_mem(FCFG_2, 3, accel_regs))
-        return -1;
-
-    memcpy(gyro_regs, gyro_sign, 3);
-    memcpy(accel_regs, accel_sign, 3);
-    if (orient & 4) {
-        gyro_regs[0] |= 1;
-        accel_regs[0] |= 1;
-    }
-    if (orient & 0x20) {
-        gyro_regs[1] |= 1;
-        accel_regs[1] |= 1;
-    }
-    if (orient & 0x100) {
-        gyro_regs[2] |= 1;
-        accel_regs[2] |= 1;
-    }
-
-    /* Chip-to-body, sign only. */
-    if (mpu_write_mem(FCFG_3, 3, gyro_regs))
-        return -1;
-    if (mpu_write_mem(FCFG_7, 3, accel_regs))
-        return -1;
-    dmp_orient = orient;
-    return 0;
-}
-
-/**
- *  @brief      Push gyro biases to the dmp_
- *  Because the gyro integration is handled in the DMP, any gyro biases
- *  calculated by the MPL should be pushed down to DMP memory to remove
- *  3-axis quaternion drift.
- *  \n NOTE: If the DMP-based gyro calibration is enabled, the DMP will
- *  overwrite the biases written to this location once a new one is computed.
- *  @param[in]  bias    Gyro biases in q16.
- *  @return     0 if successful.
- */
-int dmp_set_gyro_bias(long *bias)
-{
-    long gyro_bias_body[3];
-    unsigned char regs[4];
-
-    gyro_bias_body[0] = bias[dmp_orient & 3];
-    if (dmp_orient & 4)
-        gyro_bias_body[0] *= -1;
-    gyro_bias_body[1] = bias[(dmp_orient >> 3) & 3];
-    if (dmp_orient & 0x20)
-        gyro_bias_body[1] *= -1;
-    gyro_bias_body[2] = bias[(dmp_orient >> 6) & 3];
-    if (dmp_orient & 0x100)
-        gyro_bias_body[2] *= -1;
-
-#ifdef EMPL_NO_64BIT
-    gyro_bias_body[0] = (long)(((float)gyro_bias_body[0] * GYRO_SF) / 1073741824.f);
-    gyro_bias_body[1] = (long)(((float)gyro_bias_body[1] * GYRO_SF) / 1073741824.f);
-    gyro_bias_body[2] = (long)(((float)gyro_bias_body[2] * GYRO_SF) / 1073741824.f);
-#else
-    gyro_bias_body[0] = (long)(((long long)gyro_bias_body[0] * GYRO_SF) >> 30);
-    gyro_bias_body[1] = (long)(((long long)gyro_bias_body[1] * GYRO_SF) >> 30);
-    gyro_bias_body[2] = (long)(((long long)gyro_bias_body[2] * GYRO_SF) >> 30);
-#endif
-
-    regs[0] = (unsigned char)((gyro_bias_body[0] >> 24) & 0xFF);
-    regs[1] = (unsigned char)((gyro_bias_body[0] >> 16) & 0xFF);
-    regs[2] = (unsigned char)((gyro_bias_body[0] >> 8) & 0xFF);
-    regs[3] = (unsigned char)(gyro_bias_body[0] & 0xFF);
-    if (mpu_write_mem(D_EXT_GYRO_BIAS_X, 4, regs))
-        return -1;
-
-    regs[0] = (unsigned char)((gyro_bias_body[1] >> 24) & 0xFF);
-    regs[1] = (unsigned char)((gyro_bias_body[1] >> 16) & 0xFF);
-    regs[2] = (unsigned char)((gyro_bias_body[1] >> 8) & 0xFF);
-    regs[3] = (unsigned char)(gyro_bias_body[1] & 0xFF);
-    if (mpu_write_mem(D_EXT_GYRO_BIAS_Y, 4, regs))
-        return -1;
-
-    regs[0] = (unsigned char)((gyro_bias_body[2] >> 24) & 0xFF);
-    regs[1] = (unsigned char)((gyro_bias_body[2] >> 16) & 0xFF);
-    regs[2] = (unsigned char)((gyro_bias_body[2] >> 8) & 0xFF);
-    regs[3] = (unsigned char)(gyro_bias_body[2] & 0xFF);
-    return mpu_write_mem(D_EXT_GYRO_BIAS_Z, 4, regs);
-}
-
-/**
- *  @brief      Push accel biases to the dmp_
- *  These biases will be removed from the DMP 6-axis quaternion.
- *  @param[in]  bias    Accel biases in q16.
- *  @return     0 if successful.
- */
-int dmp_set_accel_bias(long *bias)
-{
-    long accel_bias_body[3];
-    unsigned char regs[12];
-    long long accel_sf;
-    unsigned short accel_sens;
-
-    mpu_get_accel_sens(&accel_sens);
-    accel_sf = (long long)accel_sens << 15;
-    delay_ms(1);
-
-    accel_bias_body[0] = bias[dmp_orient & 3];
-    if (dmp_orient & 4)
-        accel_bias_body[0] *= -1;
-    accel_bias_body[1] = bias[(dmp_orient >> 3) & 3];
-    if (dmp_orient & 0x20)
-        accel_bias_body[1] *= -1;
-    accel_bias_body[2] = bias[(dmp_orient >> 6) & 3];
-    if (dmp_orient & 0x100)
-        accel_bias_body[2] *= -1;
-
-#ifdef EMPL_NO_64BIT
-    accel_bias_body[0] = (long)(((float)accel_bias_body[0] * accel_sf) / 1073741824.f);
-    accel_bias_body[1] = (long)(((float)accel_bias_body[1] * accel_sf) / 1073741824.f);
-    accel_bias_body[2] = (long)(((float)accel_bias_body[2] * accel_sf) / 1073741824.f);
-#else
-    accel_bias_body[0] = (long)(((long long)accel_bias_body[0] * accel_sf) >> 30);
-    accel_bias_body[1] = (long)(((long long)accel_bias_body[1] * accel_sf) >> 30);
-    accel_bias_body[2] = (long)(((long long)accel_bias_body[2] * accel_sf) >> 30);
-#endif
-
-    regs[0] = (unsigned char)((accel_bias_body[0] >> 24) & 0xFF);
-    regs[1] = (unsigned char)((accel_bias_body[0] >> 16) & 0xFF);
-    regs[2] = (unsigned char)((accel_bias_body[0] >> 8) & 0xFF);
-    regs[3] = (unsigned char)(accel_bias_body[0] & 0xFF);
-    regs[4] = (unsigned char)((accel_bias_body[1] >> 24) & 0xFF);
-    regs[5] = (unsigned char)((accel_bias_body[1] >> 16) & 0xFF);
-    regs[6] = (unsigned char)((accel_bias_body[1] >> 8) & 0xFF);
-    regs[7] = (unsigned char)(accel_bias_body[1] & 0xFF);
-    regs[8] = (unsigned char)((accel_bias_body[2] >> 24) & 0xFF);
-    regs[9] = (unsigned char)((accel_bias_body[2] >> 16) & 0xFF);
-    regs[10] = (unsigned char)((accel_bias_body[2] >> 8) & 0xFF);
-    regs[11] = (unsigned char)(accel_bias_body[2] & 0xFF);
-    return mpu_write_mem(D_ACCEL_BIAS, 12, regs);
-}
-
-/**
- *  @brief      Set DMP output rate.
- *  Only used when DMP is on.
- *  @param[in]  rate    Desired fifo rate (Hz).
- *  @return     0 if successful.
- */
 int dmp_set_fifo_rate(unsigned short rate)
 {
     const unsigned char regs_end[12] = {DINAFE, DINAF2, DINAAB,
@@ -675,18 +472,6 @@ int dmp_set_fifo_rate(unsigned short rate)
     dmp_fifo_rate = rate;
     return 0;
 }
-
-/**
- *  @brief      Get DMP output rate.
- *  @param[out] rate    Current fifo rate (Hz).
- *  @return     0 if successful.
- */
-int dmp_get_fifo_rate(unsigned short *rate)
-{
-    rate[0] = dmp_fifo_rate;
-    return 0;
-}
-
 
 
 /**
@@ -883,25 +668,21 @@ int dmp_set_shake_reject_timeout(unsigned short time)
  *  @param[out] count   Number of steps detected.
  *  @return     0 if successful.
  */
-int dmp_get_pedometer_step_count(unsigned long *count)
+unsigned long dmp_get_pedometer_step_count()
 {
     unsigned char tmp[4];
-    if (!count)
-        return -1;
+    unsigned long count;
+    // if (!count)
+    //     return -1;
 
     if (mpu_read_mem(D_PEDSTD_STEPCTR, 4, tmp))
         return -1;
 
-    // SEGGER_RTT_printf(0, "STEP DATA: %d ", tmp[0]);
-    // SEGGER_RTT_printf(0, "%d ", tmp[1]);
-    // SEGGER_RTT_printf(0, "%d ", tmp[2]);
-    // SEGGER_RTT_printf(0, "%d\r\n", tmp[3]);
-
-    count[0] = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
+    count = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
         ((unsigned long)tmp[2] << 8) | tmp[3];
 
-        SEGGER_RTT_printf(0, "Count: %d\r\n", count[0]);
-    return 0;
+        //SEGGER_RTT_printf(0, "Count: %d\r\n", count[0]);
+    return count;
 }
 
 /**
@@ -1018,17 +799,11 @@ int dmp_enable_feature(unsigned short mask)
     mpu_write_mem(CFG_15,10,tmp);
 
     /* Send gesture data to the FIFO. */
-    //if (mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
     if (mask & (DMP_FEATURE_TAP))
         tmp[0] = DINA20;
     else
         tmp[0] = 0xD8;
     mpu_write_mem(CFG_27,1,tmp);
-
-    if (mask & DMP_FEATURE_GYRO_CAL)
-        dmp_enable_gyro_cal(1);
-    else
-        dmp_enable_gyro_cal(0);
 
     if (mask & DMP_FEATURE_SEND_ANY_GYRO) {
         if (mask & DMP_FEATURE_SEND_CAL_GYRO) {
@@ -1045,14 +820,13 @@ int dmp_enable_feature(unsigned short mask)
         mpu_write_mem(CFG_GYRO_RAW_DATA, 4, tmp);
     }
 
-//#ifdef MPU_MAXIMAL
     if (mask & DMP_FEATURE_TAP) {
         /* Enable tap. */
         tmp[0] = 0xF8;
         mpu_write_mem(CFG_20, 1, tmp);
         dmp_set_tap_thresh(TAP_XYZ, 250);
         dmp_set_tap_axes(TAP_XYZ);
-        dmp_set_tap_count(1);
+        dmp_set_tap_count(2);
         dmp_set_tap_time(100);
         dmp_set_tap_time_multi(500);
 
@@ -1064,106 +838,24 @@ int dmp_enable_feature(unsigned short mask)
         mpu_write_mem(CFG_20, 1, tmp);
     }
 
-    // if (mask & DMP_FEATURE_ANDROID_ORIENT) {
-    //     tmp[0] = 0xD9;
-    // } else
-    //     tmp[0] = 0xD8;
-    // mpu_write_mem(CFG_ANDROID_ORIENT_INT, 1, tmp);
-//#endif // MPU_MAXIMAL
-
-    if (mask & DMP_FEATURE_LP_QUAT)
-        dmp_enable_lp_quat(1);
-    else
-        dmp_enable_lp_quat(0);
-
-    if (mask & DMP_FEATURE_6X_LP_QUAT)
-        dmp_enable_6x_lp_quat(1);
-    else
-        dmp_enable_6x_lp_quat(0);
-
     /* Pedometer is always enabled. */
     dmp_feature_mask = mask | DMP_FEATURE_PEDOMETER;
     mpu_reset_fifo();
 
-    //SEGGER_RTT_printf(0, "Mask: %d\r\n", mask);
-    //SEGGER_RTT_printf(0, "Feature: %d\r\n", DMP_FEATURE_TAP);
-    //SEGGER_RTT_printf(0, "EN: %d\r\n", mask & (DMP_FEATURE_TAP));
     dmp_packet_length = 0;
     int packet_length = 0;
     if (mask & DMP_FEATURE_SEND_RAW_ACCEL)
-        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & DMP_FEATURE_SEND_ANY_GYRO)
-        //dmp_packet_length += 6;
         packet_length += 6;
     if (mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT))
-        //dmp_packet_length += 16;
         packet_length += 16;
-    //if (mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
     if (mask & (DMP_FEATURE_TAP))
-        //dmp_packet_length += 4;
         packet_length += 4;
 
     dmp_packet_length = packet_length;
-    //SEGGER_RTT_printf(0, "packet_length:%d\r\n", packet_length);
-    //SEGGER_RTT_printf(0, "packet_length INIT:%d\r\n", dmp_packet_length);
     return 0;
 } 
-
-/**
- *  @brief      Get list of currently enabled DMP features.
- *  @param[out] Mask of enabled features.
- *  @return     0 if successful.
- */
-int dmp_get_enabled_features(unsigned short *mask)
-{
-    mask[0] = dmp_feature_mask;
-    return 0;
-}
-
-/**
- *  @brief      Calibrate the gyro data in the dmp_
- *  After eight seconds of no motion, the DMP will compute gyro biases and
- *  subtract them from the quaternion output. If @e dmp_enable_feature is
- *  called with @e DMP_FEATURE_SEND_CAL_GYRO, the biases will also be
- *  subtracted from the gyro output.
- *  @param[in]  enable  1 to enable gyro calibration.
- *  @return     0 if successful.
- */
-int dmp_enable_gyro_cal(unsigned char enable)
-{
-    if (enable) {
-        unsigned char regs[9] = {0xb8, 0xaa, 0xb3, 0x8d, 0xb4, 0x98, 0x0d, 0x35, 0x5d};
-        return mpu_write_mem(CFG_MOTION_BIAS, 9, regs);
-    } else {
-        unsigned char regs[9] = {0xb8, 0xaa, 0xaa, 0xaa, 0xb0, 0x88, 0xc3, 0xc5, 0xc7};
-        return mpu_write_mem(CFG_MOTION_BIAS, 9, regs);
-    }
-}
-
-/**
- *  @brief      Generate 3-axis quaternions from the dmp_
- *  In this driver, the 3-axis and 6-axis DMP quaternion features are mutually
- *  exclusive.
- *  @param[in]  enable  1 to enable 3-axis quaternion.
- *  @return     0 if successful.
- */
-int dmp_enable_lp_quat(unsigned char enable)
-{
-    unsigned char regs[4];
-    if (enable) {
-        regs[0] = DINBC0;
-        regs[1] = DINBC2;
-        regs[2] = DINBC4;
-        regs[3] = DINBC6;
-    }
-    else
-        memset(regs, 0x8B, 4);
-
-    mpu_write_mem(CFG_LP_QUAT, 4, regs);
-
-    return mpu_reset_fifo();
-}
 
 /**
  *  @brief       Generate 6-axis quaternions from the dmp_
@@ -1188,7 +880,6 @@ int dmp_enable_6x_lp_quat(unsigned char enable)
     return mpu_reset_fifo();
 }
 
-//#ifdef MPU_MAXIMAL
 /**
  *  @brief      Decode the four-byte gesture data and execute any callbacks.
  *  @param[in]  gesture Gesture data from DMP packet.
@@ -1196,16 +887,8 @@ int dmp_enable_6x_lp_quat(unsigned char enable)
  */
 static int decode_gesture(unsigned char *gesture)
 {
-    // SEGGER_RTT_printf(0, "Gestures: %d ", gesture[0]);
-    // SEGGER_RTT_printf(0, "%d ", gesture[1]);
-    // SEGGER_RTT_printf(0, "%d ", gesture[2]);
-    // SEGGER_RTT_printf(0, "%d\r\n", gesture[3]);
-
-
     unsigned char tap;
-    // android_orient;
 
-    //android_orient = gesture[3] & 0xC0;
     tap = 0x3F & gesture[3];
 
     if (gesture[1] & INT_SRC_TAP) {
@@ -1216,14 +899,8 @@ static int decode_gesture(unsigned char *gesture)
             dmp_tap_cb(direction, count);
     }
 
-    // if (gesture[1] & INT_SRC_ANDROID_ORIENT) {
-    //     // if (dmp_android_orient_cb)
-    //     //     dmp_android_orient_cb(android_orient >> 6);
-    // }
-
     return 0;
 }
-//#endif // MPU_MAXIMAL
 
 /**
  *  @brief      Specify when a DMP interrupt should occur.
@@ -1273,93 +950,17 @@ int dmp_set_interrupt_mode(unsigned char mode)
  *  @param[out] more        Number of remaining packets.
  *  @return     0 if successful.
  */
-int dmp_read_fifo(short *gyro, short *accel, long *quat,
-	short *sensors, unsigned char *more)
+int dmp_read_fifo(unsigned char *more)
 {
     unsigned char fifo_data[MAX_PACKET_LENGTH];
     unsigned char ii = 0;
     int errCode;
 
-    /* TODO: sensors[0] only changes when dmp_enable_feature is called. We can
-     * cache this value and save some cycles.
-     */
-    sensors[0] = 0;
-    //SEGGER_RTT_printf(0, "Length: %d\r\n", dmp_packet_length);  
-    /* Get a packet. */
     if ((errCode = mpu_read_fifo_stream(dmp_packet_length, fifo_data, more)))
         return errCode;
 
-    /* Parse DMP packet. */
-    if (dmp_feature_mask & (DMP_FEATURE_LP_QUAT | DMP_FEATURE_6X_LP_QUAT)) {
-#ifdef FIFO_CORRUPTION_CHECK
-        long quat_q14[4], quat_mag_sq;
-#endif
-        quat[0] = ((long)fifo_data[0] << 24) | ((long)fifo_data[1] << 16) |
-            ((long)fifo_data[2] << 8) | fifo_data[3];
-        quat[1] = ((long)fifo_data[4] << 24) | ((long)fifo_data[5] << 16) |
-            ((long)fifo_data[6] << 8) | fifo_data[7];
-        quat[2] = ((long)fifo_data[8] << 24) | ((long)fifo_data[9] << 16) |
-            ((long)fifo_data[10] << 8) | fifo_data[11];
-        quat[3] = ((long)fifo_data[12] << 24) | ((long)fifo_data[13] << 16) |
-            ((long)fifo_data[14] << 8) | fifo_data[15];
-        ii += 16;
-#ifdef FIFO_CORRUPTION_CHECK
-        /* We can detect a corrupted FIFO by monitoring the quaternion data and
-         * ensuring that the magnitude is always normalized to one. This
-         * shouldn't happen in normal operation, but if an I2C error occurs,
-         * the FIFO reads might become misaligned.
-         *
-         * Let's start by scaling down the quaternion data to avoid long long
-         * math.
-         */
-        quat_q14[0] = quat[0] >> 16;
-        quat_q14[1] = quat[1] >> 16;
-        quat_q14[2] = quat[2] >> 16;
-        quat_q14[3] = quat[3] >> 16;
-        quat_mag_sq = quat_q14[0] * quat_q14[0] + quat_q14[1] * quat_q14[1] +
-            quat_q14[2] * quat_q14[2] + quat_q14[3] * quat_q14[3];
-        if ((quat_mag_sq < QUAT_MAG_SQ_MIN) ||
-            (quat_mag_sq > QUAT_MAG_SQ_MAX)) {
-            /* Quaternion is outside of the acceptable threshold. */
-            mpu_reset_fifo();
-            sensors[0] = 0;
-            return 3;
-        };
-        sensors[0] |= INV_WXYZ_QUAT;
-#endif
-    }
-
-    if (dmp_feature_mask & DMP_FEATURE_SEND_RAW_ACCEL) {
-        accel[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
-        accel[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
-        accel[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
-        ii += 6;
-        sensors[0] |= INV_XYZ_ACCEL;
-    }
-
-    if (dmp_feature_mask & DMP_FEATURE_SEND_ANY_GYRO) {
-        gyro[0] = ((short)fifo_data[ii+0] << 8) | fifo_data[ii+1];
-        gyro[1] = ((short)fifo_data[ii+2] << 8) | fifo_data[ii+3];
-        gyro[2] = ((short)fifo_data[ii+4] << 8) | fifo_data[ii+5];
-        ii += 6;
-        sensors[0] |= INV_XYZ_GYRO;
-    }
-//#ifdef MPU_MAXIMAL
-    /* Gesture data is at the end of the DMP packet. Parse it and call
-     * the gesture callbacks (if registered).
-     */
-    //if (dmp_feature_mask & (DMP_FEATURE_TAP | DMP_FEATURE_ANDROID_ORIENT))
     if (dmp_feature_mask & (DMP_FEATURE_TAP))
         decode_gesture(fifo_data + ii);
-//#endif // MPU_MAXIMAL
-    //if (timestamp)
-	//get_ms(timestamp);
-
-    // SEGGER_RTT_WriteString(0, "FIFO DATA: ");
-    // for(int i = 0; i < MAX_PACKET_LENGTH; ++i){
-    //     SEGGER_RTT_printf(0, "%d ", fifo_data[i]);
-    // }
-    // SEGGER_RTT_WriteString(0, "\r\n");
     return 0;
 }
 
@@ -1381,20 +982,3 @@ int dmp_register_tap_cb(void (*func)(unsigned char, unsigned char))
     dmp_tap_cb = func;
     return 0;
 }
-
-/**
- *  @brief      Register a function to be executed on a android orientation event.
- *  @param[in]  func    Callback function.
- *  @return     0 if successful.
- */
-// int dmp_register_android_orient_cb(void (*func)(unsigned char))
-// {
-//     dmp_android_orient_cb = func;
-//     return 0;
-// }
-//#endif // MPU_MAXIMAL
-
-/**
- *  @}
- */
-
