@@ -3,7 +3,7 @@
 #include "mpu.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
-#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT.h"
 #include <math.h>
 #include "nrf_delay.h"
 
