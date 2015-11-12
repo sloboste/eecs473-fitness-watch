@@ -2,11 +2,17 @@
 
 #define LCD_DRIVER_H
 
-// LCD Dimensions
+
+/* ************** */
+/* LCD Dimensions */
+/* ************** */
+
 #define LCD_WIDTH       (96)
 #define LCD_HEIGHT      (96) 
 
-// 
+/* *********************** */
+/* Potential Struct Setups */
+/* *********************** */
 
 struct CURSOR {
 	uint8_t line;
@@ -39,51 +45,61 @@ struct TOP_BAR_DATA {
 }TIMER_BAR;
 
 
-//struct LCD {
- //public:
-  //void LCD(uint8_t CLK, uint8_t MOSI, uint8_t SS);
-  //void placeTemplate(int16_t x, int16_t y, uint16_t color);
-  void clearDisplay();
-  void clearLines(uint8_t start, uint8_t end);
+/* ************** */
+/* Init Functions */
+/* ************** */
 
-  void refresh(void);
+void initCursor();
+void initStructs();
 
-  void initCursor();
+/* *********************************** */
+/* Transfer, Draw, and Erase Functions */
+/* *********************************** */
 
-  void drawDottedLine(uint8_t line);
+void drawLine(uint8_t line);
+void transferToBitmap(uint8_t data);
+void clearLines(uint8_t start, uint8_t end);
 
-  //void writeStringToBitmap(char &s , int length);
-  void transferChar(char c, uint8_t size);
+void transferChar(char c);
+void transferSmallNumInt(int num, uint8_t size);
+void transferBigNumInt(int num, uint8_t size);
+void transferSpecialChar(char c);
+void transferSpecialBigChar(char c);
 
-  void transferSpecialChar(char c, uint8_t size);
+void transferBatteryLevel(int num);
 
-  void transferSpecialLargeChar(char c);
+/* ***************************** */
+/* LCD Transfer Helper Functions */
+/* ***************************** */
 
-  void setCursor(int x, int y);
+uint8_t reverseBitOrder(uint8_t MSB);
 
-  uint8_t bitmapToUint(int x, int y);
+/* ******************************** */
+/* Macro LCD Manipulation Functions */
+/* ******************************** */
 
-  void transferToBitmap(uint8_t data);
-  void transferSmallNumInt(int num, uint8_t size);
-  void transferBigNumInt(int num, uint8_t size);
-  void transferSmallNumDouble(double num, uint8_t numSize, uint8_t size);
-  void transferBigNumDouble(double num, uint8_t numSize, uint8_t size);
-  void transferBatteryLevel(int num);
+void refresh(void);
+void clearDisplay();
 
-  void charTest();
+/* ********************** */
+/* LCD Mangment Functions */
+/* ********************** */
 
-  void initStructs();
-  
-  void buildGPS_LCD();
-  void buildTimer_LCD();
-  void buildRun_LCD();
-  void buildTopBar_LCD();
+void setCursor(int x, int y);
 
+/* ******************* */
+/* Macro EIR Functions */
+/* ******************* */
 
- //private:
-  //uint8_t ss, clk, mosi;
-  uint8_t reverseBitOrder(uint8_t MSB);
-//}LCD;
+void buildGPS_LCD();
+void buildTimer_LCD();
+void buildRun_LCD();
+void buildTopBar_LCD();
 
+/* ************** */
+/* Test Functions */
+/* ************** */
+
+void charTest();
 
 #endif

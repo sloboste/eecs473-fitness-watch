@@ -1,31 +1,26 @@
 /*********************************************************************
-This is a library built specifically for the EIR watch. The 
-capabilities of this library are limited to only the necessary 
-functions required to get the desired functionality from the LCD.
+This is an Arduino library for our Monochrome SHARP Memory Displays
 
-This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
-interface, not including ground and power.
+  Pick one up today in the adafruit shop!
+  ------> http://www.adafruit.com/products/1393
 
-The Watchmen invests time and resources providing this open source code, 
-so please support the EIR watch project and open-source hardware by 
-referring the developers to Google and other really cool potential jobs
-we may want. Our names can be found below:
+These displays use SPI to communicate, 3 pins are required to  
+interface
 
-Joshua Kaufman
-Nathan Immerman
-Steven Slaboda
-Tyler Kohan
-Amit Shah
+Adafruit invests time and resources providing this open source code, 
+please support Adafruit and open-source hardware by purchasing 
+products from Adafruit!
 
-We are legends of the computer engineering world.
-
-Written by Joshua Kaufman for the EIR watch by The Watchmen.  
+Written by Limor Fried/Ladyada  for Adafruit Industries.  
+BSD license, check license.txt for more information
+All text above, and the splash screen must be included in any redistribution
 *********************************************************************/
 
 #include <stdint.h>
 #include <stdbool.h>
 
 #include "nrf_gpio.h"
+//#include "nrf_drv_config.h"
 
 #include "lcd_driver.h"
 #include "spi_driver.h"
@@ -36,48 +31,31 @@ Written by Joshua Kaufman for the EIR watch by The Watchmen.
 /**************************************************************************
     Sharp Memory Display Connector
     -----------------------------------------------------------------------
-    Function        Notes
-    ==============  ===============================
-    VIN             3.3
-    3V3             3.3V out
-    GND
-    SCLK            Serial Clock
-    MOSI            Serial Data Input
-    CS              Serial Chip Select
- **************************************************************************/
+    Pin   Function        Notes
+    ===   ==============  ===============================
+      1   VIN             3.3-5.0V (into LDO supply)
+      2   3V3             3.3V out
+      3   GND
+      4   SCLK            Serial Clock
+      5   MOSI            Serial Data Input
+      6   CS              Serial Chip Select
+      9   EXTMODE         COM Inversion Select (Low = SW clock/serial)
+      7   EXTCOMIN        External COM Inversion Signal
+      8   DISP            Display On(High)/Off(Low)
 
-/* ************* */
-/* LCD Constants */
-/* ************* */
+ **************************************************************************/
 
 #define DATA_WRITE				(0x80)
 //#define SHARPMEM_BIT_VCOM       (0x40)
 #define LCD_CLEAR      		(0x20)
-
-/* ********************* */
-/* Initialize the bitmap */
-/* ********************* */
-
+//#define TOGGLE_VCOM             do { _sharpmem_vcom = _sharpmem_vcom ? 0x00 : SHARPMEM_BIT_VCOM; } while(0);
 uint8_t bitmap[(LCD_WIDTH * LCD_HEIGHT)/8] = { 0 };
 
-/**************************************************************************/
-/*!
-    @brief    Initializes the cursor to row 0 and line 0. This is the top
-    @         left position of the LCD.
-*/
-/**************************************************************************/ 
-
 void initCursor(){
+  //CURSOR Cursor:
   Cursor.line = 0;
   Cursor.row = 0;
 }
-
-/**************************************************************************/
-/*!
-    @brief    Initializes the data structures for the peripherals. The 
-    @         current value and data types are not necessarily correct
-*/
-/**************************************************************************/  
 
 void initStructs(){
   // GPS
@@ -100,99 +78,66 @@ void initStructs(){
   TIMER_DATA.numLaps = 0;
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "GPS" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/  
-
   void buildGPS_LCD(){
 
   }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TIMER" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines  
-*/
-/**************************************************************************/  
-
 void buildTimer_LCD();
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "RUN" screen on the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/
 
 void buildRun_LCD(){
   clearLines(13,96);
   setCursor(0, 14);
-  transferChar('t');
-  transferChar('i');
-  transferChar('m');
-  transferChar('e');
+  transferChar('t', 9);
+  transferChar('i', 9);
+  transferChar('m', 9);
+  transferChar('e', 9);
 
   setCursor(1, 28);
-  transferBigNumInt(1);
-  transferBigNumInt(2);
-  transferSpecialBigChar(':');
-  transferBigNumInt(3);
-  transferBigNumInt(4);
+  transferBigNumInt(1,19);
+  transferBigNumInt(2,19);
+  transferSpecialLargeChar(':');
+  transferBigNumInt(3,19);
+  transferBigNumInt(4,19);
 
-  drawLine(68);
+  drawDottedLine(68);
 
   setCursor(0, 70);
-  transferChar('d');
-  transferChar('i');
-  transferChar('s');
-  transferChar('t');
-  transferSpecialChar(':');
+  transferChar('d', 9);
+  transferChar('i', 9);
+  transferChar('s', 9);
+  transferChar('t', 9);
+  transferSpecialChar(':',9);
   Cursor.row++;
-  transferSmallNumInt(1);
-  transferSpecialChar('.');
-  transferSmallNumInt(2);
-  transferSmallNumInt(3);
+  transferSmallNumInt(1,9);
+  transferSpecialChar('.',9);
+  transferSmallNumInt(2,9);
+  transferSmallNumInt(3,9);
 
-  drawLine(82);
+  drawDottedLine(82);
 
   setCursor(0, 84);
-  transferChar('p');
-  transferChar('a');
-  transferChar('c');
-  transferChar('e');
-  transferSpecialChar(':');
+  transferChar('p', 9);
+  transferChar('a', 9);
+  transferChar('c', 9);
+  transferChar('e', 9);
+  transferSpecialChar(':',9);
   Cursor.row++;
-  transferSmallNumInt(4);
-  transferSpecialChar(':');
-  transferSmallNumInt(5);
-  transferSmallNumInt(6);
+  transferSmallNumInt(4,9);
+  transferSpecialChar(':',9);
+  transferSmallNumInt(5,9);
+  transferSmallNumInt(6,9);
   }
 
-/**************************************************************************/
-/*!
-    @brief    Takes in a lowercase letter and places it at the cursor 
-    @         location on the bitmap.  Function auto increments and 
-    @         repositions cursor to keep text from falling off the screen. 
-    @         This function should be used if you want a small font.   
+// void writeStringToBitmap(char &s , int length){
+//   int i;
+//   for int(i = 0; i < length; i++)
+//   {
+//     transferChar(s[i]);
+//   }
+// }
 
-    @size     Uses 1 row1 on 9 lines 
-*/
-/**************************************************************************/  
-
-void transferChar(char c){
+void transferChar(char c, uint8_t size){
   int i;
-  uint8_t size;
-  size = 9;
   for (i = 0; i < size; i++){
     transferToBitmap(chars[9*((int)c - 97)+i]);
     Cursor.line++;
@@ -210,22 +155,9 @@ void transferChar(char c){
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Takes in a ':', '.', or '/' char and places it at the cursor 
-    @         location on the bitmap.  Function auto increments and 
-    @         repositions cursor to keep text from falling off the screen.
-    @         This function should be used if you want a small font.  
-
-    @size     Uses 1 row on 9 lines 
-*/
-/**************************************************************************/  
-
-void transferSpecialChar(char c){
+void transferSpecialChar(char c, uint8_t size){
   int i;
   int offset;
-  uint8_t size;
-  size = 9;
   if (c == ':')
   {
     offset = 26;
@@ -255,20 +187,7 @@ void transferSpecialChar(char c){
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Currently can only take a ':' char and place it at the cursor 
-    @         location on the bitmap.  Function auto increments and 
-    @         repositions cursor to keep text from falling off the screen.
-    @         This function should be used if you want a large font.  
-
-    @size     Uses 1 row on 19 lines  Currently only ':' char exists,
-    @         with the introduction of new chars this size may vary
-    @         depending on the char.
-*/
-/**************************************************************************/ 
-
-void transferSpecialBigChar(char c){
+void transferSpecialLargeChar(char c){
   uint8_t i;
   uint8_t offset;
   uint8_t size;
@@ -294,27 +213,13 @@ void transferSpecialBigChar(char c){
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Takes in an integer of any size and places it at the cursor 
-    @         location on the bitmap.  Function auto increments and 
-    @         repositions cursor to keep numbers from falling off the 
-    @         screen. This function should be used if you want to display
-    @         small numbers. 
-
-    @size     Uses 1 row on 9 lines
-*/
-/**************************************************************************/ 
-
-void transferSmallNumInt(int num){
+void transferSmallNumInt(int num, uint8_t size){
   int divisor;
   int numCopy;
-  uint8_t size;
   uint8_t realNum;
   uint8_t i;
   uint8_t j;
   uint8_t numLength;
-  size = 9;
   numCopy = num;
   divisor = 1;
   for (numLength = 0; numCopy != 0 || numLength == 0;){
@@ -347,27 +252,13 @@ void transferSmallNumInt(int num){
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Takes in an integer of any size and places it at the cursor 
-    @         location on the bitmap.  Function auto increments and 
-    @         repositions cursor to keep numbers from falling off the 
-    @         screen. This function should be used if you want to display
-    @         large numbers.  
-
-    @size     Uses 2 rows on 19 lines 
-*/
-/**************************************************************************/ 
-
-void transferBigNumInt(int num){
+void transferBigNumInt(int num, uint8_t size){
   int divisor;
   int numCopy;
   uint8_t realNum;
   uint8_t i;
   uint8_t j;
   uint8_t numLength;
-  uint8_t size;
-  size = 9;
   numCopy = num;
   divisor = 1;
   for (numLength = 0; numCopy != 0 || numLength == 0;){
@@ -402,16 +293,6 @@ void transferBigNumInt(int num){
     }
   }
 }
-
-/**************************************************************************/
-/*!
-    @brief    Takes in an integer of size 0 - 4, inclusive, and places the
-    @         corresponding battery level image at the cursor location.
-    @         0 being for very low, and 4 being for full.
-
-    @size     Uses 2 rows on 9 lines
-*/
-/**************************************************************************/ 
 
 void transferBatteryLevel(int num){
   int divisor;
@@ -459,12 +340,10 @@ void transferBatteryLevel(int num){
 
 /**************************************************************************/
 /*!
-    @brief    Transfers the uint8_t "data" to the bitmap at the current
-    @         cursors location
-
-    @size     Uses 1 row on 1 line
+    @brief    Transfers uint8_t input data to the current position the cursor
+    @         is set at.
 */
-/**************************************************************************/ 
+/**************************************************************************/
 
 void transferToBitmap(uint8_t data){
   bitmap[Cursor.line*12+Cursor.row] = data;
@@ -472,18 +351,51 @@ void transferToBitmap(uint8_t data){
 
 /**************************************************************************/
 /*!
-    @brief    Sets the cursors row to 'x' and line to 'y'
+    @brief    Sets cursor postion to row 'x' and line 'y'.
 */
-/**************************************************************************/ 
+/**************************************************************************/
 
 void setCursor(int x, int y){
   Cursor.line = y;
   Cursor.row = x;
 }
+
+/* ************* */
+/* CONSTRUCTORS  */
+/* ************* */
+
+// void LCD(uint8_t CLK, uint8_t MOSI, uint8_t SS) {
+//   clk = clk;
+//   mosi = mosi;
+//   ss = ss;
+
+//   // Set pin state before direction to make sure they start this way (no glitching)
+//   nrf_gpio_pin_set(ss);
+//   nrf_gpio_pin_clear(clk);
+//   nrf_gpio_pin_set(mosi);
+  
+//   nrf_gpio_pin_dir_set(ss, NRF_GPIO_PIN_DIR_OUTPUT);
+//   nrf_gpio_pin_dir_set(clk, NRF_GPIO_PIN_DIR_OUTPUT);
+//   nrf_gpio_pin_dir_set(mosi, NRF_GPIO_PIN_DIR_OUTPUT);
+  
+  // clkport     = portOutputRegister(digitalPinToPort(_clk));
+  // clkpinmask  = digitalPinToBitMask(_clk);
+  // dataport    = portOutputRegister(digitalPinToPort(_mosi));
+  // datapinmask = digitalPinToBitMask(_mosi);
+  
+  // // Set the vcom bit to a defined state
+  // _sharpmem_vcom = SHARPMEM_BIT_VCOM;
+
+// }
+
+/* *************** */
+/* PRIVATE METHODS */
+/* *************** */
+
  
 /**************************************************************************/
 /*!
-    @brief    Returns reversed bit order with respect to the input "MSB".
+    @brief  Reverses order of bits in input uint8_t.
 */
 /**************************************************************************/
 
@@ -499,12 +411,17 @@ uint8_t reverseBitOrder(uint8_t MSB){
     return LSB;
 }
 
+/* ************** */
+/* PUBLIC METHODS */
+/* ************** */
+
+
+
 /**************************************************************************/
 /*! 
-    @brief    Clears the screen and bitmap.
+    @brief Clears the screen
 */
 /**************************************************************************/
-
 void clearDisplay() 
 {
   int i;
@@ -518,13 +435,6 @@ void clearDisplay()
     bitmap[i] = 0x00;
   }
 }
-
-/**************************************************************************/
-/*! 
-    @brief    Clears the bitmap between "start" and "end" positions
-    @         inclusivley.
-*/
-/**************************************************************************/
 
 void clearLines(uint8_t start, uint8_t end){
   uint8_t i;
@@ -540,15 +450,18 @@ void clearLines(uint8_t start, uint8_t end){
 
 /**************************************************************************/
 /*! 
-    @brief    Sends the contents of the pixel buffer to the LCD.
+    @brief Renders the contents of the pixel buffer on the LCD
 */
 /**************************************************************************/
-
 void refresh(void) 
 {
+
 	nrf_gpio_pin_set(SPI_SS_PIN);
   uint8_t addr;
   uint8_t byteNum;
+  //uint16_t totalbytes = (LCD_WIDTH) / 8;
+
+  //uint8_t pixle;
   spi_write(DATA_WRITE);
   for(addr = 1; addr <= 96; addr++)
   {
@@ -564,15 +477,7 @@ void refresh(void)
   nrf_gpio_pin_clear(SPI_SS_PIN);
 }
 
-/**************************************************************************/
-/*!
-    @brief    Creates a line at the line number specified as input.
-
-    @size     Uses all 12 rows on 1 line
-*/
-/**************************************************************************/ 
-
-void drawLine(uint8_t line){
+void drawDottedLine(uint8_t line){
   uint8_t i;
   setCursor(0, line-1);
   for (i = 0; i < 12; i++)
@@ -581,12 +486,6 @@ void drawLine(uint8_t line){
     Cursor.row++;
   }
 }
-
-/**************************************************************************/
-/*!
-    @brief    This is a simple test function to print out all charachters
-*/
-/**************************************************************************/ 
 
 void charTest(){
   clearDisplay();
@@ -649,19 +548,9 @@ void charTest(){
   transferBatteryLevel(4);
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TOP BAR" portion of the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the top 13 lines 
-*/
-/**************************************************************************/
-
 void buildTopBar_LCD(){
   clearLines(1,11);
-  drawLine(12);
+  drawDottedLine(12);
   setCursor(0,1);
   transferBatteryLevel(3);
   Cursor.row++;

@@ -126,6 +126,62 @@ void buildTimer_LCD();
 
 /**************************************************************************/
 /*!
+    @brief    Macro function which builds the "Watch Face" screen on the 
+    @         bitmap.
+
+    @size     Uses all 12 rows on all 96 lines  
+*/
+/**************************************************************************/  
+
+void buildWatchFace_LCD(){
+  //clearDisplay();
+  setCursor(0,1);
+  transferBatteryLevel(3);
+  Cursor.row+=2;
+
+  transferSmallNumInt(11);
+  transferSpecialChar('/');
+  transferSmallNumInt(13);
+  transferSpecialChar('/');
+  transferSmallNumInt(15);
+
+  // drawLine(16);
+  // drawLine(22);
+  // drawLine(27);
+  // drawLine(32);
+  // drawLine(36);
+  // drawLine(39);
+  // drawLine(41);
+  setCursor(0, 42);
+  if(curr_time.hours < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(curr_time.hours);
+  transferSpecialBigChar(':');
+  if(curr_time.minutes < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(curr_time.minutes);
+  setCursor(9, 52);
+  transferSpecialChar(':');
+  if(curr_time.seconds < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(curr_time.seconds);
+
+
+  // drawLine(63);
+  // drawLine(65);
+  // drawLine(68);
+  // drawLine(72);
+  // drawLine(77);
+  // drawLine(83);
+  // drawLine(90);
+
+}
+
+/**************************************************************************/
+/*!
     @brief    Macro function which builds the "RUN" screen on the bitmap.
     @         Currently is not dynamic. Dynamics will be implemented
     @         between 11/11/15 - 11/13/15.
@@ -142,12 +198,22 @@ void buildRun_LCD(){
   transferChar('m');
   transferChar('e');
 
-  setCursor(1, 28);
-  transferBigNumInt(1);
-  transferBigNumInt(2);
+  setCursor(0, 28);
+  if(curr_time.minutes < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(curr_time.minutes);
   transferSpecialBigChar(':');
-  transferBigNumInt(3);
-  transferBigNumInt(4);
+  if(curr_time.seconds < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(curr_time.seconds);
+  setCursor(9, 38);
+  transferSpecialChar(':');
+  if(curr_time.milli < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(curr_time.milli);
 
   drawLine(68);
 
@@ -367,7 +433,7 @@ void transferBigNumInt(int num){
   uint8_t j;
   uint8_t numLength;
   uint8_t size;
-  size = 9;
+  size = 19;
   numCopy = num;
   divisor = 1;
   for (numLength = 0; numCopy != 0 || numLength == 0;){
@@ -590,56 +656,56 @@ void drawLine(uint8_t line){
 
 void charTest(){
   clearDisplay();
-  transferChar('a', 9);
-  transferChar('b', 9);
-  transferChar('c', 9);
-  transferChar('d', 9);
-  transferChar('e', 9);
-  transferChar('f', 9);
-  transferChar('g', 9);
-  transferChar('h', 9);
-  transferChar('i', 9);
-  transferChar('j', 9);
-  transferChar('k', 9);
-  transferChar('l', 9);
+  transferChar('a');
+  transferChar('b');
+  transferChar('c');
+  transferChar('d');
+  transferChar('e');
+  transferChar('f');
+  transferChar('g');
+  transferChar('h');
+  transferChar('i');
+  transferChar('j');
+  transferChar('k');
+  transferChar('l');
   Cursor.line++;
-  transferChar('m', 9);
-  transferChar('n', 9);
-  transferChar('o', 9);
-  transferChar('p', 9);
-  transferChar('q', 9);
-  transferChar('r', 9);
-  transferChar('s', 9);
-  transferChar('t', 9);
-  transferChar('u', 9);
-  transferChar('v', 9);
-  transferChar('w', 9);
-  transferChar('x', 9);
+  transferChar('m');
+  transferChar('n');
+  transferChar('o');
+  transferChar('p');
+  transferChar('q');
+  transferChar('r');
+  transferChar('s');
+  transferChar('t');
+  transferChar('u');
+  transferChar('v');
+  transferChar('w');
+  transferChar('x');
   Cursor.line++;
-  transferChar('y', 9);
-  transferChar('z', 9);
-  transferSmallNumInt(0,9);
-  transferSmallNumInt(1,9);
-  transferSmallNumInt(2,9);
-  transferSmallNumInt(3,9);
-  transferSmallNumInt(4,9);
-  transferSmallNumInt(5,9);
-  transferSmallNumInt(6,9);
-  transferSmallNumInt(7,9);
-  transferSmallNumInt(8,9);
-  transferSmallNumInt(9,9);
+  transferChar('y');
+  transferChar('z');
+  transferSmallNumInt(0);
+  transferSmallNumInt(1);
+  transferSmallNumInt(2);
+  transferSmallNumInt(3);
+  transferSmallNumInt(4);
+  transferSmallNumInt(5);
+  transferSmallNumInt(6);
+  transferSmallNumInt(7);
+  transferSmallNumInt(8);
+  transferSmallNumInt(9);
   Cursor.line++;
-  transferBigNumInt(0,19);
-  transferBigNumInt(1,19);
-  transferBigNumInt(2,19);
-  transferBigNumInt(3,19);
-  transferBigNumInt(4,19);
-  transferBigNumInt(5,19);
+  transferBigNumInt(0);
+  transferBigNumInt(1);
+  transferBigNumInt(2);
+  transferBigNumInt(3);
+  transferBigNumInt(4);
+  transferBigNumInt(5);
   Cursor.line++;
-  transferBigNumInt(6,19);
-  transferBigNumInt(7,19);
-  transferBigNumInt(8,19);
-  transferBigNumInt(9,19);
+  transferBigNumInt(6);
+  transferBigNumInt(7);
+  transferBigNumInt(8);
+  transferBigNumInt(9);
   Cursor.line += 20;
   Cursor.row = 0;
   transferBatteryLevel(0);
@@ -665,13 +731,13 @@ void buildTopBar_LCD(){
   setCursor(0,1);
   transferBatteryLevel(3);
   Cursor.row++;
-  transferChar('e', 9);
-  transferChar('i', 9);
-  transferChar('r', 9);
+  transferChar('e');
+  transferChar('i');
+  transferChar('r');
   Cursor.row++;
-  transferSmallNumInt(1,9);
-  transferSmallNumInt(2,9);
-  transferSpecialChar(':',9);
-  transferSmallNumInt(3,9);
-  transferSmallNumInt(4,9);
+  transferSmallNumInt(1);
+  transferSmallNumInt(2);
+  transferSpecialChar(':');
+  transferSmallNumInt(3);
+  transferSmallNumInt(4);
 }
