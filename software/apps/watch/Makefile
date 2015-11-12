@@ -27,7 +27,8 @@ APPLICATION_SRCS += ble_config.c
 APPLICATION_SRCS += gps_service.c 
 APPLICATION_SRCS += heart_rate_service.c 
 APPLICATION_SRCS += ped_service.c 
-#APPLICATION_SRCS += timer_config.c 
+APPLICATION_SRCS += timer_config.c 
+APPLICATION_SRCS += scheduler_config.c 
 #APPLICATION_SRCS += gps.c 
 #APPLICATION_SRCS += uart_adapter.c 
 
@@ -57,10 +58,12 @@ SOURCE_PATHS += ../../lib/ble/
 #SOURCE_PATHS += ../../lib/imu/
 #LIBRARY_PATHS += ../../lib/lcd/
 #SOURCE_PATHS += ../../lib/lcd/
+LIBRARY_PATHS += ../../lib/scheduler/
+SOURCE_PATHS += ../../lib/scheduler/
 #LIBRARY_PATHS += ../../lib/spi/
 #SOURCE_PATHS += ../../lib/spi/
-#LIBRARY_PATHS += ../../lib/timer/
-#SOURCE_PATHS += ../../lib/timer/
+LIBRARY_PATHS += ../../lib/timer/
+SOURCE_PATHS += ../../lib/timer/
 #LIBRARY_PATHS += ../../lib/uart/
 #SOURCE_PATHS += ../../lib/uart/
 

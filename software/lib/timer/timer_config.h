@@ -7,8 +7,10 @@
 #ifndef __TIMER_CONFIG_H
 #define __TIMER_CONFIG_H
 
+#include <stdbool.h>
+
 // The value to divide the low frequency clock by for RTC1
-#define APP_TIMER_PRESCALER         0   // FIXME sched used 16??
+#define APP_TIMER_PRESCALER         0   // TODO may need to tune 
 
 // The maximum number of times that will be used in the application
 #define APP_TIMER_MAX_TIMERS        6   // FIXME this is arbitrary right now
@@ -19,6 +21,6 @@
 /**
  * Set up the app timer module for the watch application.
  */
-extern void timers_init(void);
+extern void timers_init(bool use_scheduler);
 
 #endif
