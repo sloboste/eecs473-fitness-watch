@@ -1,6 +1,6 @@
-#include "mpu.h"
 #include <stdint.h>
 #include <inttypes.h>
+#include "mpu.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #include "SEGGER_RTT.h"
@@ -10,9 +10,8 @@
 #define DMP_INT_GESTURE     (0x01)
 #define DMP_INT_CONTINUOUS  (0x02)
 
-unsigned int tap_count = 0;
-unsigned long time = 0;
-
+//unsigned int tap_count = 0;
+//unsigned long time = 0;
 
 /*void tap_detect(unsigned char direction, unsigned char count){
 	tap_count += count;
@@ -37,9 +36,7 @@ int mympu_open(unsigned int rate) {
 }
 
 uint32_t get_steps(){
-	unsigned long steps = 0;
-	dmp_get_pedometer_step_count(&steps)
-	return (uint32_t)steps;
+	return dmp_get_pedometer_step_count();
 }
 
 void reset_steps(){

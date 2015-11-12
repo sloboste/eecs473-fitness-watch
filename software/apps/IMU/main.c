@@ -11,6 +11,7 @@
 
 #define LED_PIN 18 // led 0 on the green board
 #define PIN_IN 17
+#define PIN_OUT 19
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
     NVIC_SystemReset();
