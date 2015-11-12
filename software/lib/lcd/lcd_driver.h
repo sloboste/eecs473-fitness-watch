@@ -2,7 +2,7 @@
 
 #define LCD_DRIVER_H
 
-
+#include "globals.h"
 /* ************** */
 /* LCD Dimensions */
 /* ************** */
@@ -61,8 +61,8 @@ void transferToBitmap(uint8_t data);
 void clearLines(uint8_t start, uint8_t end);
 
 void transferChar(char c);
-void transferSmallNumInt(int num, uint8_t size);
-void transferBigNumInt(int num, uint8_t size);
+void transferSmallNumInt(int num);
+void transferBigNumInt(int num);
 void transferSpecialChar(char c);
 void transferSpecialBigChar(char c);
 
@@ -95,6 +95,7 @@ void buildGPS_LCD();
 void buildTimer_LCD();
 void buildRun_LCD();
 void buildTopBar_LCD();
+void buildWatchFace_LCD();
 
 /* ************** */
 /* Test Functions */

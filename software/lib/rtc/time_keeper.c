@@ -10,7 +10,7 @@ void rtc_config(void)
 {
   NVIC_EnableIRQ(RTC0_IRQn);                                 // Enable Interrupt for the RTC in the core
   NRF_RTC0->PRESCALER = COUNTER_PRESCALER;                   // Set prescaler to a TICK of RTC_FREQUENCY
-  NRF_RTC0->CC[0] = COMPARE_COUNTERTIME * (RTC_FREQUENCY/2);     // Compare0 after approx COMPARE_COUNTERTIME seconds
+  NRF_RTC0->CC[0] = COMPARE_COUNTERTIME * (RTC_FREQUENCY/100);     // Compare0 after approx COMPARE_COUNTERTIME seconds
 
   // Enable TICK event and TICK interrupt:
   NRF_RTC0->EVTENSET = RTC_EVTENSET_TICK_Msk;
@@ -32,7 +32,7 @@ void RTC0_IRQHandler()
   {
     NRF_RTC0->EVENTS_TICK = 0;
     //do something on a tick here
-    nrf_gpio_pin_toggle(18);
+    nrf_gpio_pin_toggle(21);
   }
   if ((NRF_RTC0->EVENTS_COMPARE[0] != 0) && ((NRF_RTC0->INTENSET & RTC_INTENSET_COMPARE0_Msk) != 0))
   {
@@ -40,7 +40,7 @@ void RTC0_IRQHandler()
     NRF_RTC0->TASKS_CLEAR = 1;
     //do something every  millisecond here
     update_curr_time();
-    nrf_gpio_pin_toggle(19);
+    nrf_gpio_pin_toggle(22);
     
   }
 }
@@ -69,7 +69,7 @@ void update_curr_time(){
     curr_time.minutes++;
     curr_time.seconds = 0;
   }
-  if(curr_time.minutes == 100){
+  if(curr_time.minutes == 60){
     curr_time.hours++;
     curr_time.minutes = 0;
   }
@@ -80,4 +80,15 @@ void update_curr_time(){
     curr_time.milli = 0;
   }
   CRITICAL_REGION_EXIT();
+}
+
+void lfclk_config(void)
+{
+  NRF_CLOCK->LFCLKSRC = (CLOCK_LFCLKSRC_SRC_Xtal << CLOCK_LFCLKSRC_SRC_Pos);
+  NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
+  NRF_CLOCK->TASKS_LFCLKSTART = 1;
+  while (NRF_CLOCK->EVENTS_LFCLKSTARTED == 0)
+  {
+  }
+  NRF_CLOCK->EVENTS_LFCLKSTARTED = 0;
 }

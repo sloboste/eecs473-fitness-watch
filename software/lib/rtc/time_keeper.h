@@ -1,12 +1,4 @@
-typedef struct current_time_struct{
-	uint8_t hours;
-	uint8_t minutes;
-	uint8_t seconds;
-	uint8_t milli;
-} current_time_t;
-
-current_time_t curr_time;
-
+#include "globals.h"
 
 #define RTC_FREQUENCY             (800UL)                     /*!< required RTC working clock RTC_FREQUENCY Hertz. Changable */
 #define COMPARE_COUNTERTIME       (1UL)                     /*!< Get Compare event COMPARE_TIME seconds after the counter starts from 0 */
@@ -23,3 +15,5 @@ extern void set_time(uint8_t hours, uint8_t minutes, uint8_t seconds, uint8_t mi
 extern current_time_t get_time();
 
 void update_curr_time();
+
+extern void lfclk_config(void);

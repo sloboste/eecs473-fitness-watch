@@ -32,8 +32,8 @@
 #include "nrf_gpio.h"
 #include "time_keeper.h"
 
-#define GPIO_TOGGLE_TICK_EVENT    (18)                       /*!< Pin number to toggle when there is a tick event in RTC */
-#define GPIO_TOGGLE_COMPARE_EVENT (19)                       /*!< Pin number to toggle when there is compare event in RTC */
+#define GPIO_TOGGLE_TICK_EVENT    (21)                       /*!< Pin number to toggle when there is a tick event in RTC */
+#define GPIO_TOGGLE_COMPARE_EVENT (22)                       /*!< Pin number to toggle when there is compare event in RTC */
 #define LFCLK_FREQUENCY           (32768UL)                 /*!< LFCLK frequency in Hertz, constant */
 #define RTC_FREQUENCY             (800UL)                     /*!< required RTC working clock RTC_FREQUENCY Hertz. Changable */
 #define COMPARE_COUNTERTIME       (1UL)                     /*!< Get Compare event COMPARE_TIME seconds after the counter starts from 0 */
