@@ -17,6 +17,10 @@ APPLICATION_SRCS += twi_hw_master.c
 APPLICATION_SRCS += SEGGER_RTT.c
 APPLICATION_SRCS += SEGGER_RTT_printf.c
 
+APPLICATION_SRCS += inv_mpu.c
+APPLICATION_SRCS += inv_mpu_dmp_motion_driver.c
+APPLICATION_SRCS += mpu.c
+
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
@@ -30,6 +34,9 @@ APPLICATION_SRCS += $(TARGET_LOWER).c
 
 LIBRARY_PATHS += ./ ../../platform/
 SOURCE_PATHS += ../../platform/
+
+LIBRARY_PATHS += ./ ../../lib/imu
+SOURCE_PATHS += ../../lib/imu
 
 LIBRARY_PATHS += ./ ../../platform/RTT/
 SOURCE_PATHS += ../../platform/RTT/
