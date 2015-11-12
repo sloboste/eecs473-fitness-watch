@@ -19,7 +19,7 @@ APPLICATION_SRCS += SEGGER_RTT_printf.c
 
 
 ifndef TARGET
-    TARGET = BLEES
+    TARGET = GREEN_DEV_BOARD
 endif
 
 TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)
