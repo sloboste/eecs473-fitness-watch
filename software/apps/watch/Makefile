@@ -13,9 +13,6 @@ APPLICATION_SRCS += nrf_drv_clock.c # FIXME remove when ble
 APPLICATION_SRCS += app_scheduler.c
 APPLICATION_SRCS += app_timer_appsh.c
 
-#APPLICATION_SRCS += app_uart.c
-#APPLICATION_SRCS += nrf_drv_gpiote.c
-#APPLICATION_SRCS += nrf_drv_common.c
 
 APPLICATION_SRCS += softdevice_handler.c
 APPLICATION_SRCS += ble_srv_common.c
@@ -30,8 +27,11 @@ APPLICATION_SRCS += ble_config.c
 APPLICATION_SRCS += ped_service.c 
 APPLICATION_SRCS += timer_config.c 
 APPLICATION_SRCS += scheduler_config.c 
-#APPLICATION_SRCS += gps.c 
-#APPLICATION_SRCS += uart_adapter.c 
+APPLICATION_SRCS += gps.c 
+APPLICATION_SRCS += uart_adapter.c 
+APPLICATION_SRCS += app_uart.c
+APPLICATION_SRCS += nrf_drv_gpiote.c
+APPLICATION_SRCS += nrf_drv_common.c
 
 APPLICATION_SRCS += twi_hw_master.c
 APPLICATION_SRCS += inv_mpu.c
@@ -43,7 +43,7 @@ APPLICATION_SRCS += mpu.c
 
 APPLICATION_SRCS += spi_driver.c
 APPLICATION_SRCS += lcd_driver.c
-APPLICATION_SRCS += globals.c
+#APPLICATION_SRCS += globals.c
 
 APPLICATION_SRCS += time_keeper.c
 
@@ -74,8 +74,8 @@ LIBRARY_PATHS += ../../lib/
 SOURCE_PATHS += ../../lib/
 LIBRARY_PATHS += ../../lib/ble/
 SOURCE_PATHS += ../../lib/ble/
-#LIBRARY_PATHS +=  ../../lib/gps/
-#SOURCE_PATHS += ../../lib/gps/
+LIBRARY_PATHS +=  ../../lib/gps/
+SOURCE_PATHS += ../../lib/gps/
 #LIBRARY_PATHS += ../../lib/hrm/
 #SOURCE_PATHS += ../../lib/hrm/
 #LIBRARY_PATHS += ../../lib/i2c/
@@ -92,8 +92,8 @@ SOURCE_PATHS += ../../lib/scheduler/
 #SOURCE_PATHS += ../../lib/spi/
 LIBRARY_PATHS += ../../lib/timer/
 SOURCE_PATHS += ../../lib/timer/
-#LIBRARY_PATHS += ../../lib/uart/
-#SOURCE_PATHS += ../../lib/uart/
+LIBRARY_PATHS += ../../lib/uart/
+SOURCE_PATHS += ../../lib/uart/
 
 NRF_BASE_PATH ?= ../../nrf5x-base/
 TEMPLATE_PATH ?= $(NRF_BASE_PATH)/nrf51-pure-gcc-setup/template/
