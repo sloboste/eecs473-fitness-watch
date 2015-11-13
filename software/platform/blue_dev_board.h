@@ -1,13 +1,15 @@
 #ifndef BLUE_DEV_BOARD_H
 #define BLUE_DEV_BOARD_H
 
-#include "nrf_gpio.h"
+//#include "nrf_gpio.h"
 
 // Push button switches
 #define PIN_BUTTON_0 17
 #define PIN_BUTTON_1 18
 #define PIN_BUTTON_2 19
 #define PIN_BUTTON_3 20
+
+//#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
 
 // LEDs
 #define PIN_LED_1 21
@@ -21,6 +23,14 @@
 #define PIN_CTS 10
 #define PIN_RXD 11
 
-//#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
+// SPI
+#define SPI_SCK_PIN 29                                                          
+#define SPI_MISO_PIN 28                                                         
+#define SPI_MOSI_PIN 25                                                         
+#define SPI_SS_PIN 20 
+#define NRF_SPI NRF_SPI0 // TODO should we have an include for this?
+
+// I2C
+// TODO
 
 #endif
