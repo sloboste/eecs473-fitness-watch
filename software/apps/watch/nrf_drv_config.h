@@ -103,8 +103,12 @@
 
 #if (TWI0_ENABLED == 1)
 #define TWI0_CONFIG_FREQUENCY    NRF_TWI_FREQ_400K
-#define TWI0_CONFIG_SCL          0
-#define TWI0_CONFIG_SDA          1
+// Blue dev board
+#define TWI0_CONFIG_SCL          7
+#define TWI0_CONFIG_SDA          30
+// Green dev board
+//#define TWI0_CONFIG_SCL          0
+//#define TWI0_CONFIG_SDA          1 
 #define TWI0_CONFIG_IRQ_PRIORITY APP_IRQ_PRIORITY_HIGH
 
 #define TWI0_INSTANCE_INDEX      0
