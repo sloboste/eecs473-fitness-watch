@@ -15,8 +15,8 @@
 #include "timer_config.h"
 #include "scheduler_config.h"
 
-/*
 #include "ble_config.h"
+/*
 #include "heart_rate_service.h"
 #include "battery_service.h"
 #include "gps_service.h"
@@ -65,44 +65,27 @@ void gpio_init(void)
     nrf_gpio_pin_set(PIN_LED_4);
 }
 
-static void demo_time_steps()
-{
-    time = rtc_get_time();
-    buildWatchFace_LCD(&time, get_steps());
-    refresh();
-}
-
 
 static app_timer_id_t timer_id_1hz;
 
 void task_1hz(void * arg_ptr)
 {
-    static int i = 0;
-    ++i;
+    static uint32_t step_count = 0;
+    //static uint8_t battery_level = 100;
+    //static uint16_t heart_rate_bpm = 1000;
 
     nrf_gpio_pin_toggle(PIN_LED_1);
 
-    demo_time_steps();
-
-    //time = rtc_get_time();
-    //buildRun_LCD();
-    //buildTopBar_LCD();
-    //buildWatchFace_LCD(&time);
-    //refresh();
-
-    /*
-    static uint8_t battery_level = 100;
-    bas_update(battery_level--);
-
-    static uint16_t heart_rate_bpm = 1000;
-    hrs_update(heart_rate_bpm++);
-
-    static uint32_t step_count = 0;
-    //ble_ped_update_step_count(step_count++);
+    time = rtc_get_time();
     step_count = get_steps();
-    ble_ped_update_step_count(step_count);
-    */
+    buildWatchFace_LCD(&time, get_steps());
+    refresh();
 
+    ble_ped_update_step_count(step_count);
+    /*
+    bas_update(battery_level--);
+    hrs_update(heart_rate_bpm++);
+    */
 }
 
 
@@ -121,10 +104,6 @@ int main(void)
     nrf_drv_clock_lfclk_request();                                              
     //-----
 
-    // Init real time counter
-    rtc_config();
-    rtc_start();
-
     // Init gpio pins
     gpio_init();
 
@@ -133,7 +112,11 @@ int main(void)
     scheduler_init();
 
     // Init BLE
-    //ble_init();
+    ble_init();
+
+    // Init real time counter FIXME breaks ble?
+    //rtc_config();
+    //rtc_start();
 
     // Init IMU
     mympu_open(200);
@@ -148,7 +131,7 @@ int main(void)
                     app_timer_evt_schedule);
 
     // Begin BLE advertisement
-    //advertising_start();
+    advertising_start();
 
     // Main loop
     while (1) {

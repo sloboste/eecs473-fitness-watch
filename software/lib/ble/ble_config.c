@@ -11,17 +11,20 @@
 //#include "ble_debug_assert_handler.h"
 #include "ble_hci.h"
 
+//#include "blue_dev_board.h" // FIXME remove
+//#include "nrf_gpio.h" // FIXME remove
+
 #include "ble_config.h"
-#include "battery_service.h"
-#include "heart_rate_service.h"
-#include "gps_service.h"
+//#include "battery_service.h"
+//#include "heart_rate_service.h"
+//#include "gps_service.h"
 #include "ped_service.h"
 #include "timer_config.h" // FIXME APP_TIMER_PRESCALER...
 //#define APP_TIMER_PRESCALER 0
 
 
 // Name that the device will advertise
-static const char * ble_DEVICE_NAME = "Watchman 0.1";
+static const char * ble_DEVICE_NAME = "Eir Watch";
 
 // Handle for the current connection
 static uint16_t ble_current_conn_handle;
@@ -99,8 +102,8 @@ static void advertising_init(void)
     uint32_t                  err_code;
     ble_uuid_t adv_uuids[] = { 
         {0x1800, BLE_UUID_TYPE_BLE},    // Generic Access Service
-        {hrs_UUID, BLE_UUID_TYPE_BLE},
-        {bas_UUID, BLE_UUID_TYPE_BLE},
+        //{hrs_UUID, BLE_UUID_TYPE_BLE},
+        //{bas_UUID, BLE_UUID_TYPE_BLE},
         //{ble_gps_UUID, BLE_UUID_TYPE_VENDOR_BEGIN},
     };
     // TODO: Can't advertise custom 128 bit uuids without changing nordic code.
@@ -228,9 +231,9 @@ static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
     on_ble_evt(ble_evt_ptr);
     ble_conn_params_on_ble_evt(ble_evt_ptr);
-    ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
-    ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
-    ble_gps_on_ble_evt(ble_evt_ptr);
+    //ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
+    ///ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
+    //ble_gps_on_ble_evt(ble_evt_ptr);
     ble_ped_on_ble_evt(ble_evt_ptr);
 }
 
@@ -268,16 +271,16 @@ static void services_init(void)
     uint32_t err_code;
 
     // Init heart rate service 
-    err_code = hrs_init();
-    APP_ERROR_CHECK(err_code);
+    //err_code = hrs_init();
+    //APP_ERROR_CHECK(err_code);
 
     // Init battery service
-    err_code = bas_init();
-    APP_ERROR_CHECK(err_code);
+    //err_code = bas_init();
+    //APP_ERROR_CHECK(err_code);
 
     // Init gps service
-    err_code = ble_gps_init();
-    APP_ERROR_CHECK(err_code);
+    //err_code = ble_gps_init();
+    //APP_ERROR_CHECK(err_code);
 
     // Init pedometer service
     err_code = ble_ped_init();
@@ -290,6 +293,7 @@ static void services_init(void)
  */
 void ble_init(void)
 {
+//nrf_gpio_pin_clear(PIN_LED_3);
     ble_stack_init();
     gap_params_init();
     advertising_init();
