@@ -20,16 +20,16 @@ static char * latitude_name = "GPS Latutude";
 static bool latitude_notifications_enabled = false; 
 
 // Longitude characteristic
-#define LONGITUDE_LEN 16
-static char longitude_buf[LONGITUDE_LEN];
-static char * longitude_name = "GPS Longitude";
-static bool longitude_notifications_enabled = false; 
+//#define LONGITUDE_LEN 16
+//static char longitude_buf[LONGITUDE_LEN];
+//static char * longitude_name = "GPS Longitude";
+//static bool longitude_notifications_enabled = false; 
 
 // Speed characteristic
-#define SPEED_LEN 4
-static char speed_buf[SPEED_LEN];
-static char * speed_name = "GPS Speed";
-static bool speed_notifications_enabled = false; 
+//#define SPEED_LEN 4
+//static char speed_buf[SPEED_LEN];
+//static char * speed_name = "GPS Speed";
+//static bool speed_notifications_enabled = false; 
 
 // Status characteristic
 #define STATUS_LEN 1
@@ -76,6 +76,7 @@ uint32_t ble_gps_update_latitude(char * location, uint32_t len)
     return err_code;
 }
 
+/*
 uint32_t ble_gps_update_longitude(char * location, uint32_t len)
 {
     uint32_t err_code = NRF_SUCCESS;
@@ -200,6 +201,7 @@ uint32_t ble_gps_update_status(uint8_t status)
     
     return err_code;
 }
+*/
 
 /**
  * Handle the event when the client connects to this device.
@@ -350,6 +352,7 @@ uint32_t ble_gps_init(void)
         strlen(latitude_name), latitude_name, 1, 0, 1,
         &ble_gps_object.latitude_char_handles);
 
+/*
     // Register the longitude characteristic with the softdevice 
     err_code = char_add(
         ble_gps_UUID_LONGITUDE, LONGITUDE_LEN, &longitude_buf,
@@ -367,6 +370,7 @@ uint32_t ble_gps_init(void)
         ble_gps_UUID_STATUS, STATUS_LEN, &status_buf,
         strlen(status_name), status_name, 1, 0, 1,
         &ble_gps_object.status_char_handles);
+*/
 
     // FIXME bad err_code will be ignored if not last value
     return err_code;

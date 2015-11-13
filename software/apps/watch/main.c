@@ -116,6 +116,7 @@ void task_1hz(void * arg_ptr)
     refresh();
 
     ble_ped_update_step_count(step_count);
+    ble_ped_update_status(1);
     /*
     bas_update(battery_level--);
     hrs_update(heart_rate_bpm++);
@@ -157,9 +158,9 @@ int main(void)
     clearDisplay();
     
     // Init GPS
-    gps_init();
-    gps_config();
-    gps_enable();
+    //gps_init();
+    //gps_config();
+    //gps_enable();
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
 
     // TODO move this
