@@ -87,7 +87,7 @@ void gpio_init(void)
 int main(void)
 {
     gpio_init();
-    timers_init();
+    timers_init(false);
     ble_init();
 
     // Wait for button press

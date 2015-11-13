@@ -12,8 +12,8 @@ APPLICATION_SRCS += ble_hrs.c
 APPLICATION_SRCS += ble_bas.c
 
 #APPLICATION_SRCS += nrf_drv_twi.c
-#APPLICATION_SRCS += app_scheduler.c
-#APPLICATION_SRCS += app_timer_appsh.c
+APPLICATION_SRCS += app_scheduler.c
+APPLICATION_SRCS += app_timer_appsh.c
 APPLICATION_SRCS += nrf_delay.c
 
 APPLICATION_SRCS += app_uart.c
