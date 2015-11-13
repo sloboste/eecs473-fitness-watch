@@ -1,3 +1,6 @@
 [submodule "software/nrf5x-base"]
 	path = software/nrf5x-base
 	url = https://github.com/sloboste/nrf5x-base.git
+[submodule "watch/app"]
+	path = watch/app
+	url = C:/Users/amits/AndroidStudioProjects/BluetoothLeGatt/Application/src
