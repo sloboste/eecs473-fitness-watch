@@ -13,7 +13,7 @@ we may want. Our names can be found below:
 
 Joshua Kaufman
 Nathan Immerman
-Steven Slaboda
+Steven Sloboda
 Tyler Kohan
 Amit Shah
 
@@ -31,7 +31,10 @@ Written by Joshua Kaufman for the EIR watch by The Watchmen.
 #include "spi_driver.h"
 #include "charData.h"
 
-#include "led.h"
+//#include "led.h"
+
+#include "time_keeper.h"
+
 
 /**************************************************************************
     Sharp Memory Display Connector
@@ -133,7 +136,7 @@ void buildTimer_LCD();
 */
 /**************************************************************************/  
 
-void buildWatchFace_LCD(){
+void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
   //clearDisplay();
   setCursor(0,1);
   transferBatteryLevel(3);
@@ -153,21 +156,21 @@ void buildWatchFace_LCD(){
   // drawLine(39);
   // drawLine(41);
   setCursor(0, 42);
-  if(curr_time.hours < 10){
+  if(time_ptr->hours < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(curr_time.hours);
+  transferBigNumInt(time_ptr->hours);
   transferSpecialBigChar(':');
-  if(curr_time.minutes < 10){
+  if(time_ptr->minutes < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(curr_time.minutes);
+  transferBigNumInt(time_ptr->minutes);
   setCursor(9, 52);
   transferSpecialChar(':');
-  if(curr_time.seconds < 10){
+  if(time_ptr->seconds < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(curr_time.seconds);
+  transferSmallNumInt(time_ptr->seconds);
 
 
   // drawLine(63);
@@ -178,6 +181,17 @@ void buildWatchFace_LCD(){
   // drawLine(83);
   // drawLine(90);
 
+  // NOTE: added this for demo to show step count
+  drawLine(82);
+  setCursor(0, 84);
+  transferChar('s');
+  transferChar('t');
+  transferChar('e');
+  transferChar('p');
+  transferChar('s');
+  transferSpecialChar(':');
+  Cursor.row++;
+  transferSmallNumInt(steps);
 }
 
 /**************************************************************************/
@@ -190,7 +204,7 @@ void buildWatchFace_LCD(){
 */
 /**************************************************************************/
 
-void buildRun_LCD(){
+void buildRun_LCD(rtc_time_t * time_ptr){
   clearLines(13,96);
   setCursor(0, 14);
   transferChar('t');
@@ -199,21 +213,21 @@ void buildRun_LCD(){
   transferChar('e');
 
   setCursor(0, 28);
-  if(curr_time.minutes < 10){
+  if(time_ptr->minutes < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(curr_time.minutes);
+  transferBigNumInt(time_ptr->minutes);
   transferSpecialBigChar(':');
-  if(curr_time.seconds < 10){
+  if(time_ptr->seconds < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(curr_time.seconds);
+  transferBigNumInt(time_ptr->seconds);
   setCursor(9, 38);
   transferSpecialChar(':');
-  if(curr_time.milli < 10){
+  if(time_ptr->milli < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(curr_time.milli);
+  transferSmallNumInt(time_ptr->milli);
 
   drawLine(68);
 

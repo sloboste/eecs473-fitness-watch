@@ -2,16 +2,15 @@ PROJECT_NAME = $(shell basename "$(realpath ./)")
 
 APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
 APPLICATION_SRCS += softdevice_handler.c
-APPLICATION_SRCS += ble_advdata.c
-APPLICATION_SRCS += ble_conn_params.c
+#APPLICATION_SRCS += ble_advdata.c
+#APPLICATION_SRCS += ble_conn_params.c
 APPLICATION_SRCS += ble_debug_assert_handler.c
-APPLICATION_SRCS += ble_srv_common.c
+#APPLICATION_SRCS += ble_srv_common.c
 APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += app_util_platform.c
-APPLICATION_SRCS += ble_hrs.c
-APPLICATION_SRCS += ble_bas.c
 
 APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += nrf_drv_clock.c # FIXME remove when ble
 
 #APPLICATION_SRCS += nrf_drv_twi.c
 
@@ -22,11 +21,13 @@ APPLICATION_SRCS += app_timer_appsh.c
 #APPLICATION_SRCS += nrf_drv_gpiote.c
 #APPLICATION_SRCS += nrf_drv_common.c
 
-APPLICATION_SRCS += battery_service.c
-APPLICATION_SRCS += ble_config.c
-APPLICATION_SRCS += gps_service.c 
-APPLICATION_SRCS += heart_rate_service.c 
-APPLICATION_SRCS += ped_service.c 
+#APPLICATION_SRCS += ble_hrs.c
+#APPLICATION_SRCS += ble_bas.c
+#APPLICATION_SRCS += battery_service.c
+#APPLICATION_SRCS += ble_config.c
+#APPLICATION_SRCS += gps_service.c 
+#APPLICATION_SRCS += heart_rate_service.c 
+#APPLICATION_SRCS += ped_service.c 
 APPLICATION_SRCS += timer_config.c 
 APPLICATION_SRCS += scheduler_config.c 
 #APPLICATION_SRCS += gps.c 
@@ -39,6 +40,12 @@ APPLICATION_SRCS += mpu.c
 
 #APPLICATION_SRCS += SEGGER_RTT.c
 #APPLICATION_SRCS += SEGGER_RTT_printf.c
+
+APPLICATION_SRCS += spi_driver.c
+APPLICATION_SRCS += lcd_driver.c
+APPLICATION_SRCS += globals.c
+
+APPLICATION_SRCS += time_keeper.c
 
 
 ifndef TARGET
@@ -63,6 +70,8 @@ SOURCE_PATHS += ../../platform/
 #LIBRARY_PATHS += ./ ../../platform/RTT/
 #SOURCE_PATHS += ../../platform/RTT/
 
+LIBRARY_PATHS += ../../lib/
+SOURCE_PATHS += ../../lib/
 LIBRARY_PATHS += ../../lib/ble/
 SOURCE_PATHS += ../../lib/ble/
 #LIBRARY_PATHS +=  ../../lib/gps/
@@ -73,8 +82,10 @@ SOURCE_PATHS += ../../lib/ble/
 #SOURCE_PATHS += ../../lib/i2c/
 LIBRARY_PATHS += ../../lib/imu/
 SOURCE_PATHS += ../../lib/imu/
-#LIBRARY_PATHS += ../../lib/lcd/
-#SOURCE_PATHS += ../../lib/lcd/
+LIBRARY_PATHS += ../../lib/lcd/
+SOURCE_PATHS += ../../lib/lcd/
+LIBRARY_PATHS += ../../lib/rtc/
+SOURCE_PATHS += ../../lib/rtc/
 LIBRARY_PATHS += ../../lib/scheduler/
 SOURCE_PATHS += ../../lib/scheduler/
 #LIBRARY_PATHS += ../../lib/spi/
