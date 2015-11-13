@@ -2,7 +2,12 @@
 
 #define LCD_DRIVER_H
 
-#include "globals.h"
+//#include "globals.h"
+#include <stdint.h>
+
+#include "time_keeper.h"
+
+
 /* ************** */
 /* LCD Dimensions */
 /* ************** */
@@ -95,7 +100,7 @@ void buildGPS_LCD();
 void buildTimer_LCD();
 void buildRun_LCD();
 void buildTopBar_LCD();
-void buildWatchFace_LCD();
+void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps);
 
 /* ************** */
 /* Test Functions */

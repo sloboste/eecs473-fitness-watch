@@ -7,7 +7,7 @@
 #include "twi_master.h"
 #include "inv_mpu.h"
 #include "nrf_delay.h"
-#include "SEGGER_RTT.h"
+//#include "SEGGER_RTT.h"
 
 /* The following functions must be defined for this platform:
  * i2c_write(unsigned char slave_addr, unsigned char reg_addr,
@@ -588,7 +588,7 @@ static int setup_compass(void);
 static int set_int_enable(unsigned char enable)
 {
     unsigned char tmp;
-    SEGGER_RTT_printf(0, "IZ DMP ON: %d\r\n", st->chip_cfg.dmp_on);
+    //SEGGER_RTT_printf(0, "IZ DMP ON: %d\r\n", st->chip_cfg.dmp_on);
     if (st->chip_cfg.dmp_on) {
         if (enable)
             //tmp = BIT_DMP_INT_EN;
@@ -598,7 +598,7 @@ static int set_int_enable(unsigned char enable)
         if (i2c_write(st->hw->addr, st->reg->int_enable, 1, &tmp))
             return -1;
         st->chip_cfg.int_enable = tmp;
-        SEGGER_RTT_printf(0, "int_EN: %d\r\n", st->chip_cfg.int_enable);
+        //SEGGER_RTT_printf(0, "int_EN: %d\r\n", st->chip_cfg.int_enable);
     } else {
         if (!st->chip_cfg.sensors)
             return -1;

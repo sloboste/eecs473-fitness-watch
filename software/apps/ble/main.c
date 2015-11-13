@@ -87,7 +87,7 @@ void gpio_init(void)
 int main(void)
 {
     gpio_init();
-    timers_init();
+    timers_init(false);
     ble_init();
 
     // Wait for button press
@@ -129,11 +129,12 @@ int main(void)
         bas_update(battery_level--);
         hrs_update(heart_rate_bpm++);
         
-        //gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
-        //ble_gps_update_location(gps_info.latitude, 16);
+        gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
+        ble_gps_update_latitude(gps_info.latitude, 16);
         //ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
         //ble_gps_update_location(gps_info.longitude, 16);
 
+        /*
         if (x) {
             ble_gps_update_latitude(lat1, strlen(lat1));
             ble_gps_update_longitude(long1, strlen(long1));
@@ -148,6 +149,7 @@ int main(void)
         ble_ped_update_step_count(pval--);
         pstatus ^= 0x1;
         ble_ped_update_status(pstatus);
+        */
         // ---
     }
 }

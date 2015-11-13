@@ -1,14 +1,15 @@
 #ifndef SPI_DRIVER_H
-
 #define SPI_DRIVER_H
+
+#include "blue_dev_board.h"
 
 // Pin selections
 //#define LED_PIN 25
-#define SPI_SCK_PIN 29
-#define SPI_MISO_PIN 28
-#define SPI_MOSI_PIN 25
-#define SPI_SS_PIN 24
-#define NRF_SPI NRF_SPI0
+//#define SPI_SCK_PIN 29
+//#define SPI_MISO_PIN 28
+//#define SPI_MOSI_PIN 25
+//#define SPI_SS_PIN 20
+//#define NRF_SPI NRF_SPI0
 
 //Initializes and enables spi
 void spi_init();

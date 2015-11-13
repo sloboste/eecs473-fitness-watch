@@ -28,13 +28,21 @@ uint32_t ble_ped_update_step_count(uint32_t step_count)
 {
     uint32_t err_code = NRF_SUCCESS;
 
+    // Reverse byte order
+    uint8_t step_count_reversed[4] = {
+        ((uint8_t *) &step_count)[3],
+        ((uint8_t *) &step_count)[2],
+        ((uint8_t *) &step_count)[1],
+        ((uint8_t *) &step_count)[0],
+    };
+
     // Build a characteristic value
     ble_gatts_value_t gatts_value;
     memset(&gatts_value, 0, sizeof(gatts_value));
     
     gatts_value.len = STEP_COUNT_LEN; 
     gatts_value.offset = 0;
-    gatts_value.p_value = (uint8_t *) &step_count; 
+    gatts_value.p_value = (uint8_t *) step_count_reversed; 
     
     // Set the new characteristic value 
     err_code = sd_ble_gatts_value_set(
