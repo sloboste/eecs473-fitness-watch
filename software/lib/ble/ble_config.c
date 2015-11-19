@@ -18,7 +18,8 @@
 //#include "battery_service.h"
 //#include "heart_rate_service.h"
 //#include "gps_service.h"
-#include "ped_service.h"
+//#include "ped_service.h"
+#include "watch_service.h"
 #include "timer_config.h" // FIXME APP_TIMER_PRESCALER...
 //#define APP_TIMER_PRESCALER 0
 
@@ -234,7 +235,8 @@ static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
     //ble_hrs_on_ble_evt(&hrs_handle, ble_evt_ptr);
     ///ble_bas_on_ble_evt(&bas_handle, ble_evt_ptr);
     //ble_gps_on_ble_evt(ble_evt_ptr);
-    ble_ped_on_ble_evt(ble_evt_ptr);
+    //ble_ped_on_ble_evt(ble_evt_ptr);
+    ble_watch_on_ble_evt(ble_evt_ptr);
 }
 
 
@@ -266,7 +268,7 @@ static void ble_stack_init(void)
 /**
  * Initialize all of the services for the watch.
  */
-static void services_init(void)
+static void services_init(ble_watch_request_handler_t handler)
 {
     uint32_t err_code;
 
@@ -283,7 +285,11 @@ static void services_init(void)
     //APP_ERROR_CHECK(err_code);
 
     // Init pedometer service
-    err_code = ble_ped_init();
+    //err_code = ble_ped_init();
+    //APP_ERROR_CHECK(err_code);
+
+    // Init watch request reply service
+    err_code = ble_watch_init(handler);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -291,12 +297,12 @@ static void services_init(void)
 /**
  * Initialize all of the BLE functionality for the watch.
  */
-void ble_init(void)
+void ble_init(ble_watch_request_handler_t handler)
 {
 //nrf_gpio_pin_clear(PIN_LED_3);
     ble_stack_init();
     gap_params_init();
     advertising_init();
     conn_params_init();
-    services_init();
+    services_init(handler);
 }
