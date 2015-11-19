@@ -5,6 +5,7 @@
 #ifndef __BLE_CONFIG_H
 #define __BLE_CONFIG_H
 
+#include "watch_service.h"
 // TODO add include for ble_gap stuff
 //#include "???"
 
@@ -43,7 +44,7 @@
  * NOTE: the timers must have already been set up properly otherwise the
  *       softdevice won't work properly.
  */
-extern void ble_init(void);
+extern void ble_init(ble_watch_request_handler_t handler);
 
 /**
  * Call this to start sending BLE advertising packets.

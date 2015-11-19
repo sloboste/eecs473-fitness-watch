@@ -51,6 +51,8 @@
 //#define KNOT_IN_METERS_PER_SECOND 0.514444F
 
 
+#define GPS_LAT_LONG_LEN    20
+
 // Information from the GPS module
 typedef struct gps_info_struct {
     // Altitude (meters) relative to sea level

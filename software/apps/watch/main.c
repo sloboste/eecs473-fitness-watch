@@ -1,13 +1,14 @@
 #include <stdbool.h>
 #include <stdint.h>
+//#include <stdlib.h> // TODO memset include file
 
-#include "nrf_drv_clock.h"// FIXME remove when using ble
+//#include "nrf_drv_clock.h"// FIXME remove when using ble
 
 #include "nrf.h"
 #include "nrf_gpio.h"
 #include "softdevice_handler.h"
 
-#include "nrf_delay.h"
+//#include "nrf_delay.h"
 
 #include "blue_dev_board.h"
 //#include "green_dev_board.h"
@@ -16,17 +17,10 @@
 #include "scheduler_config.h"
 
 #include "ble_config.h"
-#include "ped_service.h"
-/*
-#include "heart_rate_service.h"
-#include "battery_service.h"
-#include "gps_service.h"
-*/
+#include "watch_service.h"
+#include "packets.h"
 
 #include "mpu.h"
-//#include "inv_mpu.h" // FIXME remove
-//#include "SEGGER_RTT.h" // FIXME remove
-
 #include "gps.h"
 
 #include "spi_driver.h"
@@ -38,6 +32,13 @@
 
 static rtc_time_t time;
 static gps_info_t gps_info;
+static uint32_t step_count = 0;
+static uint8_t battery_level = 0;
+static uint16_t heart_rate_bpm = 0;
+static uint8_t packet_buf[PACKET_BUF_LEN];
+
+static app_timer_id_t timer_id_1hz;
+
 
 /**
  * Handle when an error ocurrs during runtime.
@@ -96,48 +97,121 @@ static void increment_time()
     CRITICAL_REGION_EXIT();                                                     
 }
 
-static app_timer_id_t timer_id_1hz;
 
 void task_1hz(void * arg_ptr)
 {
-    static int i = 0;
-    static uint32_t step_count = 0;
-    //static uint8_t battery_level = 100;
-    //static uint16_t heart_rate_bpm = 1000;
-
-    nrf_gpio_pin_toggle(PIN_LED_1);
+    nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
 
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
     //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
 
-    increment_time();
     step_count = get_steps();
-    buildWatchFace_LCD(&time, get_steps());
+    --battery_level; // FIXME do real stuff
+    ++heart_rate_bpm; // FIXME do real stuff
+
+    increment_time(); // FIXME do real stuff
+
+    buildWatchFace_LCD(&time, step_count);
     refresh();
 
-    ble_ped_update_step_count(step_count);
-    ble_ped_update_status(1);
-    /*
-    bas_update(battery_level--);
-    hrs_update(heart_rate_bpm++);
-    */
-    
 }
 
+/**
+ * Handle request packets sent by the phone.
+ */
+static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
+{
+    nrf_gpio_pin_toggle(PIN_LED_4); // FIXME remove
+
+    uint8_t packet_type;
+    packet_type = packets_decode_request_packet(data, (uint8_t) len);
+
+    // TODO finish
+    switch (packet_type) {
+        case PACKET_TYPE_REQUEST_PED_STEP_COUNT:
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            uint32_t step_count_rev = __REV(step_count); // Flip endianness
+            packets_build_reply_packet(
+                packet_buf,
+                PACKET_TYPE_REPLY_PED_STEP_COUNT,
+                (void *) &step_count_rev,
+                sizeof(step_count),
+                true); 
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+        case PACKET_TYPE_REQUEST_GPS_DATA: 
+            // Latitude
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf,
+                PACKET_TYPE_REPLY_GPS_LATITUDE,
+                (void *) gps_info.latitude,
+                sizeof(gps_info.latitude),
+                true); 
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            // Longitude
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_GPS_LONGITUDE,
+                (void *) gps_info.longitude,
+                sizeof(gps_info.latitude),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            // Speed
+            uint32_t speed_rev = __REV(gps_info.speed); // Flip endianness
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_GPS_SPEED,
+                (void *) &speed_rev,
+                sizeof(gps_info.speed),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+        case PACKET_TYPE_REQUEST_GPS_LOG: 
+            // TODO
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            break;
+        case PACKET_TYPE_REQUEST_BATTERY_LEVEL:
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_BATTERY_LEVEL,
+                (void *) &battery_level,
+                sizeof(battery_level),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+        case PACKET_TYPE_REQUEST_HEART_RATE:
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            uint32_t heart_rate_bpm_rev = __REV16(heart_rate_bpm); // Flip endianness
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_HEART_RATE,
+                (void *) &heart_rate_bpm_rev,
+                sizeof(heart_rate_bpm_rev),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+        default: // Unrecognized request
+            // TODO
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+    }
+    return 0; // FIXME
+}
 
 /**
  * Watch app.
  */
 int main(void)
 {
-    // FIXME remove
-    //SEGGER_RTT_ConfigUpBuffer(0, NULL, NULL, 0, SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL);
-    //SEGGER_RTT_WriteString(0, "SEGGER Real-Time-Terminal Sample\r\n\r\n"); 
-
     // FIXME won't need this when using ble
-    uint32_t err_code = nrf_drv_clock_init(NULL);                               
-    APP_ERROR_CHECK(err_code);                                                  
-    nrf_drv_clock_lfclk_request();                                              
+    //uint32_t err_code = nrf_drv_clock_init(NULL);                               
+    //APP_ERROR_CHECK(err_code);                                                  
+    //nrf_drv_clock_lfclk_request();                                              
     //-----
 
     // Init gpio pins
@@ -148,7 +222,7 @@ int main(void)
     scheduler_init();
 
     // Init BLE
-    ble_init();
+    ble_init(request_handler);
 
     // Init IMU
     mympu_open(200);
