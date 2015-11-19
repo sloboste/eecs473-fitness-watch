@@ -2,7 +2,7 @@
 #include <stdint.h>
 //#include <stdlib.h> // TODO memset include file
 
-#include "nrf_drv_clock.h"// FIXME remove when using ble
+//#include "nrf_drv_clock.h"// FIXME remove when using ble
 
 #include "nrf.h"
 #include "nrf_gpio.h"
@@ -37,11 +37,8 @@ static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
-// FIXME remove
-
-//---
-
 static app_timer_id_t timer_id_1hz;
+
 
 /**
  * Handle when an error ocurrs during runtime.
@@ -212,9 +209,9 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
 int main(void)
 {
     // FIXME won't need this when using ble
-    uint32_t err_code = nrf_drv_clock_init(NULL);                               
-    APP_ERROR_CHECK(err_code);                                                  
-    nrf_drv_clock_lfclk_request();                                              
+    //uint32_t err_code = nrf_drv_clock_init(NULL);                               
+    //APP_ERROR_CHECK(err_code);                                                  
+    //nrf_drv_clock_lfclk_request();                                              
     //-----
 
     // Init gpio pins
