@@ -63,14 +63,25 @@ static app_timer_id_t timer_id_1hz;
  */
 void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to_low)
 {
+    // TODO finish
     uint32_t pin;
     if ((event_pins_high_to_low >> PIN_BUTTON_1) & 0x1) {
         pin = PIN_LED_2;
+        // Cycle between screens
+        clearDisplay();
         screen_state = get_next_screen_state(screen_state);
+        refresh();
     } else if ((event_pins_high_to_low >> PIN_BUTTON_2) & 0x1) {
         pin = PIN_LED_3;
+        // Select item
+
     } else if ((event_pins_high_to_low >> PIN_BUTTON_3) & 0x1) {
         pin = PIN_LED_4;
+        // On off
+
+        // Begin BLE advertisement
+        advertising_start();
+        
     } else {
         return;
     }
@@ -174,7 +185,7 @@ void task_1hz(void * arg_ptr)
     increment_time(); // FIXME do real stuff
     
     // TODO finish
-    clearDisplay(); // FIXME we don't want to have to clear the display each time. Fix the lcd driver
+    //clearDisplay(); // FIXME we don't want to have to clear the display each time. Fix the lcd driver
     switch (screen_state) {
         case SCREEN_STATE_WATCH_FACE:
             buildWatchFace_LCD(&time, step_count);
@@ -323,9 +334,6 @@ int main(void)
     app_timer_create(&timer_id_1hz, APP_TIMER_MODE_REPEATED, task_1hz);
     app_timer_start(timer_id_1hz, APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER),
                     app_timer_evt_schedule);
-
-    // Begin BLE advertisement
-    advertising_start();
 
     // Main loop
     while (1) {

@@ -51,10 +51,9 @@ extern void ble_init(ble_watch_request_handler_t handler);
  */
 extern void advertising_start(void);
 
-// TODO finish this function
 /**
  * Call this to stop sending BLE advertising packets.
  */
-//void advertising_stop(void);
+void advertising_stop(void);
 
 #endif

@@ -149,6 +149,18 @@ void advertising_start(void)
 }
 
 
+/**
+ * Stop the BLE advertising procedure. 
+ */
+void advertising_stop(void)
+{
+    uint32_t err_code;
+
+    err_code = sd_ble_gap_adv_stop();
+    APP_ERROR_CHECK(err_code);
+}
+
+
 static void conn_params_error_handler(uint32_t nrf_error)
 {
     APP_ERROR_HANDLER(nrf_error);
@@ -215,7 +227,7 @@ static void on_ble_evt(ble_evt_t * ble_evt_ptr)
         case BLE_GAP_EVT_DISCONNECTED:
             ble_current_conn_handle = BLE_CONN_HANDLE_INVALID;
             // FIXME Probably don't want to restart advertising all the time
-            advertising_start(); 
+            //advertising_start(); 
             break;
         default:
             break;
