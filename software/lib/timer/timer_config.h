@@ -16,7 +16,7 @@
 #define APP_TIMER_MAX_TIMERS        6   // FIXME this is arbitrary right now
 
 // Size of the timer operations queue
-#define APP_TIMER_OP_QUEUE_SIZE     2   // FIXME this is arbitrary right now
+#define APP_TIMER_OP_QUEUE_SIZE     6   // FIXME this is arbitrary right now
 
 /**
  * Set up the app timer module for the watch application.

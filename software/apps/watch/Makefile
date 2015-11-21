@@ -2,17 +2,15 @@ PROJECT_NAME = $(shell basename "$(realpath ./)")
 
 APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
 APPLICATION_SRCS += ble_debug_assert_handler.c
-APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += app_util_platform.c
 
-APPLICATION_SRCS += nrf_delay.c
-APPLICATION_SRCS += nrf_drv_clock.c # FIXME remove when ble
+#APPLICATION_SRCS += nrf_drv_clock.c # FIXME remove when ble
 
 #APPLICATION_SRCS += nrf_drv_twi.c
 
+APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += app_scheduler.c
 APPLICATION_SRCS += app_timer_appsh.c
-
 
 APPLICATION_SRCS += softdevice_handler.c
 APPLICATION_SRCS += ble_srv_common.c
@@ -33,13 +31,12 @@ APPLICATION_SRCS += scheduler_config.c
 #APPLICATION_SRCS += gps.c 
 #APPLICATION_SRCS += uart_adapter.c 
 #APPLICATION_SRCS += app_uart.c
-#APPLICATION_SRCS += nrf_drv_gpiote.c
-#APPLICATION_SRCS += nrf_drv_common.c
 
 APPLICATION_SRCS += twi_hw_master.c
 APPLICATION_SRCS += inv_mpu.c
 APPLICATION_SRCS += inv_mpu_dmp_motion_driver.c
 APPLICATION_SRCS += mpu.c
+APPLICATION_SRCS += nrf_delay.c
 
 #APPLICATION_SRCS += SEGGER_RTT.c
 #APPLICATION_SRCS += SEGGER_RTT_printf.c
@@ -47,6 +44,8 @@ APPLICATION_SRCS += mpu.c
 APPLICATION_SRCS += spi_driver.c
 APPLICATION_SRCS += lcd_driver.c
 #APPLICATION_SRCS += globals.c
+
+APPLICATION_SRCS += app_gpiote.c
 
 APPLICATION_SRCS += time_keeper.c
 

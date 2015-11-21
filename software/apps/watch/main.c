@@ -8,8 +8,6 @@
 #include "nrf_gpio.h"
 #include "softdevice_handler.h"
 
-//#include "nrf_delay.h"
-
 #include "blue_dev_board.h"
 //#include "green_dev_board.h"
 
@@ -29,7 +27,27 @@
 #include "app_util_platform.h" // CRITICAL SECTION
 #include "time_keeper.h"
 
+#include "nrf_delay.h"
+#include "app_gpiote.h"
 
+#define SCREEN_STATE_WATCH_FACE     0
+#define SCREEN_STATE_RUN            1
+#define SCREEN_STATE_GPS            2
+#define SCREEN_STATE_TIMER          3
+static uint8_t get_next_screen_state(uint8_t state)
+{
+    // FIXME
+    return !state;
+    /*
+    if (state >= SCREEN_STATE_TIMER) {
+        return SCREEN_STATE_WATCH_FACE;
+    } else {
+        return ++state;
+    }
+    */
+}
+
+static uint8_t screen_state = SCREEN_STATE_WATCH_FACE;
 static rtc_time_t time;
 static gps_info_t gps_info;
 static uint32_t step_count = 0;
@@ -37,7 +55,51 @@ static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
+
 static app_timer_id_t timer_id_1hz;
+
+/**
+ *
+ */
+void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to_low)
+{
+    uint32_t pin;
+    if ((event_pins_high_to_low >> PIN_BUTTON_1) & 0x1) {
+        pin = PIN_LED_2;
+        screen_state = get_next_screen_state(screen_state);
+    } else if ((event_pins_high_to_low >> PIN_BUTTON_2) & 0x1) {
+        pin = PIN_LED_3;
+    } else if ((event_pins_high_to_low >> PIN_BUTTON_3) & 0x1) {
+        pin = PIN_LED_4;
+    } else {
+        return;
+    }
+    nrf_gpio_pin_clear(pin);
+    nrf_delay_ms(100);
+    nrf_gpio_pin_set(pin);
+}
+
+/**
+ *
+ */
+void buttons_init()
+{
+    uint32_t err_code;
+    nrf_gpio_cfg_sense_input(PIN_BUTTON_1, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(PIN_BUTTON_2, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+    nrf_gpio_cfg_sense_input(PIN_BUTTON_3, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+    uint32_t low_to_high_bitmask = 0x00000000;
+    uint32_t high_to_low_bitmask =
+        (1 << PIN_BUTTON_1) + (1 << PIN_BUTTON_2) + (1 << PIN_BUTTON_3);
+    APP_GPIOTE_INIT(1);
+    static app_gpiote_user_id_t gpiote_user_id;
+    err_code = app_gpiote_user_register(
+        &gpiote_user_id, low_to_high_bitmask, high_to_low_bitmask,
+        button_handler);
+    APP_ERROR_CHECK(err_code);
+    err_code = app_gpiote_user_enable(gpiote_user_id);
+    APP_ERROR_CHECK(err_code);
+}
 
 
 /**
@@ -110,10 +172,26 @@ void task_1hz(void * arg_ptr)
     ++heart_rate_bpm; // FIXME do real stuff
 
     increment_time(); // FIXME do real stuff
-
-    buildWatchFace_LCD(&time, step_count);
+    
+    // TODO finish
+    clearDisplay(); // FIXME we don't want to have to clear the display each time. Fix the lcd driver
+    switch (screen_state) {
+        case SCREEN_STATE_WATCH_FACE:
+            buildWatchFace_LCD(&time, step_count);
+            break;
+        case SCREEN_STATE_RUN:
+            buildRun_LCD();
+            break;
+        case SCREEN_STATE_GPS:
+            buildGPS_LCD();
+            break;
+        case SCREEN_STATE_TIMER:
+            //buildTimer_LCD();
+            break;
+        default:
+            break;
+    }
     refresh();
-
 }
 
 /**
@@ -223,6 +301,10 @@ int main(void)
 
     // Init BLE
     ble_init(request_handler);
+
+    // Init buttons
+    buttons_init();
+    //nrf_gpio_pin_clear(PIN_LED_2); // FIXME remove
 
     // Init IMU
     mympu_open(200);

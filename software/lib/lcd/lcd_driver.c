@@ -1,4 +1,6 @@
 /*********************************************************************
+FIXME This large comment is very unnecessary...
+
 This is a library built specifically for the EIR watch. The 
 capabilities of this library are limited to only the necessary 
 functions required to get the desired functionality from the LCD.
