@@ -41,13 +41,13 @@ APPLICATION_SRCS += nrf_delay.c
 #APPLICATION_SRCS += SEGGER_RTT.c
 #APPLICATION_SRCS += SEGGER_RTT_printf.c
 
+APPLICATION_SRCS += charData.c
 APPLICATION_SRCS += spi_driver.c
 APPLICATION_SRCS += lcd_driver.c
+APPLICATION_SRCS += lcd_builder.c
 #APPLICATION_SRCS += globals.c
 
 APPLICATION_SRCS += app_gpiote.c
-
-APPLICATION_SRCS += time_keeper.c
 
 
 ifndef TARGET
@@ -86,8 +86,6 @@ LIBRARY_PATHS += ../../lib/imu/
 SOURCE_PATHS += ../../lib/imu/
 LIBRARY_PATHS += ../../lib/lcd/
 SOURCE_PATHS += ../../lib/lcd/
-LIBRARY_PATHS += ../../lib/rtc/
-SOURCE_PATHS += ../../lib/rtc/
 LIBRARY_PATHS += ../../lib/scheduler/
 SOURCE_PATHS += ../../lib/scheduler/
 #LIBRARY_PATHS += ../../lib/spi/

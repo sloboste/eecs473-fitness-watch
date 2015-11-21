@@ -23,9 +23,9 @@
 
 #include "spi_driver.h"
 #include "lcd_driver.h"
+#include "lcd_builder.h"
 
 #include "app_util_platform.h" // CRITICAL SECTION
-#include "time_keeper.h"
 
 #include "nrf_delay.h"
 #include "app_gpiote.h"
@@ -48,7 +48,6 @@ static uint8_t get_next_screen_state(uint8_t state)
 }
 
 static uint8_t screen_state = SCREEN_STATE_WATCH_FACE;
-static rtc_time_t time;
 static gps_info_t gps_info;
 static uint32_t step_count = 0;
 static uint8_t battery_level = 0;
@@ -143,29 +142,29 @@ void gpio_init(void)
 static void set_time(uint8_t hours, uint8_t minutes, uint8_t seconds)
 {
     CRITICAL_REGION_ENTER();                                                    
-    time.seconds = seconds;
-    time.minutes = minutes;
-    time.hours = hours;
+    TIME.seconds = seconds;
+    TIME.minutes = minutes;
+    TIME.hours = hours;
     CRITICAL_REGION_EXIT();                                                     
 }
 
 static void increment_time()
 {                                                 
     CRITICAL_REGION_ENTER();                                                    
-    ++time.seconds;                                                          
-    if (time.seconds == 60) {                                              
-        ++time.minutes;                                                    
-        time.seconds = 0;                                                  
+    ++TIME.seconds;                                                          
+    if (TIME.seconds == 60) {                                              
+        ++TIME.minutes;                                                    
+        TIME.seconds = 0;                                                  
     }                                                                           
-    if (time.minutes == 60) {                                              
-        ++time.hours;                                                      
-        time.minutes = 0;                                                  
+    if (TIME.minutes == 60) {                                              
+        ++TIME.hours;                                                      
+        TIME.minutes = 0;                                                  
     }                                                                           
-    if (time.hours == 24) {                                                
-        time.seconds = 0;                                                  
-        time.minutes = 0;                                                  
-        time.hours = 0;                                                    
-        time.milli = 0;                                                    
+    if (TIME.hours == 24) {                                                
+        TIME.seconds = 0;                                                  
+        TIME.minutes = 0;                                                  
+        TIME.hours = 0;                                                    
+        TIME.milli = 0;                                                    
     }                                                                           
     CRITICAL_REGION_EXIT();                                                     
 }
@@ -188,7 +187,7 @@ void task_1hz(void * arg_ptr)
     //clearDisplay(); // FIXME we don't want to have to clear the display each time. Fix the lcd driver
     switch (screen_state) {
         case SCREEN_STATE_WATCH_FACE:
-            buildWatchFace_LCD(&time, step_count);
+            buildWatchFace_LCD();
             break;
         case SCREEN_STATE_RUN:
             buildRun_LCD();

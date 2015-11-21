@@ -35,8 +35,6 @@ Written by Joshua Kaufman for the EIR watch by The Watchmen.
 
 //#include "led.h"
 
-#include "time_keeper.h"
-
 
 /**************************************************************************
     Sharp Memory Display Connector
@@ -71,7 +69,6 @@ uint8_t bitmap[(LCD_WIDTH * LCD_HEIGHT)/8] = { 0 };
     @         left position of the LCD.
 */
 /**************************************************************************/ 
-
 void initCursor(){
   Cursor.line = 0;
   Cursor.row = 0;

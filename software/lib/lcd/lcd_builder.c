@@ -8,49 +8,6 @@
 #include "spi_driver.h"
 #include "charData.h"
 
-#include "time_keeper.h"
-
-
-/* ************* */
-/* Struct Setups */
-/* ************* */
-
-struct CURSOR {
-	uint8_t line;
-	uint8_t row;
-}Cursor;
-
-struct GPS_LCD_DATA {
-	double longitude;
-	double latitude;
-	int altitude;
-	int velocity;
-}GPS_DATA;
-
-struct RUN_LCD_DATA {
-	uint16_t meters;
-
-	uint8_t pace_minutes;
-	uint8_t pace_seconds;
-
-	uint8_t timer_hours;
-	uint8_t timer_minutes;
-	uint8_t timer_seconds;
-
-	bool startFlag;
-}RUN_DATA;
-
-struct TIMER_LCD_DATA {
-	double lapTimes[4];
-	int timer;
-	int numLaps;
-}TIMER_DATA;
-
-struct TOP_BAR_DATA {
-	int time;
-	uint8_t batLevel;
-	bool flag;
-}TIMER_BAR;
 
 /**************************************************************************/
 /*!
@@ -124,7 +81,7 @@ void buildTimer_LCD();
 */
 /**************************************************************************/  
 
-void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
+void buildWatchFace_LCD() {
   //clearDisplay();
   setCursor(0,1);
   transferBatteryLevel(3);
@@ -137,21 +94,21 @@ void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
   transferSmallNumInt(15);
 
   setCursor(0, 42);
-  if(time_ptr->hours < 10){
+  if(TIME.hours < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(time_ptr->hours);
+  transferBigNumInt(TIME.hours);
   transferSpecialBigChar(':');
-  if(time_ptr->minutes < 10){
+  if(TIME.minutes < 10){
     transferBigNumInt(0);
   }
-  transferBigNumInt(time_ptr->minutes);
+  transferBigNumInt(TIME.minutes);
   setCursor(9, 52);
   transferSpecialChar(':');
-  if(time_ptr->seconds < 10){
+  if(TIME.seconds < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(time_ptr->seconds);
+  transferSmallNumInt(TIME.seconds);
 
   // NOTE: added this for demo to show step count
   drawLine(82);
@@ -163,7 +120,7 @@ void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
   transferChar('s');
   transferSpecialChar(':');
   Cursor.row++;
-  transferSmallNumInt(steps);
+  transferSmallNumInt(0);
 }
 
 /**************************************************************************/
@@ -176,7 +133,7 @@ void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
 */
 /**************************************************************************/
 
-void buildRun_LCD(rtc_time_t * time_ptr){
+void buildRun_LCD(){
 	buildTopBar_LCD();
   clearLines(13,96);
   setCursor(0, 14);
@@ -273,19 +230,13 @@ void buildTopBar_LCD(){
   transferChar('r');
   Cursor.row++;
 
-  if(time_ptr->hours < 10){
+  if(TIME.hours < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(time_ptr->minutes);
+  transferSmallNumInt(TIME.minutes);
   transferSpecialChar(':');
-  if(time_ptr->minutes < 10){
+  if(TIME.minutes < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(time_ptr->seconds);
+  transferSmallNumInt(TIME.seconds);
 }
-
-void buildGPS_LCD();
-void buildTimer_LCD();
-void buildRun_LCD();
-void buildTopBar_LCD();
-void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps);

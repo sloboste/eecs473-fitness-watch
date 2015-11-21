@@ -5,8 +5,6 @@
 //#include "globals.h"
 #include <stdint.h>
 
-#include "time_keeper.h"
-
 
 /* ************** */
 /* LCD Dimensions */
@@ -14,6 +12,11 @@
 
 #define LCD_WIDTH       (96)
 #define LCD_HEIGHT      (96) 
+
+struct CURSOR {
+	uint8_t line;
+	uint8_t row;
+}Cursor;
 
 /* ************** */
 /* Init Functions */
