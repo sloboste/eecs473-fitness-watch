@@ -175,7 +175,7 @@ void transferSpecialBigChar(char c){
   size = 19;
   if (c == ':')
   {
-    offset = 10;
+    offset = 11;
   }
   for (i = 0; i < size; i++){
     transferToBitmap(bignums[19*2*offset+i]);
@@ -276,6 +276,12 @@ void transferBigNumInt(int num){
   }
   for (i = 0; i < numLength-1; i++){
     divisor = divisor * 10;
+  }
+  if (num == 99999)
+  {
+    divisor = 1;
+    numLength = 1;
+    realNum = 10
   }
   for (i = 0; i < numLength; i++){
     realNum = num/divisor;
