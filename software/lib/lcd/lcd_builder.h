@@ -25,6 +25,12 @@ struct GPS_LCD_DATA {
 }GPS_DATA;
 
 struct RUN_LCD_DATA {
+    uint16_t steps;
+    uint16_t yesterdaySteps;
+    uint8_t goal[5];
+}RUN_DATA;
+
+struct STEPS_LCD_DATA {
     uint16_t meters;
 
     uint8_t pace_minutes;
@@ -35,7 +41,7 @@ struct RUN_LCD_DATA {
     uint8_t timer_seconds;
 
     bool startFlag;
-}RUN_DATA;
+}STEPS_DATA;
 
 struct TIMER_LCD_DATA {
     double lapTimes[4];
@@ -56,6 +62,7 @@ struct TOP_BAR_DATA {
 
 void buildGPS_LCD();
 void buildTimer_LCD();
+void buildSteps_LCD();
 void buildRun_LCD();
 void buildTopBar_LCD();
 void buildWatchFace_LCD();
