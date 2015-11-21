@@ -37,8 +37,8 @@
 #define SCREEN_STATE_GPS            4
 static uint8_t get_next_screen_state(uint8_t state)
 {
-    if (state >= SCREEN_STATE_STEPS) {
-        return SCREEN_STATE_TIMER;
+    if (state >= SCREEN_STATE_GPS) {
+        return SCREEN_STATE_WATCH_FACE;
     } else {
         return ++state;
     }

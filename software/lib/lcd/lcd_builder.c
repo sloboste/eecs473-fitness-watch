@@ -23,8 +23,8 @@ void initStructs(){
   // GPS
   GPS_DATA.longitude = "012 23.5678 S";
   GPS_DATA.latitude = "98 87.5432 W";
-  GPS_DATA.altitude = 0;
-  GPS_DATA.ground_speed = 0;
+  GPS_DATA.altitude = 5898;
+  GPS_DATA.ground_speed = 23;
 
   // RUN - DONE
 	RUN_DATA.meters = 1260;
@@ -76,58 +76,75 @@ void initStructs(){
 */
 /**************************************************************************/  
 
-  void buildGPS_LCD(){
-  buildTopBar_LCD();
-  clearLines(13,96);
-  setCursor(0, 14);
+// TODO make this look pretty
+void buildGPS_LCD(){
+    buildTopBar_LCD();
+    clearLines(13,96);
+    setCursor(0, 14);
 
-  transferChar('g');
-  transferChar('p');
-  transferChar('s');
-  Cursor.row++;
+    transferChar('g');
+    transferChar('p');
+    transferChar('s');
+    Cursor.row++;
 
-  transferChar('c');
-  transferChar('o');
-  transferChar('o');
-  transferChar('r');
-  transferChar('d');
-  transferChar('s');
-  transferSpecialChar(':');
+    transferChar('c');
+    transferChar('o');
+    transferChar('o');
+    transferChar('r');
+    transferChar('d');
+    transferChar('s');
+    transferSpecialChar(':');
 
-  setCursor(0, 28);
-  transferSmallNumInt((int)GPS_DATA.longitude[0]);
-  transferSmallNumInt((int)GPS_DATA.longitude[1]);
-  transferSmallNumInt((int)GPS_DATA.longitude[2]);
-  Cursor.row++;
-  transferSmallNumInt((int)GPS_DATA.longitude[4]);
-  transferSmallNumInt((int)GPS_DATA.longitude[5]);
-  transferSpecialChar(GPS_DATA.longitude[6]);
-  transferSmallNumInt((int)GPS_DATA.longitude[7]);
-  transferSmallNumInt((int)GPS_DATA.longitude[8]);
-  transferSmallNumInt((int)GPS_DATA.longitude[9]);
-  transferSmallNumInt((int)GPS_DATA.longitude[10]);
-  Cursor.row++;
-  setCursor(11, 42);
-  transferChar((char)((int)GPS_DATA.longitude[12]+32)));
+    setCursor(0, 28);
+    transferSmallNumInt((int)GPS_DATA.longitude[0]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[1]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[2]-48);
+    Cursor.row++;
+    transferSmallNumInt((int)GPS_DATA.longitude[4]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[5]-48);
+    transferSpecialChar(GPS_DATA.longitude[6]);
+    transferSmallNumInt((int)GPS_DATA.longitude[7]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[8]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[9]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[10]-48);
+    //Cursor.row++;
+    //setCursor(11, 42);
+    transferChar((char)((int)GPS_DATA.longitude[12]+32));
 
-setCursor(0, 56);
-transferSmallNumInt((int)GPS_DATA.longitude[0]);
-transferSmallNumInt((int)GPS_DATA.longitude[1]);
-Cursor.row++;
-transferSmallNumInt((int)GPS_DATA.longitude[3]);
-transferSmallNumInt((int)GPS_DATA.longitude[4]);
-transferSpecialChar(GPS_DATA.longitude[5]);
-transferSmallNumInt((int)GPS_DATA.longitude[6]);
-transferSmallNumInt((int)GPS_DATA.longitude[7]);
-transferSmallNumInt((int)GPS_DATA.longitude[8]);
-transferSmallNumInt((int)GPS_DATA.longitude[9]);
-Cursor.row++;
-transferChar((char)((int)GPS_DATA.longitude[11]+32)));
+    setCursor(0, 42);
+    transferSmallNumInt((int)GPS_DATA.latitude[0]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[1]-48);
+    Cursor.row++;
+    transferSmallNumInt((int)GPS_DATA.latitude[3]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[4]-48);
+    transferSpecialChar(GPS_DATA.latitude[5]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[6]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[7]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[8]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[9]-48);
+    Cursor.row++;
+    transferChar((char)((int)GPS_DATA.latitude[11]+32));
 
-drawLine(70);
+    drawLine(54);
 
+    setCursor(0, 70);
+    transferChar('a');
+    transferChar('l');
+    transferChar('t');
+    transferSpecialChar(':');
+    Cursor.row++;
+    transferSmallNumInt(GPS_DATA.altitude);
 
-  }
+    setCursor(0, 84);
+    transferChar('s');
+    transferChar('p');
+    transferChar('e');
+    transferChar('e');
+    transferChar('d');
+    transferSpecialChar(':');
+    Cursor.row++;
+    transferSmallNumInt(GPS_DATA.ground_speed);
+}
 
 /**************************************************************************/
 /*!
