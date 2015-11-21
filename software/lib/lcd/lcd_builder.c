@@ -154,7 +154,7 @@ void buildRun_LCD(){
     transferBigNumInt(0);
   }
   transferBigNumInt(RUN_DATA.timer_minutes);
-  setCursor(9, 52);
+  setCursor(9, 38);
   transferSpecialChar(':');
   if(RUN_DATA.timer_seconds < 10){
     transferSmallNumInt(0);
@@ -162,7 +162,7 @@ void buildRun_LCD(){
   transferSmallNumInt(RUN_DATA.timer_seconds);
 
 
-  setCursor(0,54);
+  setCursor(8,52);
   if(RUN_DATA.startFlag)
   {
   	transferChar('s');
@@ -206,8 +206,12 @@ void buildRun_LCD(){
   Cursor.row+=2;
   transferSmallNumInt(RUN_DATA.pace_minutes);
   transferSpecialChar(':');
-  transferSmallNumInt(RUN_DATA.pace_seconds);
+  if (RUN_DATA.pace_seconds < 10)
+  {
+    transferSmallNumInt(0);
   }
+  transferSmallNumInt(RUN_DATA.pace_seconds);
+}
 
   /**************************************************************************/
 /*!
@@ -233,10 +237,10 @@ void buildTopBar_LCD(){
   if(TIME.hours < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(TIME.minutes);
+  transferSmallNumInt(TIME.hours);
   transferSpecialChar(':');
   if(TIME.minutes < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(TIME.seconds);
+  transferSmallNumInt(TIME.minutes);
 }
