@@ -138,6 +138,10 @@ void transferSpecialChar(char c){
   {
     offset = 29;
   }
+  if (c == '.')
+  {
+    offset = 30;
+  }
   for (i = 0; i < size; i++){
     transferToBitmap(chars[9*offset+i]);
     Cursor.line++;

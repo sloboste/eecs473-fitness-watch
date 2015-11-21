@@ -109,7 +109,7 @@ void buildTimer_LCD()
   }
   transferBigNumInt(TIMER_DATA.timer_seconds);
   setCursor(9, 38);
-  transferSpecialChar(':');
+  transferSpecialChar('.');
   if(TIMER_DATA.timer_milli < 10){
     transferSmallNumInt(0);
   }
@@ -133,7 +133,7 @@ void buildTimer_LCD()
     transferSmallNumInt(0);
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
-  transferSpecialChar(':');
+  transferSpecialChar('.');
   if(TIMER_DATA.lapTimesMS[0] < 10){
     transferSmallNumInt(0);
   }
@@ -157,7 +157,7 @@ void buildTimer_LCD()
     transferSmallNumInt(0);
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
-  transferSpecialChar(':');
+  transferSpecialChar('.');
   if(TIMER_DATA.lapTimesMS[1] < 10){
     transferSmallNumInt(0);
   }
@@ -181,7 +181,7 @@ void buildTimer_LCD()
     transferSmallNumInt(0);
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
-  transferSpecialChar(':');
+  transferSpecialChar('.');
   if(TIMER_DATA.lapTimesMS[2] < 10){
     transferSmallNumInt(0);
   }
@@ -354,11 +354,14 @@ void buildRun_LCD(){
   clearLines(13,96);
   setCursor(0, 14);
 
+  transferChar('r');
+  transferChar('u');
+  transferChar('n');
+  Cursor.row++;
   transferChar('t');
   transferChar('i');
   transferChar('m');
   transferChar('e');
-  transferChar('r');
 
   setCursor(0, 28);
   if(RUN_DATA.timer_hours < 10){
