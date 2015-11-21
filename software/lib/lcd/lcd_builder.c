@@ -24,14 +24,14 @@ void initStructs(){
   GPS_DATA.velocity =0;
 
   // RUN
-	RUN_DATA.meters = 0;
+	RUN_DATA.meters = 1260;
 
-	RUN_DATA.pace_minutes = 0;
-	RUN_DATA.pace_seconds = 0;
+	RUN_DATA.pace_minutes = 3;
+	RUN_DATA.pace_seconds = 12;
 
-	RUN_DATA.timer_hours = 0;
-	RUN_DATA.timer_minutes = 0;
-	RUN_DATA.timer_seconds = 0;
+	RUN_DATA.timer_hours = 14;
+	RUN_DATA.timer_minutes = 69;
+	RUN_DATA.timer_seconds = 59;
 
 	RUN_DATA.startFlag = false;
 
@@ -42,6 +42,11 @@ void initStructs(){
   TIMER_DATA.lapTimes[3] = 0;
   TIMER_DATA.timer = 0;
   TIMER_DATA.numLaps = 0;
+
+    // TIME FIXME remove
+    TIME.hours = 23;
+    TIME.minutes = 38;
+    TIME.seconds = 3;
 }
 
 /* ******************* */

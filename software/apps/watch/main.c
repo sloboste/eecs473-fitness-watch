@@ -322,6 +322,7 @@ int main(void)
     // Init LCD
     spi_init();
     clearDisplay();
+    initStructs();
     
     // Init GPS
     //gps_init();
