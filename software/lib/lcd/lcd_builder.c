@@ -23,7 +23,7 @@ void initStructs(){
   GPS_DATA.altitude = 0;
   GPS_DATA.velocity =0;
 
-  // RUN
+  // RUN - DONE
 	RUN_DATA.meters = 1260;
 
 	RUN_DATA.pace_minutes = 3;
@@ -48,7 +48,7 @@ void initStructs(){
     TIME.minutes = 38;
     TIME.seconds = 3;
 
-  // RUN
+  // RUN - DONE
   STEPS_DATA.steps = 12345;
   STEPS_DATA.yesterdaySteps = 54321;
   memset(&STEPS_DATA.goal, 4, 5);
@@ -80,7 +80,107 @@ void initStructs(){
 */
 /**************************************************************************/  
 
-void buildTimer_LCD();
+void buildTimer_LCD()
+{
+  buildTopBar_LCD();
+  clearLines(13,96);
+  setCursor(0, 14);
+
+  transferChar('t');
+  transferChar('i');
+  transferChar('m');
+  transferChar('e');
+  transferChar('r');
+
+  setCursor(0, 28);
+  if(TIMER_DATA.timer_minutes < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(TIMER_DATA.timer_minutes);
+  transferSpecialBigChar(':');
+  if(TIMER_DATA.timer_seconds < 10){
+    transferBigNumInt(0);
+  }
+  transferBigNumInt(TIMER_DATA.timer_seconds);
+  setCursor(9, 38);
+  transferSpecialChar(':');
+  if(TIMER_DATA.timer_milli < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.timer_milli);
+
+  drawLine(54)
+
+  setCursor(0, 56);
+
+  transferChar('L');
+  transferSmallNumInt(1);
+  transferSpecialChar(':');
+  Cursor.row++;
+
+  if(TIMER_DATA.lapTimesMin[0] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesSec[0] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesMS[0] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMS[0]);
+
+  drawLine(68);
+
+  setCursor(0, 70);
+  
+  transferChar('L');
+  transferSmallNumInt(2);
+  transferSpecialChar(':');
+  Cursor.row++;
+
+  if(TIMER_DATA.lapTimesMin[1] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesSec[1] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesMS[1] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMS[1]);
+
+  drawLine(82);
+
+  setCursor(0, 84);
+  
+  transferChar('L');
+  transferSmallNumInt(3);
+  transferSpecialChar(':');
+  Cursor.row++;
+
+  if(TIMER_DATA.lapTimesMin[2] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesSec[2] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
+  transferSpecialChar(':');
+  if(TIMER_DATA.lapTimesMS[2] < 10){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(TIMER_DATA.lapTimesMS[2]);
+}
 
 /**************************************************************************/
 /*!

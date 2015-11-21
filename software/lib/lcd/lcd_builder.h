@@ -44,9 +44,13 @@ struct STEPS_LCD_DATA {
 }STEPS_DATA;
 
 struct TIMER_LCD_DATA {
-    double lapTimes[4];
-    int timer;
-    int numLaps;
+    uint8_t lapTimesMin[3];
+    uint8_t lapTimesSec[3];
+    uint8_t lapTimesMS[3];
+
+    uint8_t timer_minutes;
+    uint8_t timer_seconds;
+    uint8_t timer_milli;
 }TIMER_DATA;
 
 struct TOP_BAR_DATA {
