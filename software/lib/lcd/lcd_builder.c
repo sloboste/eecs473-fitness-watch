@@ -47,6 +47,11 @@ void initStructs(){
     TIME.hours = 23;
     TIME.minutes = 38;
     TIME.seconds = 3;
+
+  // RUN
+  steps = 0;
+  yesterdaySteps = 0;
+  goal[5] = {0,0,0,0,0};
 }
 
 /* ******************* */
@@ -76,6 +81,91 @@ void initStructs(){
 /**************************************************************************/  
 
 void buildTimer_LCD();
+
+/**************************************************************************/
+/*!
+    @brief    Macro function which builds the "STEPS" screen on the bitmap.
+    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
+
+    @size     Uses all 12 rows on the bottom 83 lines  
+*/
+/**************************************************************************/  
+
+void buildSteps_LCD()
+{
+  int i;
+  buildTopBar_LCD();
+  clearLines(13,96);
+  setCursor(0, 14);
+
+  transferChar('s');
+  transferChar('t');
+  transferChar('e');
+  transferChar('p');
+  transferChar('s');
+
+  setCursor(1, 28);
+  if(STEPS_DATA.steps < 1000){
+    transferBigNumInt(0);
+  }
+  if(STEPS_DATA.steps < 100){
+    transferBigNumInt(0);
+  }
+  if(STEPS_DATA.steps < 10){
+    transferBigNumInt(0);
+  }
+  if(STEPS_DATA.steps < 1){
+    transferBigNumInt(0);
+  }
+
+  setCursor(4,52);
+  transferChar('o');
+  transferChar('f');
+  Cursor.row++;
+  for (i = 0; i < 5; i++)
+  {
+    transferSmallNumInt(STEPS_DATA.goal[i]);
+  }
+
+  // drawLine(68);
+
+  // setCursor(0, 70);
+  // transferChar('d');
+  // transferChar('i');
+  // transferChar('s');
+  // transferChar('t');
+  // transferSpecialChar(':');
+  // Cursor.row+=2;
+  
+  // // THERE IS A BETTER WAY TO DO THIS
+  // transferSmallNumInt(RUN_DATA.meters/1000);
+  // transferSpecialChar('.');
+  // transferSmallNumInt((RUN_DATA.meters%1000)/100);
+  // transferSmallNumInt((RUN_DATA.meters%100)/10);
+
+  drawLine(82);
+
+  setCursor(0, 84);
+  transferChar('l');
+  transferChar('a');
+  transferChar('s');
+  transferChar('t');
+  transferSpecialChar(':');
+  Cursor.row++;
+  if(STEPS_DATA.yesterdaySteps < 1000){
+    transferSmallNumInt(0);
+  }
+  if(STEPS_DATA.yesterdaySteps < 100){
+    transferSmallNumInt(0);
+  }
+  if(STEPS_DATA.yesterdaySteps < 10){
+    transferSmallNumInt(0);
+  }
+  if(STEPS_DATA.yesterdaySteps < 1){
+    transferSmallNumInt(0);
+  }
+  transferSmallNumInt(STEPS_DATA.yesterdaySteps);
+}
 
 /**************************************************************************/
 /*!
