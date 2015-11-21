@@ -36,12 +36,18 @@ void initStructs(){
 	RUN_DATA.startFlag = false;
 
   // TIMER
-  TIMER_DATA.lapTimes[0] = 0;
-  TIMER_DATA.lapTimes[1] = 0;
-  TIMER_DATA.lapTimes[2] = 0;
-  TIMER_DATA.lapTimes[3] = 0;
-  TIMER_DATA.timer = 0;
-  TIMER_DATA.numLaps = 0;
+  TIMER_DATA.lapTimesMin[0] = 22;
+  TIMER_DATA.lapTimesSec[0] = 59;
+  TIMER_DATA.lapTimesMS[0] = 28;
+  TIMER_DATA.lapTimesMin[1] = 66;
+  TIMER_DATA.lapTimesSec[1] = 30;
+  TIMER_DATA.lapTimesMS[1] = 11;
+  TIMER_DATA.lapTimesMin[2] = 57;
+  TIMER_DATA.lapTimesSec[2] = 38;
+  TIMER_DATA.lapTimesMS[2] = 21;
+  TIMER_DATA.timer_minutes = 23;
+  TIMER_DATA.timer_seconds = 57;
+  TIMER_DATA.timer_milli = 19;
 
     // TIME FIXME remove
     TIME.hours = 23;
@@ -109,11 +115,11 @@ void buildTimer_LCD()
   }
   transferSmallNumInt(TIMER_DATA.timer_milli);
 
-  drawLine(54)
+  drawLine(54);
 
   setCursor(0, 56);
 
-  transferChar('L');
+  transferChar('l');
   transferSmallNumInt(1);
   transferSpecialChar(':');
   Cursor.row++;
@@ -137,7 +143,7 @@ void buildTimer_LCD()
 
   setCursor(0, 70);
   
-  transferChar('L');
+  transferChar('l');
   transferSmallNumInt(2);
   transferSpecialChar(':');
   Cursor.row++;
@@ -161,7 +167,7 @@ void buildTimer_LCD()
 
   setCursor(0, 84);
   
-  transferChar('L');
+  transferChar('l');
   transferSmallNumInt(3);
   transferSpecialChar(':');
   Cursor.row++;

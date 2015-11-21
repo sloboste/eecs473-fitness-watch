@@ -33,12 +33,12 @@
 #define SCREEN_STATE_WATCH_FACE     0
 #define SCREEN_STATE_RUN            1
 #define SCREEN_STATE_STEPS          2
-#define SCREEN_STATE_GPS            3
-#define SCREEN_STATE_TIMER          4 
+#define SCREEN_STATE_TIMER          3 
+#define SCREEN_STATE_GPS            4
 static uint8_t get_next_screen_state(uint8_t state)
 {
     if (state >= SCREEN_STATE_STEPS) {
-        return SCREEN_STATE_WATCH_FACE;
+        return SCREEN_STATE_TIMER;
     } else {
         return ++state;
     }
@@ -78,9 +78,9 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
 
         // Toggle BLE advertisement
         if (advertising) {
-            app_sched_event_put(NULL, 4, advertising_stop);
+            app_sched_event_put(NULL, 0, advertising_stop);
         } else {
-            app_sched_event_put(NULL, 4, advertising_start);
+            app_sched_event_put(NULL, 0, advertising_start);
         }
         advertising = !advertising;
         
@@ -202,7 +202,7 @@ void task_1hz(void * arg_ptr)
             buildGPS_LCD();
             break;
         case SCREEN_STATE_TIMER:
-            //buildTimer_LCD();
+            buildTimer_LCD();
             break;
         default:
             break;
