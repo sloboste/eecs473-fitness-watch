@@ -50,6 +50,7 @@ static uint32_t step_count = 0;
 static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
+static bool advertising = false;
 
 
 static app_timer_id_t timer_id_1hz;
@@ -75,8 +76,13 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
         pin = PIN_LED_4;
         // On off
 
-        // Begin BLE advertisement
-        app_sched_event_put(NULL, 4, advertising_start);
+        // Toggle BLE advertisement
+        if (advertising) {
+            app_sched_event_put(NULL, 4, advertising_stop);
+        } else {
+            app_sched_event_put(NULL, 4, advertising_start);
+        }
+        advertising = !advertising;
         
     } else {
         return;

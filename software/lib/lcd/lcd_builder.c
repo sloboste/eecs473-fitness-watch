@@ -187,13 +187,14 @@ void buildWatchFace_LCD() {
   transferChar('i');
   transferChar('r');
 
-  setCursor(3, 37);
+  setCursor(1, 37);
 
   if(TIME.hours < 10){
     transferBigNumInt(0);
   }
   transferBigNumInt(TIME.hours);
-  transferSpecialBigChar(':');
+  transferBigNumInt(99999); // Big colon
+  //transferSpecialBigChar(':');
   if(TIME.minutes < 10){
     transferBigNumInt(0);
   }
@@ -206,6 +207,7 @@ void buildWatchFace_LCD() {
   // }
   // transferSmallNumInt(TIME.seconds);
 
+    // TODO Make date dynamic
   setCursor(1, 82);
   transferChar('s');
   transferChar('a');

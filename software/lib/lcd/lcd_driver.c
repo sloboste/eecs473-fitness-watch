@@ -281,7 +281,7 @@ void transferBigNumInt(int num){
   {
     divisor = 1;
     numLength = 1;
-    realNum = 10
+    num = 10;
   }
   for (i = 0; i < numLength; i++){
     realNum = num/divisor;
