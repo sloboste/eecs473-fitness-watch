@@ -32,19 +32,16 @@
 
 #define SCREEN_STATE_WATCH_FACE     0
 #define SCREEN_STATE_RUN            1
-#define SCREEN_STATE_GPS            2
-#define SCREEN_STATE_TIMER          3
+#define SCREEN_STATE_STEPS          2
+#define SCREEN_STATE_GPS            3
+#define SCREEN_STATE_TIMER          4 
 static uint8_t get_next_screen_state(uint8_t state)
 {
-    // FIXME
-    return !state;
-    /*
-    if (state >= SCREEN_STATE_TIMER) {
+    if (state >= SCREEN_STATE_STEPS) {
         return SCREEN_STATE_WATCH_FACE;
     } else {
         return ++state;
     }
-    */
 }
 
 static uint8_t screen_state = SCREEN_STATE_WATCH_FACE;
@@ -79,7 +76,7 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
         // On off
 
         // Begin BLE advertisement
-        advertising_start();
+        app_sched_event_put(NULL, 4, advertising_start);
         
     } else {
         return;
@@ -191,6 +188,9 @@ void task_1hz(void * arg_ptr)
             break;
         case SCREEN_STATE_RUN:
             buildRun_LCD();
+            break;
+        case SCREEN_STATE_STEPS:
+            buildSteps_LCD();
             break;
         case SCREEN_STATE_GPS:
             buildGPS_LCD();

@@ -49,9 +49,9 @@ void initStructs(){
     TIME.seconds = 3;
 
   // RUN
-  steps = 0;
-  yesterdaySteps = 0;
-  goal[5] = {0,0,0,0,0};
+  STEPS_DATA.steps = 12345;
+  STEPS_DATA.yesterdaySteps = 54321;
+  memset(&STEPS_DATA.goal, 4, 5);
 }
 
 /* ******************* */
@@ -96,7 +96,7 @@ void buildSteps_LCD()
   int i;
   buildTopBar_LCD();
   clearLines(13,96);
-  setCursor(0, 14);
+  setCursor(0, 20);
 
   transferChar('s');
   transferChar('t');
@@ -104,7 +104,10 @@ void buildSteps_LCD()
   transferChar('p');
   transferChar('s');
 
-  setCursor(1, 28);
+  setCursor(1, 38);
+  if(STEPS_DATA.steps < 10000){
+    transferBigNumInt(0);
+  }
   if(STEPS_DATA.steps < 1000){
     transferBigNumInt(0);
   }
@@ -114,11 +117,9 @@ void buildSteps_LCD()
   if(STEPS_DATA.steps < 10){
     transferBigNumInt(0);
   }
-  if(STEPS_DATA.steps < 1){
-    transferBigNumInt(0);
-  }
+  transferBigNumInt(STEPS_DATA.steps);
 
-  setCursor(4,52);
+  setCursor(4, 66);
   transferChar('o');
   transferChar('f');
   Cursor.row++;
@@ -152,6 +153,9 @@ void buildSteps_LCD()
   transferChar('t');
   transferSpecialChar(':');
   Cursor.row++;
+  if(STEPS_DATA.yesterdaySteps < 10000){
+    transferSmallNumInt(0);
+  }
   if(STEPS_DATA.yesterdaySteps < 1000){
     transferSmallNumInt(0);
   }
@@ -159,9 +163,6 @@ void buildSteps_LCD()
     transferSmallNumInt(0);
   }
   if(STEPS_DATA.yesterdaySteps < 10){
-    transferSmallNumInt(0);
-  }
-  if(STEPS_DATA.yesterdaySteps < 1){
     transferSmallNumInt(0);
   }
   transferSmallNumInt(STEPS_DATA.yesterdaySteps);
