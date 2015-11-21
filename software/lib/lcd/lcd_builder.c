@@ -166,15 +166,16 @@ void buildRun_LCD(){
   }
   transferSmallNumInt(RUN_DATA.timer_seconds);
 
-
-  setCursor(8,52);
+  setCursor(5,52);
   if(RUN_DATA.startFlag)
   {
-  	transferChar('s');
-	  transferChar('t');
-	  transferChar('a');
-	  transferChar('r');
-	  transferChar('t');
+  	transferChar('r');
+	  transferChar('u');
+	  transferChar('n');
+	  transferChar('n');
+	  transferChar('i');
+    transferChar('n');
+    transferChar('g');
   }
   else
   {
@@ -182,6 +183,9 @@ void buildRun_LCD(){
 	  transferChar('t');
 	  transferChar('o');
 	  transferChar('p');
+    transferChar('p');
+    transferChar('e');
+    transferChar('d');
   }
 
   drawLine(68);
