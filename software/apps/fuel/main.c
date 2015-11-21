@@ -48,14 +48,22 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
 }
 
 
+//SCL 8
+//SDA 9
+
 int main(void) {
-    uint16_t per = 0;;
+    uint16_t per = 0;
     uint8_t led = 18;
+    uint8_t led2 = 19;
     // Initialization
     led_init(led);
-    led_on(led);
-    set_SDA();
-    set_SCL();
+    led_off(led);
+    led_init(led2);
+    led_off(led2);
+    //nrf_gpio_pin_dir_set(11, NRF_GPIO_PIN_DIR_OUTPUT);
+    twi_master_sw_init();
+    int count = 0;
+    //nrf_delay_ms(500);
     while(1){
         // set_SDA();
         // set_SCL();
@@ -63,14 +71,33 @@ int main(void) {
         // i2c_start_cond();
         // i2c_write_bit(1);
         // i2c_stop_cond();
-        nrf_delay_ms(3);
+       //nrf_gpio_pin_set(11);
+
+
+        //nrf_delay_ms(1);
+        //led_on(led2);
         per = getSOC();
+        nrf_delay_ms(2);
+
+        count++;
+
+        if (count % 500 == 0)
+            nrf_gpio_pin_toggle(led);
+        //uint8_t led = 18;
+        //led_on(led);
+        //nrf_delay_ms(500);
+        //led_off(led);
+        //nrf_delay_ms(500);
+        //led_on(led);
+        //nrf_delay_ms(10);
         // if(per > 50 && per < 60){
           // while (1) {
-          //   led_on(led);
-          //   nrf_delay_ms(750);
-          //   led_off(led);
-          //   nrf_delay_ms(250);
+            // led_on(led);
+            // nrf_delay_ms(750);
+            // led_off(led);
+            // nrf_delay_ms(250);
+            //nrf_gpio_pin_clear(11);
+           // nrf_delay_ms(1);
         // }
 
     }

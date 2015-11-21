@@ -5,7 +5,7 @@
 // Pin selections
 //#define LED_PIN 25
 
-const uint8_t battery[9*5*2] = {
+const uint8_t batteryAndArrow[9*5*2] = {
 	// 0/4
 	0b00000000, 0b00000000,
 	0b01111111, 0b11111000,

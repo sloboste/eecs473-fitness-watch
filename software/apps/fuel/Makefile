@@ -11,9 +11,10 @@ APPLICATION_SRCS += app_util_platform.c
 APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
-APPLICATION_SRCS += nrf_drv_twi.c
+#APPLICATION_SRCS += nrf_drv_twi.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += app_scheduler.c
+APPLICATION_SRCS += twi_sw_master.c
 
 ifndef TARGET
     TARGET = GREEN_DEV_BOARD
@@ -27,6 +28,12 @@ APPLICATION_SRCS += $(TARGET_LOWER).c
 
 LIBRARY_PATHS += ./ ../../platform/
 SOURCE_PATHS += ../../platform/
+
+LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
+SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated
+
+LIBRARY_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
+SOURCE_PATHS += $(SDK_PATH)/components/drivers_nrf/twi_master/incubated/config
 
 NRF_BASE_PATH ?= ../../nrf5x-base/
 TEMPLATE_PATH ?= $(NRF_BASE_PATH)/nrf51-pure-gcc-setup/template/

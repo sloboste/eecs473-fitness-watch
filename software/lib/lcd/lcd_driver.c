@@ -79,189 +79,6 @@ void initCursor(){
 
 /**************************************************************************/
 /*!
-    @brief    Initializes the data structures for the peripherals. The 
-    @         current value and data types are not necessarily correct
-*/
-/**************************************************************************/  
-
-void initStructs(){
-  // GPS
-  GPS_DATA.longitude = 0;
-  GPS_DATA.latitude = 0;
-  GPS_DATA.altitude = 0;
-  GPS_DATA.velocity =0;
-
-  // RUN
-  RUN_DATA.dist = 0;
-  RUN_DATA.pace = 0;
-  RUN_DATA.timer = 0;
-
-  // TIMER
-  TIMER_DATA.lapTimes[0] = 0;
-  TIMER_DATA.lapTimes[1] = 0;
-  TIMER_DATA.lapTimes[2] = 0;
-  TIMER_DATA.lapTimes[3] = 0;
-  TIMER_DATA.timer = 0;
-  TIMER_DATA.numLaps = 0;
-}
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "GPS" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/  
-
-  void buildGPS_LCD(){
-
-  }
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TIMER" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines  
-*/
-/**************************************************************************/  
-
-void buildTimer_LCD();
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "Watch Face" screen on the 
-    @         bitmap.
-
-    @size     Uses all 12 rows on all 96 lines  
-*/
-/**************************************************************************/  
-
-void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps) {
-  //clearDisplay();
-  setCursor(0,1);
-  transferBatteryLevel(3);
-  Cursor.row+=2;
-
-  transferSmallNumInt(11);
-  transferSpecialChar('/');
-  transferSmallNumInt(13);
-  transferSpecialChar('/');
-  transferSmallNumInt(15);
-
-  // drawLine(16);
-  // drawLine(22);
-  // drawLine(27);
-  // drawLine(32);
-  // drawLine(36);
-  // drawLine(39);
-  // drawLine(41);
-  setCursor(0, 42);
-  if(time_ptr->hours < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(time_ptr->hours);
-  transferSpecialBigChar(':');
-  if(time_ptr->minutes < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(time_ptr->minutes);
-  setCursor(9, 52);
-  transferSpecialChar(':');
-  if(time_ptr->seconds < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(time_ptr->seconds);
-
-
-  // drawLine(63);
-  // drawLine(65);
-  // drawLine(68);
-  // drawLine(72);
-  // drawLine(77);
-  // drawLine(83);
-  // drawLine(90);
-
-  // NOTE: added this for demo to show step count
-  drawLine(82);
-  setCursor(0, 84);
-  transferChar('s');
-  transferChar('t');
-  transferChar('e');
-  transferChar('p');
-  transferChar('s');
-  transferSpecialChar(':');
-  Cursor.row++;
-  transferSmallNumInt(steps);
-}
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "RUN" screen on the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/
-
-void buildRun_LCD(rtc_time_t * time_ptr){
-  clearLines(13,96);
-  setCursor(0, 14);
-  transferChar('t');
-  transferChar('i');
-  transferChar('m');
-  transferChar('e');
-
-  setCursor(0, 28);
-  if(time_ptr->minutes < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(time_ptr->minutes);
-  transferSpecialBigChar(':');
-  if(time_ptr->seconds < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(time_ptr->seconds);
-  setCursor(9, 38);
-  transferSpecialChar(':');
-  if(time_ptr->milli < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(time_ptr->milli);
-
-  drawLine(68);
-
-  setCursor(0, 70);
-  transferChar('d');
-  transferChar('i');
-  transferChar('s');
-  transferChar('t');
-  transferSpecialChar(':');
-  Cursor.row++;
-  transferSmallNumInt(1);
-  transferSpecialChar('.');
-  transferSmallNumInt(2);
-  transferSmallNumInt(3);
-
-  drawLine(82);
-
-  setCursor(0, 84);
-  transferChar('p');
-  transferChar('a');
-  transferChar('c');
-  transferChar('e');
-  transferSpecialChar(':');
-  Cursor.row++;
-  transferSmallNumInt(4);
-  transferSpecialChar(':');
-  transferSmallNumInt(5);
-  transferSmallNumInt(6);
-  }
-
-/**************************************************************************/
-/*!
     @brief    Takes in a lowercase letter and places it at the cursor 
     @         location on the bitmap.  Function auto increments and 
     @         repositions cursor to keep text from falling off the screen. 
@@ -664,96 +481,69 @@ void drawLine(uint8_t line){
   }
 }
 
-/**************************************************************************/
-/*!
-    @brief    This is a simple test function to print out all charachters
-*/
-/**************************************************************************/ 
+// /**************************************************************************/
+// /*!
+//     @brief    This is a simple test function to print out all charachters
+// */
+// /**************************************************************************/ 
 
-void charTest(){
-  clearDisplay();
-  transferChar('a');
-  transferChar('b');
-  transferChar('c');
-  transferChar('d');
-  transferChar('e');
-  transferChar('f');
-  transferChar('g');
-  transferChar('h');
-  transferChar('i');
-  transferChar('j');
-  transferChar('k');
-  transferChar('l');
-  Cursor.line++;
-  transferChar('m');
-  transferChar('n');
-  transferChar('o');
-  transferChar('p');
-  transferChar('q');
-  transferChar('r');
-  transferChar('s');
-  transferChar('t');
-  transferChar('u');
-  transferChar('v');
-  transferChar('w');
-  transferChar('x');
-  Cursor.line++;
-  transferChar('y');
-  transferChar('z');
-  transferSmallNumInt(0);
-  transferSmallNumInt(1);
-  transferSmallNumInt(2);
-  transferSmallNumInt(3);
-  transferSmallNumInt(4);
-  transferSmallNumInt(5);
-  transferSmallNumInt(6);
-  transferSmallNumInt(7);
-  transferSmallNumInt(8);
-  transferSmallNumInt(9);
-  Cursor.line++;
-  transferBigNumInt(0);
-  transferBigNumInt(1);
-  transferBigNumInt(2);
-  transferBigNumInt(3);
-  transferBigNumInt(4);
-  transferBigNumInt(5);
-  Cursor.line++;
-  transferBigNumInt(6);
-  transferBigNumInt(7);
-  transferBigNumInt(8);
-  transferBigNumInt(9);
-  Cursor.line += 20;
-  Cursor.row = 0;
-  transferBatteryLevel(0);
-  transferBatteryLevel(1);
-  transferBatteryLevel(2);
-  transferBatteryLevel(3);
-  transferBatteryLevel(4);
-}
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TOP BAR" portion of the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the top 13 lines 
-*/
-/**************************************************************************/
-
-void buildTopBar_LCD(){
-  clearLines(1,11);
-  drawLine(12);
-  setCursor(0,1);
-  transferBatteryLevel(3);
-  Cursor.row++;
-  transferChar('e');
-  transferChar('i');
-  transferChar('r');
-  Cursor.row++;
-  transferSmallNumInt(1);
-  transferSmallNumInt(2);
-  transferSpecialChar(':');
-  transferSmallNumInt(3);
-  transferSmallNumInt(4);
-}
+// void charTest(){
+//   clearDisplay();
+//   transferChar('a');
+//   transferChar('b');
+//   transferChar('c');
+//   transferChar('d');
+//   transferChar('e');
+//   transferChar('f');
+//   transferChar('g');
+//   transferChar('h');
+//   transferChar('i');
+//   transferChar('j');
+//   transferChar('k');
+//   transferChar('l');
+//   Cursor.line++;
+//   transferChar('m');
+//   transferChar('n');
+//   transferChar('o');
+//   transferChar('p');
+//   transferChar('q');
+//   transferChar('r');
+//   transferChar('s');
+//   transferChar('t');
+//   transferChar('u');
+//   transferChar('v');
+//   transferChar('w');
+//   transferChar('x');
+//   Cursor.line++;
+//   transferChar('y');
+//   transferChar('z');
+//   transferSmallNumInt(0);
+//   transferSmallNumInt(1);
+//   transferSmallNumInt(2);
+//   transferSmallNumInt(3);
+//   transferSmallNumInt(4);
+//   transferSmallNumInt(5);
+//   transferSmallNumInt(6);
+//   transferSmallNumInt(7);
+//   transferSmallNumInt(8);
+//   transferSmallNumInt(9);
+//   Cursor.line++;
+//   transferBigNumInt(0);
+//   transferBigNumInt(1);
+//   transferBigNumInt(2);
+//   transferBigNumInt(3);
+//   transferBigNumInt(4);
+//   transferBigNumInt(5);
+//   Cursor.line++;
+//   transferBigNumInt(6);
+//   transferBigNumInt(7);
+//   transferBigNumInt(8);
+//   transferBigNumInt(9);
+//   Cursor.line += 20;
+//   Cursor.row = 0;
+//   transferBatteryLevel(0);
+//   transferBatteryLevel(1);
+//   transferBatteryLevel(2);
+//   transferBatteryLevel(3);
+//   transferBatteryLevel(4);
+// }
