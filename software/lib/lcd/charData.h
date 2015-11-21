@@ -10,6 +10,6 @@ extern const uint8_t bignums[19*2*11-19];
 
 extern const uint8_t smallnums[9*11];
 
-extern const uint8_t chars[9*29];
+extern const uint8_t chars[9*30];
 
 #endif

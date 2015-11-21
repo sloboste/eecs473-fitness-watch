@@ -181,15 +181,14 @@ void buildWatchFace_LCD() {
   //clearDisplay();
   setCursor(0,1);
   transferBatteryLevel(3);
-  Cursor.row+=2;
+  transferSpecialChar('&');
+  Cursor.row+=6;
+  transferChar('e');
+  transferChar('i');
+  transferChar('r');
 
-  transferSmallNumInt(11);
-  transferSpecialChar('/');
-  transferSmallNumInt(13);
-  transferSpecialChar('/');
-  transferSmallNumInt(15);
+  setCursor(3, 37);
 
-  setCursor(0, 42);
   if(TIME.hours < 10){
     transferBigNumInt(0);
   }
@@ -199,24 +198,37 @@ void buildWatchFace_LCD() {
     transferBigNumInt(0);
   }
   transferBigNumInt(TIME.minutes);
-  setCursor(9, 52);
-  transferSpecialChar(':');
-  if(TIME.seconds < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIME.seconds);
+
+  // setCursor(9, 52);
+  // transferSpecialChar(':');
+  // if(TIME.seconds < 10){
+  //   transferSmallNumInt(0);
+  // }
+  // transferSmallNumInt(TIME.seconds);
+
+  setCursor(1, 82);
+  transferChar('s');
+  transferChar('a');
+  transferChar('t');
+  Cursor.row++;
+  transferChar('d');
+  transferChar('e');
+  transferChar('c');
+  Cursor.row++;
+  transferSmallNumInt(12);
+
 
   // NOTE: added this for demo to show step count
-  drawLine(82);
-  setCursor(0, 84);
-  transferChar('s');
-  transferChar('t');
-  transferChar('e');
-  transferChar('p');
-  transferChar('s');
-  transferSpecialChar(':');
-  Cursor.row++;
-  transferSmallNumInt(0);
+  // drawLine(82);
+  // setCursor(0, 84);
+  // transferChar('s');
+  // transferChar('t');
+  // transferChar('e');
+  // transferChar('p');
+  // transferChar('s');
+  // transferSpecialChar(':');
+  // Cursor.row++;
+  // transferSmallNumInt(0);
 }
 
 /**************************************************************************/
