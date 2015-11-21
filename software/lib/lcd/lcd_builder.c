@@ -17,11 +17,14 @@
 /**************************************************************************/  
 
 void initStructs(){
+
+
+
   // GPS
-  GPS_DATA.longitude = 0;
-  GPS_DATA.latitude = 0;
+  GPS_DATA.longitude = "012 23.5678 S";
+  GPS_DATA.latitude = "98 87.5432 W";
   GPS_DATA.altitude = 0;
-  GPS_DATA.velocity =0;
+  GPS_DATA.ground_speed = 0;
 
   // RUN - DONE
 	RUN_DATA.meters = 1260;
@@ -74,6 +77,55 @@ void initStructs(){
 /**************************************************************************/  
 
   void buildGPS_LCD(){
+  buildTopBar_LCD();
+  clearLines(13,96);
+  setCursor(0, 14);
+
+  transferChar('g');
+  transferChar('p');
+  transferChar('s');
+  Cursor.row++;
+
+  transferChar('c');
+  transferChar('o');
+  transferChar('o');
+  transferChar('r');
+  transferChar('d');
+  transferChar('s');
+  transferSpecialChar(':');
+
+  setCursor(0, 28);
+  transferSmallNumInt((int)GPS_DATA.longitude[0]);
+  transferSmallNumInt((int)GPS_DATA.longitude[1]);
+  transferSmallNumInt((int)GPS_DATA.longitude[2]);
+  Cursor.row++;
+  transferSmallNumInt((int)GPS_DATA.longitude[4]);
+  transferSmallNumInt((int)GPS_DATA.longitude[5]);
+  transferSpecialChar(GPS_DATA.longitude[6]);
+  transferSmallNumInt((int)GPS_DATA.longitude[7]);
+  transferSmallNumInt((int)GPS_DATA.longitude[8]);
+  transferSmallNumInt((int)GPS_DATA.longitude[9]);
+  transferSmallNumInt((int)GPS_DATA.longitude[10]);
+  Cursor.row++;
+  setCursor(11, 42);
+  transferChar((char)((int)GPS_DATA.longitude[12]+32)));
+
+setCursor(0, 56);
+transferSmallNumInt((int)GPS_DATA.longitude[0]);
+transferSmallNumInt((int)GPS_DATA.longitude[1]);
+Cursor.row++;
+transferSmallNumInt((int)GPS_DATA.longitude[3]);
+transferSmallNumInt((int)GPS_DATA.longitude[4]);
+transferSpecialChar(GPS_DATA.longitude[5]);
+transferSmallNumInt((int)GPS_DATA.longitude[6]);
+transferSmallNumInt((int)GPS_DATA.longitude[7]);
+transferSmallNumInt((int)GPS_DATA.longitude[8]);
+transferSmallNumInt((int)GPS_DATA.longitude[9]);
+Cursor.row++;
+transferChar((char)((int)GPS_DATA.longitude[11]+32)));
+
+drawLine(70);
+
 
   }
 

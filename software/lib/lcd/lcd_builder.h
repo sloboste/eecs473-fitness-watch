@@ -18,10 +18,10 @@ struct time_struct {
 } TIME;
 
 struct GPS_LCD_DATA {
-    double longitude;
-    double latitude;
-    int altitude;
-    int velocity;
+   uint32_t ground_speed;
+   uint32_t altitude;
+   char * latitude;
+   char * longitude;
 }GPS_DATA;
 
 struct RUN_LCD_DATA {
