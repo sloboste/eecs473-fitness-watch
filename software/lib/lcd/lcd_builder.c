@@ -17,8 +17,8 @@
 /**************************************************************************/  
 
 void initStructs(){
-
-
+  
+  lcd_builder_bluetooth_enabled = false;
 
   // GPS
   GPS_DATA.longitude = "012 23.5678 S";
@@ -55,7 +55,7 @@ void initStructs(){
     // TIME FIXME remove
     TIME.hours = 23;
     TIME.minutes = 38;
-    TIME.seconds = 3;
+    TIME.seconds = 55;
 
   // RUN - DONE
   STEPS_DATA.steps = 12345;
@@ -96,32 +96,32 @@ void buildGPS_LCD(){
     transferSpecialChar(':');
 
     setCursor(0, 28);
-    transferSmallNumInt((int)GPS_DATA.longitude[0]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[1]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[2]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[0]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[1]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[2]-'0');
     Cursor.row++;
-    transferSmallNumInt((int)GPS_DATA.longitude[4]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[5]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[4]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[5]-'0');
     transferSpecialChar(GPS_DATA.longitude[6]);
-    transferSmallNumInt((int)GPS_DATA.longitude[7]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[8]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[9]-48);
-    transferSmallNumInt((int)GPS_DATA.longitude[10]-48);
+    transferSmallNumInt((int)GPS_DATA.longitude[7]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[8]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[9]-'0');
+    transferSmallNumInt((int)GPS_DATA.longitude[10]-'0');
     //Cursor.row++;
     //setCursor(11, 42);
     transferChar((char)((int)GPS_DATA.longitude[12]+32));
 
     setCursor(0, 42);
-    transferSmallNumInt((int)GPS_DATA.latitude[0]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[1]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[0]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[1]-'0');
     Cursor.row++;
-    transferSmallNumInt((int)GPS_DATA.latitude[3]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[4]-48);
-    transferSpecialChar(GPS_DATA.latitude[5]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[6]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[7]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[8]-48);
-    transferSmallNumInt((int)GPS_DATA.latitude[9]-48);
+    transferSmallNumInt((int)GPS_DATA.latitude[3]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[4]-'0');
+    transferSpecialChar(GPS_DATA.latitude[5]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[6]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[7]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[8]-'0');
+    transferSmallNumInt((int)GPS_DATA.latitude[9]-'0');
     Cursor.row++;
     transferChar((char)((int)GPS_DATA.latitude[11]+32));
 
@@ -353,59 +353,53 @@ void buildSteps_LCD()
 /**************************************************************************/  
 
 void buildWatchFace_LCD() {
-  //clearDisplay();
-  setCursor(0,1);
-  transferBatteryLevel(3);
-  transferSpecialChar('&');
-  Cursor.row+=6;
-  transferChar('e');
-  transferChar('i');
-  transferChar('r');
+    // FIXME We need to make sure the bluetooth symbol has been cleared from the
+    // screen. I can't figure that out
+    //clearLines(0, 14); 
 
-  setCursor(1, 37);
+    setCursor(0,1);
+    transferBatteryLevel(3);
+    if (lcd_builder_bluetooth_enabled) {
+        transferSpecialChar('&'); // Bluetooth symbol
+    } else {
+        ++Cursor.row;
+    }
+    Cursor.row+=6;
+    transferChar('e');
+    transferChar('i');
+    transferChar('r');
 
-  if(TIME.hours < 10){
+    setCursor(1, 37);
+
+    if(TIME.hours < 10){
     transferBigNumInt(0);
-  }
-  transferBigNumInt(TIME.hours);
-  transferBigNumInt(99999); // Big colon
-  //transferSpecialBigChar(':');
-  if(TIME.minutes < 10){
+    }
+    transferBigNumInt(TIME.hours);
+    transferBigNumInt(99999); // Big colon
+    //transferSpecialBigChar(':');
+    if(TIME.minutes < 10){
     transferBigNumInt(0);
-  }
-  transferBigNumInt(TIME.minutes);
+    }
+    transferBigNumInt(TIME.minutes);
 
-  // setCursor(9, 52);
-  // transferSpecialChar(':');
-  // if(TIME.seconds < 10){
-  //   transferSmallNumInt(0);
-  // }
-  // transferSmallNumInt(TIME.seconds);
+    // setCursor(9, 52);
+    // transferSpecialChar(':');
+    // if(TIME.seconds < 10){
+    //   transferSmallNumInt(0);
+    // }
+    // transferSmallNumInt(TIME.seconds);
 
     // TODO Make date dynamic
-  setCursor(1, 82);
-  transferChar('s');
-  transferChar('a');
-  transferChar('t');
-  Cursor.row++;
-  transferChar('d');
-  transferChar('e');
-  transferChar('c');
-  Cursor.row++;
-  transferSmallNumInt(12);
-
-
-  // NOTE: added this for demo to show step count
-  // drawLine(82);
-  // setCursor(0, 84);
-  // transferChar('s');
-  // transferChar('t');
-  // transferChar('e');
-  // transferChar('p');
-  // transferChar('s');
-  // transferSpecialChar(':');
-  // Cursor.row++;
-  // transferSmallNumInt(0);
+    setCursor(1, 82);
+    transferChar('s');
+    transferChar('a');
+    transferChar('t');
+    Cursor.row++;
+    transferChar('d');
+    transferChar('e');
+    transferChar('c');
+    Cursor.row++;
+    transferSmallNumInt(12);
 }
 
 /**************************************************************************/

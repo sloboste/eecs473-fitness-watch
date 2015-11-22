@@ -22,14 +22,16 @@
 #include "gps.h"
 
 #include "spi_driver.h"
-#include "lcd_driver.h"
+//#include "lcd_driver.h"
 #include "lcd_builder.h"
+#include "state_machine.h"
 
 #include "app_util_platform.h" // CRITICAL SECTION
 
 #include "nrf_delay.h"
 #include "app_gpiote.h"
 
+/*
 #define SCREEN_STATE_WATCH_FACE     0
 #define SCREEN_STATE_RUN            1
 #define SCREEN_STATE_STEPS          2
@@ -45,12 +47,13 @@ static uint8_t get_next_screen_state(uint8_t state)
 }
 
 static uint8_t screen_state = SCREEN_STATE_WATCH_FACE;
+static bool advertising = false;
+*/
 static gps_info_t gps_info;
 static uint32_t step_count = 0;
 static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
-static bool advertising = false;
 
 
 static app_timer_id_t timer_id_1hz;
@@ -65,25 +68,14 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
     if ((event_pins_high_to_low >> PIN_BUTTON_1) & 0x1) {
         pin = PIN_LED_2;
         // Cycle between screens
-        clearDisplay();
-        screen_state = get_next_screen_state(screen_state);
-        refresh();
+        state_machine_on_button_0();
     } else if ((event_pins_high_to_low >> PIN_BUTTON_2) & 0x1) {
         pin = PIN_LED_3;
         // Select item
-
+        state_machine_on_button_1();
     } else if ((event_pins_high_to_low >> PIN_BUTTON_3) & 0x1) {
         pin = PIN_LED_4;
-        // On off
-
-        // Toggle BLE advertisement
-        if (advertising) {
-            app_sched_event_put(NULL, 0, advertising_stop);
-        } else {
-            app_sched_event_put(NULL, 0, advertising_start);
-        }
-        advertising = !advertising;
-        
+        // TODO
     } else {
         return;
     }
@@ -186,28 +178,7 @@ void task_1hz(void * arg_ptr)
 
     increment_time(); // FIXME do real stuff
     
-    // TODO finish
-    //clearDisplay(); // FIXME we don't want to have to clear the display each time. Fix the lcd driver
-    switch (screen_state) {
-        case SCREEN_STATE_WATCH_FACE:
-            buildWatchFace_LCD();
-            break;
-        case SCREEN_STATE_RUN:
-            buildRun_LCD();
-            break;
-        case SCREEN_STATE_STEPS:
-            buildSteps_LCD();
-            break;
-        case SCREEN_STATE_GPS:
-            buildGPS_LCD();
-            break;
-        case SCREEN_STATE_TIMER:
-            buildTimer_LCD();
-            break;
-        default:
-            break;
-    }
-    refresh();
+    state_machine_refresh_screen();
 }
 
 /**
@@ -325,10 +296,9 @@ int main(void)
     // Init IMU
     mympu_open(200);
 
-    // Init LCD
+    // Init LCD and state machine
     spi_init();
-    clearDisplay();
-    initStructs();
+    state_machine_init();
     
     // Init GPS
     //gps_init();

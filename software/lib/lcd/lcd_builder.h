@@ -1,7 +1,11 @@
-#ifndef LCD_BUILDER_H
+/*
+ *
+ */
 
+#ifndef LCD_BUILDER_H
 #define LCD_BUILDER_H
 
+#include <stdint.h>
 #include <stdint.h>
 
 #include "lcd_driver.h"
@@ -9,6 +13,8 @@
 /* ************* */
 /* Struct Setups */
 /* ************* */
+
+bool lcd_builder_bluetooth_enabled;
 
 struct time_struct {
 	uint8_t hours;
