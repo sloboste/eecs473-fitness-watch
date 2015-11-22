@@ -272,7 +272,7 @@ int main(void)
     scheduler_init();
 
     // Init BLE
-    ble_init(request_handler, state_machine_on_ble_advertisment_start_stop);
+    ble_init(request_handler, state_machine_on_ble_adv_con);
 
     // Init buttons
     buttons_init();

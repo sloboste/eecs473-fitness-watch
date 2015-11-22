@@ -56,7 +56,7 @@ void state_machine_refresh_screen()
 }
 
 
-void state_machine_on_ble_advertisment_start_stop(uint8_t ble_state)
+void state_machine_on_ble_adv_con(uint8_t ble_state)
 {
     lcd_builder_bluetooth_state = ble_state;
     app_sched_event_put(NULL, 0, state_machine_refresh_screen);

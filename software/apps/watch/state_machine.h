@@ -31,7 +31,7 @@ extern void state_machine_refresh_screen();
 /**
  *
  */
-extern void state_machine_on_ble_advertisment_start_stop(uint8_t ble_state);
+extern void state_machine_on_ble_adv_con(uint8_t ble_state);
 
 /**
  *
