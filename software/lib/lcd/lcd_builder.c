@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "nrf_gpio.h"
+#include "nrf_gpio.h" // FIXME needed?
+#include "app_util_platform.h" // CRITICAL SECTION
 
 #include "lcd_driver.h"
 #include "lcd_builder.h"
@@ -39,19 +40,8 @@ void initStructs(){
 
 	RUN_DATA.startFlag = false;
 
-  // TIMER
-  TIMER_DATA.lapTimesMin[0] = 22;
-  TIMER_DATA.lapTimesSec[0] = 59;
-  TIMER_DATA.lapTimesMS[0] = 28;
-  TIMER_DATA.lapTimesMin[1] = 66;
-  TIMER_DATA.lapTimesSec[1] = 30;
-  TIMER_DATA.lapTimesMS[1] = 11;
-  TIMER_DATA.lapTimesMin[2] = 57;
-  TIMER_DATA.lapTimesSec[2] = 38;
-  TIMER_DATA.lapTimesMS[2] = 21;
-  TIMER_DATA.timer_minutes = 0;
-  TIMER_DATA.timer_seconds = 0;
-  TIMER_DATA.timer_tenths = 0;
+    // TIMER
+    timerReset();
 
     // TIME FIXME remove
     TIME.hours = 23;
@@ -156,6 +146,26 @@ void buildGPS_LCD(){
 */
 /**************************************************************************/  
 
+void timerReset()
+{
+    memset(&TIMER_DATA, 0, sizeof(TIMER_DATA));
+}
+
+void timerLap()
+{
+    CRITICAL_REGION_ENTER();
+    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
+    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
+    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
+    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
+    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
+    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
+    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
+    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
+    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
+    CRITICAL_REGION_EXIT();
+}
+
 void buildTimer_LCD()
 {
   buildTopBar_LCD();
@@ -180,12 +190,6 @@ void buildTimer_LCD()
   transferBigNumInt(TIMER_DATA.timer_seconds);
   setCursor(9, 38);
   transferSpecialChar('.');
-  /*
-  if(TIMER_DATA.timer_tenths < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.timer_tenths);
-  */
   transferSmallNumInt(TIMER_DATA.timer_tenths);
   transferSmallNumInt(0);
 
@@ -208,10 +212,8 @@ void buildTimer_LCD()
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
   transferSpecialChar('.');
-  if(TIMER_DATA.lapTimesMS[0] < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMS[0]);
+  transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
+  transferSmallNumInt(0);
 
   drawLine(68);
 
@@ -232,10 +234,8 @@ void buildTimer_LCD()
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
   transferSpecialChar('.');
-  if(TIMER_DATA.lapTimesMS[1] < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMS[1]);
+  transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
+  transferSmallNumInt(0);
 
   drawLine(82);
 
@@ -256,10 +256,8 @@ void buildTimer_LCD()
   }
   transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
   transferSpecialChar('.');
-  if(TIMER_DATA.lapTimesMS[2] < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMS[2]);
+  transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
+  transferSmallNumInt(0);
 }
 
 /**************************************************************************/

@@ -110,7 +110,8 @@ void state_machine_on_button_0()
             break;
 
         case STATE_TIMER_ON:
-            // No effect 
+            // Lap timer 
+            timerLap();
             break;
 
         default: // ERROR
@@ -144,6 +145,7 @@ void state_machine_on_button_1()
         case STATE_GPS_ON:
             break;
         case STATE_TIMER_OFF:
+            timerReset();
             timer_start_10hz_periodic();
             current_state = STATE_TIMER_ON;
             break;

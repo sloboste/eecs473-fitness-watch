@@ -52,7 +52,7 @@ struct STEPS_LCD_DATA {
 struct TIMER_LCD_DATA {
     uint8_t lapTimesMin[3];
     uint8_t lapTimesSec[3];
-    uint8_t lapTimesMS[3];
+    uint8_t lapTimesTenths[3];
 
     uint8_t timer_minutes;
     uint8_t timer_seconds;
@@ -70,11 +70,18 @@ struct TOP_BAR_DATA {
 /* Macro EIR Functions */
 /* ******************* */
 
-void buildGPS_LCD();
-void buildTimer_LCD();
-void buildSteps_LCD();
-void buildRun_LCD();
 void buildTopBar_LCD();
+
+void buildGPS_LCD();
+
+void timerLap();
+void timerReset();
+void buildTimer_LCD();
+
+void buildSteps_LCD();
+
+void buildRun_LCD();
+
 void buildWatchFace_LCD();
 
 #endif

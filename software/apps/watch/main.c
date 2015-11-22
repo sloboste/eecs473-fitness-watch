@@ -53,11 +53,11 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
     uint32_t pin;
     if ((event_pins_high_to_low >> PIN_BUTTON_1) & 0x1) {
         pin = PIN_LED_2;
-        // Cycle between screens
+        // Cycle
         app_sched_event_put(NULL, 0, state_machine_on_button_0);
     } else if ((event_pins_high_to_low >> PIN_BUTTON_2) & 0x1) {
         pin = PIN_LED_3;
-        // Select item
+        // Select
         app_sched_event_put(NULL, 0, state_machine_on_button_1);
     } else if ((event_pins_high_to_low >> PIN_BUTTON_3) & 0x1) {
         pin = PIN_LED_4;
@@ -306,12 +306,8 @@ int main(void)
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
 
     // Start the timer for seconds time keeping
+    // This must be the last thing before the main loop
     timer_start_1hz_periodic();
-    // TODO move this to timers_init and timers_start
-    //app_timer_create(&timer_id_1hz, APP_TIMER_MODE_REPEATED, task_1hz);
-    //app_timer_create(&timer_id_10hz, APP_TIMER_MODE_REPEATED, task_10hz);
-    //app_timer_start(timer_id_1hz, APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER),
-    //                app_timer_evt_schedule);
 
     // Main loop
     while (1) {

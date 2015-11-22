@@ -9,7 +9,7 @@
 #include "app_scheduler.h"                                                      
 
 #define SCHED_MAX_EVENT_DATA_SIZE   APP_TIMER_SCHED_EVT_SIZE
-#define SCHED_QUEUE_SIZE            4  // FIXME Arbitrary number 
+#define SCHED_QUEUE_SIZE            6  // FIXME Arbitrary number 
 
 /**
  * Setup the scheduler module.
