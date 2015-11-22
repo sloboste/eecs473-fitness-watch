@@ -354,8 +354,6 @@ void buildSteps_LCD()
 /**************************************************************************/  
 
 void buildWatchFace_LCD() {
-    // FIXME We need to make sure the bluetooth symbol has been cleared from the
-    // screen. I can't figure that out
     clearLines(1, 11); 
 
     setCursor(0,1);
