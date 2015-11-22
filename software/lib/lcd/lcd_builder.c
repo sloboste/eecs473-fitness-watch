@@ -102,7 +102,7 @@ void buildGPS_LCD(){
     //setCursor(11, 42);
     transferChar((char)((int)GPS_DATA.longitude[12]+32));
 
-    setCursor(0, 42);
+    setCursor(0, 49);
     transferSmallNumInt((int)GPS_DATA.latitude[0]-'0');
     transferSmallNumInt((int)GPS_DATA.latitude[1]-'0');
     Cursor.row++;
@@ -116,9 +116,10 @@ void buildGPS_LCD(){
     Cursor.row++;
     transferChar((char)((int)GPS_DATA.latitude[11]+32));
 
-    drawLine(54);
 
-    setCursor(0, 70);
+    drawLine(61);
+
+    setCursor(0, 65);
     transferChar('a');
     transferChar('l');
     transferChar('t');
@@ -126,7 +127,7 @@ void buildGPS_LCD(){
     Cursor.row++;
     transferSmallNumInt(GPS_DATA.altitude);
 
-    setCursor(0, 84);
+    setCursor(0, 81);
     transferChar('s');
     transferChar('p');
     transferChar('e');
