@@ -31,26 +31,9 @@
 #include "nrf_delay.h"
 #include "app_gpiote.h"
 
-/*
-#define SCREEN_STATE_WATCH_FACE     0
-#define SCREEN_STATE_RUN            1
-#define SCREEN_STATE_STEPS          2
-#define SCREEN_STATE_TIMER          3 
-#define SCREEN_STATE_GPS            4
-static uint8_t get_next_screen_state(uint8_t state)
-{
-    if (state >= SCREEN_STATE_GPS) {
-        return SCREEN_STATE_WATCH_FACE;
-    } else {
-        return ++state;
-    }
-}
 
-static uint8_t screen_state = SCREEN_STATE_WATCH_FACE;
-static bool advertising = false;
-*/
 static gps_info_t gps_info;
-static uint32_t step_count = 0;
+//static uint32_t step_count = 0;
 static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
@@ -60,6 +43,8 @@ static app_timer_id_t timer_id_1hz;
 
 /**
  *
+ * Note: this fuction executes in the interrupt context so schedule any function
+ *       calls in response to the button.
  */
 void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to_low)
 {
@@ -68,11 +53,11 @@ void button_handler(uint32_t event_pins_low_to_high, uint32_t event_pins_high_to
     if ((event_pins_high_to_low >> PIN_BUTTON_1) & 0x1) {
         pin = PIN_LED_2;
         // Cycle between screens
-        state_machine_on_button_0();
+        app_sched_event_put(NULL, 0, state_machine_on_button_0);
     } else if ((event_pins_high_to_low >> PIN_BUTTON_2) & 0x1) {
         pin = PIN_LED_3;
         // Select item
-        state_machine_on_button_1();
+        app_sched_event_put(NULL, 0, state_machine_on_button_1);
     } else if ((event_pins_high_to_low >> PIN_BUTTON_3) & 0x1) {
         pin = PIN_LED_4;
         // TODO
@@ -172,7 +157,7 @@ void task_1hz(void * arg_ptr)
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
     //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
 
-    step_count = get_steps();
+    STEPS_DATA.steps = get_steps();
     --battery_level; // FIXME do real stuff
     ++heart_rate_bpm; // FIXME do real stuff
 
@@ -195,12 +180,12 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
     switch (packet_type) {
         case PACKET_TYPE_REQUEST_PED_STEP_COUNT:
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
-            uint32_t step_count_rev = __REV(step_count); // Flip endianness
+            uint32_t step_count_rev = __REV(STEPS_DATA.steps); // Flip endianness
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
                 (void *) &step_count_rev,
-                sizeof(step_count),
+                sizeof(STEPS_DATA.steps),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -287,7 +272,7 @@ int main(void)
     scheduler_init();
 
     // Init BLE
-    ble_init(request_handler);
+    ble_init(request_handler, state_machine_on_ble_advertisment_start_stop);
 
     // Init buttons
     buttons_init();

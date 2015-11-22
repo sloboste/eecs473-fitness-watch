@@ -7,6 +7,7 @@
 #include "lcd_builder.h"
 #include "spi_driver.h"
 #include "charData.h"
+#include "ble_config.h"
 
 
 /**************************************************************************/
@@ -18,7 +19,7 @@
 
 void initStructs(){
   
-  lcd_builder_bluetooth_enabled = false;
+  lcd_builder_bluetooth_state = BLE_STATE_IDLE;
 
   // GPS
   GPS_DATA.longitude = "012 23.5678 S";
@@ -355,16 +356,20 @@ void buildSteps_LCD()
 void buildWatchFace_LCD() {
     // FIXME We need to make sure the bluetooth symbol has been cleared from the
     // screen. I can't figure that out
-    //clearLines(0, 14); 
+    clearLines(1, 11); 
 
     setCursor(0,1);
     transferBatteryLevel(3);
-    if (lcd_builder_bluetooth_enabled) {
+    if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
         transferSpecialChar('&'); // Bluetooth symbol
+        transferChar('a');
+    } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
+        transferSpecialChar('&'); // Bluetooth symbol
+        transferChar('c');
     } else {
-        ++Cursor.row;
+        Cursor.row += 2;
     }
-    Cursor.row+=6;
+    Cursor.row += 5;
     transferChar('e');
     transferChar('i');
     transferChar('r');
@@ -510,15 +515,20 @@ void buildRun_LCD(){
 /**************************************************************************/
 
 void buildTopBar_LCD(){
-  clearLines(1,11);
-  drawLine(12);
-  setCursor(0,1);
-  transferBatteryLevel(3);
-  Cursor.row++;
-  transferChar('e');
-  transferChar('i');
-  transferChar('r');
-  Cursor.row++;
+    clearLines(1,11);
+    drawLine(12);
+    setCursor(0,1);
+    transferBatteryLevel(3);
+    if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
+        transferSpecialChar('&'); // Bluetooth symbol
+        transferChar('a');
+    } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
+        transferSpecialChar('&'); // Bluetooth symbol
+        transferChar('c');
+    } else {
+        Cursor.row += 2;
+    }
+    Cursor.row += 3;
 
   if(TIME.hours < 10){
     transferSmallNumInt(0);

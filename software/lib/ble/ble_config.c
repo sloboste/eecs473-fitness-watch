@@ -39,6 +39,9 @@ static ble_advdata_t srdata;
 // Parameters to be passed to the stack when starting advertising
 static ble_gap_adv_params_t m_adv_params;
 
+// Call this when advertising start/stop or connect/disconnect
+static void (*on_adv_con)(uint8_t);
+
 
 // TODO does this need to be here?
 /**@brief Callback function for asserts in the SoftDevice.
@@ -146,6 +149,7 @@ void advertising_start(void)
 
     err_code = sd_ble_gap_adv_start(&m_adv_params);
     APP_ERROR_CHECK(err_code);
+    on_adv_con(BLE_STATE_ADVERTISING);
 }
 
 
@@ -158,6 +162,7 @@ void advertising_stop(void)
 
     err_code = sd_ble_gap_adv_stop();
     APP_ERROR_CHECK(err_code);
+    on_adv_con(BLE_STATE_IDLE);
 }
 
 
@@ -223,11 +228,11 @@ static void on_ble_evt(ble_evt_t * ble_evt_ptr)
     switch (ble_evt_ptr->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
             ble_current_conn_handle = ble_evt_ptr->evt.gap_evt.conn_handle;
+            on_adv_con(BLE_STATE_CONNECTED);
             break;
         case BLE_GAP_EVT_DISCONNECTED:
             ble_current_conn_handle = BLE_CONN_HANDLE_INVALID;
-            // FIXME Probably don't want to restart advertising all the time
-            //advertising_start(); 
+            on_adv_con(BLE_STATE_IDLE);
             break;
         default:
             break;
@@ -309,9 +314,11 @@ static void services_init(ble_watch_request_handler_t handler)
 /**
  * Initialize all of the BLE functionality for the watch.
  */
-void ble_init(ble_watch_request_handler_t handler)
+void ble_init(ble_watch_request_handler_t handler,
+              void (*on_ble_adv_con)(uint8_t))
 {
 //nrf_gpio_pin_clear(PIN_LED_3);
+    on_adv_con = on_ble_adv_con;
     ble_stack_init();
     gap_params_init();
     advertising_init();

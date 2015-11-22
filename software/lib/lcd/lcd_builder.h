@@ -14,7 +14,7 @@
 /* Struct Setups */
 /* ************* */
 
-bool lcd_builder_bluetooth_enabled;
+uint8_t lcd_builder_bluetooth_state;
 
 struct time_struct {
 	uint8_t hours;
@@ -44,8 +44,8 @@ struct RUN_LCD_DATA {
 }RUN_DATA;
 
 struct STEPS_LCD_DATA {
-    uint16_t steps;
-    uint16_t yesterdaySteps;
+    uint32_t steps;
+    uint32_t yesterdaySteps;
     uint8_t goal[5];
 }STEPS_DATA;
 
