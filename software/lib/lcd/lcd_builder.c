@@ -49,9 +49,9 @@ void initStructs(){
   TIMER_DATA.lapTimesMin[2] = 57;
   TIMER_DATA.lapTimesSec[2] = 38;
   TIMER_DATA.lapTimesMS[2] = 21;
-  TIMER_DATA.timer_minutes = 23;
-  TIMER_DATA.timer_seconds = 57;
-  TIMER_DATA.timer_milli = 19;
+  TIMER_DATA.timer_minutes = 0;
+  TIMER_DATA.timer_seconds = 0;
+  TIMER_DATA.timer_tenths = 0;
 
     // TIME FIXME remove
     TIME.hours = 23;
@@ -180,10 +180,14 @@ void buildTimer_LCD()
   transferBigNumInt(TIMER_DATA.timer_seconds);
   setCursor(9, 38);
   transferSpecialChar('.');
-  if(TIMER_DATA.timer_milli < 10){
+  /*
+  if(TIMER_DATA.timer_tenths < 10){
     transferSmallNumInt(0);
   }
-  transferSmallNumInt(TIMER_DATA.timer_milli);
+  transferSmallNumInt(TIMER_DATA.timer_tenths);
+  */
+  transferSmallNumInt(TIMER_DATA.timer_tenths);
+  transferSmallNumInt(0);
 
   drawLine(54);
 

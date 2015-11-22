@@ -7,6 +7,10 @@
 #include "ble_config.h"
 
 #include "scheduler_config.h"
+#include "timer_config.h"
+
+#include "nrf_gpio.h" // FIXME remove
+#include "blue_dev_board.h" // FIXME remove
 
 
 // The current state of the state machine
@@ -140,8 +144,12 @@ void state_machine_on_button_1()
         case STATE_GPS_ON:
             break;
         case STATE_TIMER_OFF:
+            timer_start_10hz_periodic();
+            current_state = STATE_TIMER_ON;
             break;
         case STATE_TIMER_ON:
+            timer_stop_10hz_periodic();
+            current_state = STATE_TIMER_OFF;
             break;
         default: // ERROR
             break;

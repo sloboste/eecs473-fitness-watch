@@ -20,7 +20,7 @@ struct time_struct {
 	uint8_t hours;
 	uint8_t minutes;
 	uint8_t seconds;
-	uint8_t milli;
+	uint8_t milli;  // FIXME data type
 } TIME;
 
 struct GPS_LCD_DATA {
@@ -56,7 +56,7 @@ struct TIMER_LCD_DATA {
 
     uint8_t timer_minutes;
     uint8_t timer_seconds;
-    uint8_t timer_milli;
+    uint8_t timer_tenths;
 }TIMER_DATA;
 
 struct TOP_BAR_DATA {

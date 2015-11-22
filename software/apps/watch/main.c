@@ -40,6 +40,7 @@ static uint8_t packet_buf[PACKET_BUF_LEN];
 
 
 static app_timer_id_t timer_id_1hz;
+static app_timer_id_t timer_id_10hz;
 
 /**
  *
@@ -131,24 +132,37 @@ static void set_time(uint8_t hours, uint8_t minutes, uint8_t seconds)
 static void increment_time()
 {                                                 
     CRITICAL_REGION_ENTER();                                                    
-    ++TIME.seconds;                                                          
-    if (TIME.seconds == 60) {                                              
-        ++TIME.minutes;                                                    
-        TIME.seconds = 0;                                                  
-    }                                                                           
-    if (TIME.minutes == 60) {                                              
-        ++TIME.hours;                                                      
-        TIME.minutes = 0;                                                  
-    }                                                                           
-    if (TIME.hours == 24) {                                                
-        TIME.seconds = 0;                                                  
-        TIME.minutes = 0;                                                  
-        TIME.hours = 0;                                                    
-        TIME.milli = 0;                                                    
+    if (++TIME.seconds > 59) {                                              
+        TIME.seconds -= 60;                                                  
+        if (++TIME.minutes > 59) {                                              
+            TIME.minutes -= 60;                                                  
+            if (++TIME.hours > 23) {                                                
+                TIME.hours -= 24;                                                  
+            }                                                                           
+        }                                                                           
     }                                                                           
     CRITICAL_REGION_EXIT();                                                     
 }
 
+
+void task_10hz(void * arg_ptr)
+{
+    nrf_gpio_pin_toggle(PIN_LED_4); // FIXME remove
+
+    CRITICAL_REGION_ENTER();                                                     
+    TIMER_DATA.timer_tenths += 1;
+    if (TIMER_DATA.timer_tenths > 9) {
+        TIMER_DATA.timer_tenths -= 10;
+        if (++TIMER_DATA.timer_seconds > 59) { 
+            TIMER_DATA.timer_seconds -= 60;
+            if (++TIMER_DATA.timer_minutes > 59) { 
+                TIMER_DATA.timer_minutes -= 60;
+            }
+        }
+    }
+    CRITICAL_REGION_EXIT();                                                     
+    state_machine_refresh_screen();
+}
 
 void task_1hz(void * arg_ptr)
 {
@@ -291,10 +305,13 @@ int main(void)
     //gps_enable();
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
 
-    // TODO move this
-    app_timer_create(&timer_id_1hz, APP_TIMER_MODE_REPEATED, task_1hz);
-    app_timer_start(timer_id_1hz, APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER),
-                    app_timer_evt_schedule);
+    // Start the timer for seconds time keeping
+    timer_start_1hz_periodic();
+    // TODO move this to timers_init and timers_start
+    //app_timer_create(&timer_id_1hz, APP_TIMER_MODE_REPEATED, task_1hz);
+    //app_timer_create(&timer_id_10hz, APP_TIMER_MODE_REPEATED, task_10hz);
+    //app_timer_start(timer_id_1hz, APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER),
+    //                app_timer_evt_schedule);
 
     // Main loop
     while (1) {

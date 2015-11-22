@@ -6,10 +6,39 @@
 #include "timer_config.h"
 
 
+static app_timer_id_t timer_id_1hz;
+static app_timer_id_t timer_id_10hz;
+
 void timers_init(bool use_scheduler)
 {
     APP_TIMER_INIT(APP_TIMER_PRESCALER,
                    APP_TIMER_MAX_TIMERS,
                    APP_TIMER_OP_QUEUE_SIZE,
                    use_scheduler ? app_timer_evt_schedule : NULL);
+
+    app_timer_create(&timer_id_1hz, APP_TIMER_MODE_REPEATED, task_1hz);         
+    app_timer_create(&timer_id_10hz, APP_TIMER_MODE_REPEATED, task_10hz);       
+}
+
+
+void timer_start_1hz_periodic()
+{
+    app_timer_start(timer_id_1hz, APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER),   
+                    app_timer_evt_schedule);        
+}
+
+void timer_stop_1hz_periodic()
+{
+    app_timer_stop(timer_id_1hz); 
+}
+
+void timer_start_10hz_periodic()
+{
+    app_timer_start(timer_id_10hz, APP_TIMER_TICKS(100, APP_TIMER_PRESCALER),   
+                    app_timer_evt_schedule);        
+}
+
+void timer_stop_10hz_periodic()
+{
+    app_timer_stop(timer_id_10hz); 
 }

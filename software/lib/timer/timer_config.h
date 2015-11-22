@@ -23,4 +23,36 @@
  */
 extern void timers_init(bool use_scheduler);
 
+/**
+ * Start the periodic 1 Hz timer.
+ */
+extern void timer_start_1hz_periodic();
+
+/**
+ * Stop the periodic 1 Hz timer.
+ */
+extern void timer_stop_1hz_periodic();
+
+/**
+ * Start the periodic 10 Hz timer.
+ */
+extern void timer_start_10hz_periodic();
+
+/**
+ * Stop the periodic 10 Hz timer.
+ */
+extern void timer_stop_10hz_periodic();
+
+/**
+ * THIS MUST BE IMPLEMENTED IN THE MAIN FILE
+ * Executes in the thread context.
+ */
+extern void task_1hz(void * arg_ptr);
+
+/**
+ * THIS MUST BE IMPLEMENTED IN THE MAIN FILE
+ * Executes in the thread context.
+ */
+extern void task_10hz(void * arg_ptr);
+
 #endif
