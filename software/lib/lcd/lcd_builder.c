@@ -71,8 +71,9 @@ void initStructs(){
 void buildGPS_LCD(){
     buildTopBar_LCD();
     clearLines(13,96);
-    setCursor(0, 14);
+    setCursor(0, 17);
 
+    Cursor.row++;
     transferChar('g');
     transferChar('p');
     transferChar('s');
@@ -84,9 +85,9 @@ void buildGPS_LCD(){
     transferChar('r');
     transferChar('d');
     transferChar('s');
-    transferSpecialChar(':');
 
-    setCursor(0, 28);
+    drawLine(32);
+    setCursor(0, 36);
     transferSmallNumInt((int)GPS_DATA.longitude[0]-'0');
     transferSmallNumInt((int)GPS_DATA.longitude[1]-'0');
     transferSmallNumInt((int)GPS_DATA.longitude[2]-'0');
@@ -102,7 +103,7 @@ void buildGPS_LCD(){
     //setCursor(11, 42);
     transferChar((char)((int)GPS_DATA.longitude[12]+32));
 
-    setCursor(0, 49);
+    setCursor(0, 51);
     transferSmallNumInt((int)GPS_DATA.latitude[0]-'0');
     transferSmallNumInt((int)GPS_DATA.latitude[1]-'0');
     Cursor.row++;
@@ -117,9 +118,9 @@ void buildGPS_LCD(){
     transferChar((char)((int)GPS_DATA.latitude[11]+32));
 
 
-    drawLine(61);
+    drawLine(65);
 
-    setCursor(0, 65);
+    setCursor(0, 69);
     transferChar('a');
     transferChar('l');
     transferChar('t');
@@ -127,7 +128,7 @@ void buildGPS_LCD(){
     Cursor.row++;
     transferSmallNumInt(GPS_DATA.altitude);
 
-    setCursor(0, 81);
+    setCursor(0, 83);
     transferChar('s');
     transferChar('p');
     transferChar('e');
