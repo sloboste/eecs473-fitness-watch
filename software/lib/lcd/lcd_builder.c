@@ -4,63 +4,42 @@
 
 #include "lcd_driver.h"
 #include "lcd_builder.h"
-#include "spi_driver.h"
 #include "charData.h"
 #include "ble_config.h"
 #include "date_time.h"
 
 
-/**************************************************************************/
-/*!
-    @brief    Initializes the data structures for the peripherals. The 
-    @         current value and data types are not necessarily correct
-*/
-/**************************************************************************/  
-
-void initStructs(){
+void lcd_builder_init_structs()
+{
+    lcd_builder_bluetooth_state = BLE_STATE_IDLE;
+    lcd_builder_battery_level = 0;
 
     //TIMER
-    TIMER_DATA.lapCounter = 0;
-    timerReset();
-    
-    lcd_builder_bluetooth_state = BLE_STATE_IDLE;
+    lcd_builder_stopwatch_timer_reset();
 
     // GPS
-    memset(&GPS_DATA, 0, sizeof(GPS_DATA));
-    GPS_DATA.longitude = "012 23.5678 S";
-    GPS_DATA.latitude = "98 87.5432 W";
-    GPS_DATA.altitude = 5898;
-    GPS_DATA.ground_speed = 23;
+    memset(&lcd_builder_gps_data, 0, sizeof(lcd_builder_gps_data));
+    lcd_builder_gps_data.longitude = "012 23.5678 S";
+    lcd_builder_gps_data.latitude = "98 87.5432 W";
+    lcd_builder_gps_data.altitude = 5898;
+    lcd_builder_gps_data.ground_speed = 23;
 
     // Run
-    runTimerReset(); 
-  	RUN_DATA.meters = 1260;
-  	RUN_DATA.pace_minutes = 3;
-  	RUN_DATA.pace_seconds = 12;
+    lcd_builder_run_timer_reset(); 
+  	lcd_builder_run_data.meters = 1260;
+  	lcd_builder_run_data.pace_minutes = 3;
+  	lcd_builder_run_data.pace_seconds = 12;
 
     // Steps
-    memset(&STEPS_DATA, 0, sizeof(STEPS_DATA));
-    STEPS_DATA.yesterdaySteps = 12345;
+    memset(&lcd_builder_step_data, 0, sizeof(lcd_builder_step_data));
+    lcd_builder_step_data.yesterday_steps = 12345;
     // Set goal digit index to one past the end (no highlight)
-    STEPS_DATA.goal_digit = 5;
+    lcd_builder_step_data.goal_digit = 5;
 }
 
-/* ******************* */
-/* Macro EIR Functions */
-/* ******************* */
-
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "GPS" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/  
-
-// TODO make this look pretty
-void buildGPS_LCD(){
-    buildTopBar_LCD(true);
+void lcd_builder_build_gps()
+{
+    lcd_builder_build_top_bar(true);
     clearLines(13,96);
     setCursor(0, 17);
 
@@ -72,35 +51,32 @@ void buildGPS_LCD(){
 
     drawLine(32);
     setCursor(0, 36);
-    transferSmallNumInt((int)GPS_DATA.longitude[0]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[1]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[2]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[0]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[1]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[2]-'0');
     Cursor.row++;
-    transferSmallNumInt((int)GPS_DATA.longitude[4]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[5]-'0');
-    transferSpecialChar(GPS_DATA.longitude[6]);
-    transferSmallNumInt((int)GPS_DATA.longitude[7]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[8]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[9]-'0');
-    transferSmallNumInt((int)GPS_DATA.longitude[10]-'0');
-    //Cursor.row++;
-    //setCursor(11, 42);
-    transferChar((char)((int)GPS_DATA.longitude[12]+32));
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[4]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[5]-'0');
+    transferSpecialChar(lcd_builder_gps_data.longitude[6]);
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[7]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[8]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[9]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.longitude[10]-'0');
+    transferChar((char)((int)lcd_builder_gps_data.longitude[12]+32));
 
     setCursor(0, 51);
-    transferSmallNumInt((int)GPS_DATA.latitude[0]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[1]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[0]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[1]-'0');
     Cursor.row++;
-    transferSmallNumInt((int)GPS_DATA.latitude[3]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[4]-'0');
-    transferSpecialChar(GPS_DATA.latitude[5]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[6]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[7]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[8]-'0');
-    transferSmallNumInt((int)GPS_DATA.latitude[9]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[3]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[4]-'0');
+    transferSpecialChar(lcd_builder_gps_data.latitude[5]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[6]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[7]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[8]-'0');
+    transferSmallNumInt((int)lcd_builder_gps_data.latitude[9]-'0');
     Cursor.row++;
-    transferChar((char)((int)GPS_DATA.latitude[11]+32));
-
+    transferChar((char)((int)lcd_builder_gps_data.latitude[11]+32));
 
     drawLine(65);
 
@@ -108,50 +84,50 @@ void buildGPS_LCD(){
     transferString("alt");
     transferSpecialChar(':');
     Cursor.row++;
-    transferSmallNumInt(GPS_DATA.altitude);
+    transferSmallNumInt(lcd_builder_gps_data.altitude);
 
     setCursor(0, 83);
     transferString("speed");
     transferSpecialChar(':');
     Cursor.row++;
-    transferSmallNumInt(GPS_DATA.ground_speed);
+    transferSmallNumInt(lcd_builder_gps_data.ground_speed);
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TIMER" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines  
-*/
-/**************************************************************************/  
-
-void timerReset()
+void lcd_builder_stopwatch_timer_reset()
 {
-    memset(&TIMER_DATA, 0, sizeof(TIMER_DATA));
+    memset(&lcd_builder_stopwatch_data, 0, sizeof(lcd_builder_stopwatch_data));
 }
 
-void timerLap()
+void lcd_builder_stopwatch_timer_lap()
 {
-    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
-    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
-    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
-    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
-    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
-    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
-    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
-    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
-    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
-    TIMER_DATA.lapCounter++;
-    if (TIMER_DATA.lapCounter >= 100)
+    lcd_builder_stopwatch_data.lapTimesMin[2] =
+        lcd_builder_stopwatch_data.lapTimesMin[1];
+    lcd_builder_stopwatch_data.lapTimesSec[2] =
+        lcd_builder_stopwatch_data.lapTimesSec[1];
+    lcd_builder_stopwatch_data.lapTimesTenths[2] =
+        lcd_builder_stopwatch_data.lapTimesTenths[1];
+    lcd_builder_stopwatch_data.lapTimesMin[1] =
+        lcd_builder_stopwatch_data.lapTimesMin[0];
+    lcd_builder_stopwatch_data.lapTimesSec[1] =
+        lcd_builder_stopwatch_data.lapTimesSec[0];
+    lcd_builder_stopwatch_data.lapTimesTenths[1] =
+        lcd_builder_stopwatch_data.lapTimesTenths[0];
+    lcd_builder_stopwatch_data.lapTimesMin[0] =
+        lcd_builder_stopwatch_data.timer_minutes;
+    lcd_builder_stopwatch_data.lapTimesSec[0] =
+        lcd_builder_stopwatch_data.timer_seconds;
+    lcd_builder_stopwatch_data.lapTimesTenths[0] =
+        lcd_builder_stopwatch_data.timer_tenths;
+    lcd_builder_stopwatch_data.lapCounter++;
+    if (lcd_builder_stopwatch_data.lapCounter >= 100)
     {
-        TIMER_DATA.lapCounter = 0;
+        lcd_builder_stopwatch_data.lapCounter = 0;
     }
 }
 
-void buildTimer_LCD()
+void lcd_builder_build_stopwatch()
 {
-    buildTopBar_LCD(true);
+    lcd_builder_build_top_bar(true);
     clearLines(13,96);
     setCursor(0, 14);
 
@@ -160,135 +136,126 @@ void buildTimer_LCD()
     transferString("watch");
 
     setCursor(0, 28);
-    if(TIMER_DATA.timer_minutes < 10){
+    if (lcd_builder_stopwatch_data.timer_minutes < 10) {
       transferBigNumInt(0);
     }
-    transferBigNumInt(TIMER_DATA.timer_minutes);
+    transferBigNumInt(lcd_builder_stopwatch_data.timer_minutes);
     transferSpecialBigChar(':');
-    if(TIMER_DATA.timer_seconds < 10){
+    if (lcd_builder_stopwatch_data.timer_seconds < 10) {
       transferBigNumInt(0);
     }
-    transferBigNumInt(TIMER_DATA.timer_seconds);
+    transferBigNumInt(lcd_builder_stopwatch_data.timer_seconds);
     setCursor(9, 38);
     transferSpecialChar('.');
-    transferSmallNumInt(TIMER_DATA.timer_tenths);
+    transferSmallNumInt(lcd_builder_stopwatch_data.timer_tenths);
     transferSmallNumInt(0);
 
     drawLine(54);
 
-    if (TIMER_DATA.lapCounter > 0)
+    if (lcd_builder_stopwatch_data.lapCounter > 0)
     {
         setCursor(0, 56);
         transferChar('l');
-        transferSmallNumInt(TIMER_DATA.lapCounter);
-        if (TIMER_DATA.lapCounter < 10){
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter);
+        if (lcd_builder_stopwatch_data.lapCounter < 10) {
             transferSpecialChar(':');
         }
         Cursor.row++;
-        if(TIMER_DATA.lapTimesMin[0] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesMin[0] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[0]);
         transferSpecialChar(':');
-        if(TIMER_DATA.lapTimesSec[0] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesSec[0] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[0]);
         transferSpecialChar('.');
-        transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[0]);
         transferSmallNumInt(0);
         drawLine(68);
     }
 
-    if (TIMER_DATA.lapCounter > 1)
+    if (lcd_builder_stopwatch_data.lapCounter > 1)
     {
         setCursor(0, 70);
         transferChar('l');
-        transferSmallNumInt(TIMER_DATA.lapCounter-1);
-        if (TIMER_DATA.lapCounter-1 < 10){
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter-1);
+        if (lcd_builder_stopwatch_data.lapCounter-1 < 10) {
             transferSpecialChar(':');
         }
         Cursor.row++;
-        if(TIMER_DATA.lapTimesMin[1] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesMin[1] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[1]);
         transferSpecialChar(':');
-        if(TIMER_DATA.lapTimesSec[1] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesSec[1] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[1]);
         transferSpecialChar('.');
-        transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[1]);
         transferSmallNumInt(0);
         drawLine(82);
     }
 
-    if (TIMER_DATA.lapCounter > 2)
+    if (lcd_builder_stopwatch_data.lapCounter > 2)
     {
         setCursor(0, 84);
         transferChar('l');
-        transferSmallNumInt(TIMER_DATA.lapCounter-2);
-        if (TIMER_DATA.lapCounter-2 < 10){
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter-2);
+        if (lcd_builder_stopwatch_data.lapCounter-2 < 10) {
             transferSpecialChar(':');
         }
         Cursor.row++;
 
-        if(TIMER_DATA.lapTimesMin[2] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesMin[2] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[2]);
         transferSpecialChar(':');
-        if(TIMER_DATA.lapTimesSec[2] < 10){
+        if (lcd_builder_stopwatch_data.lapTimesSec[2] < 10) {
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[2]);
         transferSpecialChar('.');
-        transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
+        transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[2]);
         transferSmallNumInt(0);
     }
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "STEPS" screen on the bitmap.
-    @         Currently empty.  Will implement between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines  
-*/
-/**************************************************************************/  
-
-void buildSteps_LCD()
+void lcd_builder_build_steps()
 {
     int i;
-    buildTopBar_LCD(true);
+    lcd_builder_build_top_bar(true);
     clearLines(13,96);
     setCursor(0, 20);
 
     transferString("steps");
 
     setCursor(1, 38);
-    if(STEPS_DATA.steps < 10000){
+    if (lcd_builder_step_data.steps < 10000) {
         transferBigNumInt(0);
     }
-    if(STEPS_DATA.steps < 1000){
+    if (lcd_builder_step_data.steps < 1000) {
         transferBigNumInt(0);
     }
-    if(STEPS_DATA.steps < 100){
+    if (lcd_builder_step_data.steps < 100) {
         transferBigNumInt(0);
     }
-    if(STEPS_DATA.steps < 10){
+    if (lcd_builder_step_data.steps < 10) {
         transferBigNumInt(0);
     }
-    transferBigNumInt(STEPS_DATA.steps);
+    transferBigNumInt(lcd_builder_step_data.steps);
 
     setCursor(4, 66);
     transferString("of");
     Cursor.row++;
     for (i = 0; i < 5; i++)
     {
-        transferSmallNumInt(STEPS_DATA.goal[i]);
-        if (STEPS_DATA.goal_digit == i)
+        transferSmallNumInt(lcd_builder_step_data.goal[i]);
+        if (lcd_builder_step_data.goal_digit == i)
         {
             invertBitMap(7+i, 66, 9);
         }
@@ -300,69 +267,35 @@ void buildSteps_LCD()
     transferString("last");
     transferSpecialChar(':');
     Cursor.row++;
-    if (STEPS_DATA.yesterdaySteps < 10000){
+    if (lcd_builder_step_data.yesterday_steps < 10000) {
         transferSmallNumInt(0);
     }
-    if (STEPS_DATA.yesterdaySteps < 1000){
+    if (lcd_builder_step_data.yesterday_steps < 1000) {
         transferSmallNumInt(0);
     }
-    if (STEPS_DATA.yesterdaySteps < 100){
+    if (lcd_builder_step_data.yesterday_steps < 100) {
         transferSmallNumInt(0);
     }
-    if (STEPS_DATA.yesterdaySteps < 10){
+    if (lcd_builder_step_data.yesterday_steps < 10) {
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(STEPS_DATA.yesterdaySteps);
+    transferSmallNumInt(lcd_builder_step_data.yesterday_steps);
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "Watch Face" screen on the 
-    @         bitmap.
-
-    @size     Uses all 12 rows on all 96 lines  
-*/
-/**************************************************************************/  
-
-void buildWatchFace_LCD() {
-    buildTopBar_LCD(false);
-/*
-    clearLines(1, 11); 
-
-    setCursor(0,1);
-    transferBatteryLevel(3);
-    if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
-        transferSpecialChar('&'); // Bluetooth symbol
-        transferChar('a');
-    } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
-        transferSpecialChar('&'); // Bluetooth symbol
-        transferChar('c');
-    } else {
-        Cursor.row += 2;
-    }
-    Cursor.row += 5;
-    transferString("eir");
-*/
-
+void lcd_builder_build_watch_face()
+{
+    lcd_builder_build_top_bar(false);
     setCursor(1, 37);
 
-    if(date_time.hours < 10){
+    if (date_time.hours < 10) {
         transferBigNumInt(0);
     }
     transferBigNumInt(date_time.hours);
-    transferBigNumInt(99999); // Big colon
-    //transferSpecialBigChar(':');
-    if(date_time.minutes < 10){
+    transferBigNumInt(99999); // Big colon FIXME use a constant for this
+    if (date_time.minutes < 10) {
         transferBigNumInt(0);
     }
     transferBigNumInt(date_time.minutes);
-
-    // setCursor(9, 52);
-    // transferSpecialChar(':');
-    // if(TIME.seconds < 10){
-    //   transferSmallNumInt(0);
-    // }
-    // transferSmallNumInt(TIME.seconds);
 
     clearLines(82, 96);
     setCursor(1, 82);
@@ -373,23 +306,14 @@ void buildWatchFace_LCD() {
     transferSmallNumInt(date_time.day_num);
 }
 
-/**************************************************************************/
-/*!
-    @brief    Macro function which builds the "RUN" screen on the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the bottom 83 lines 
-*/
-/**************************************************************************/
-
-void runTimerReset()
+void lcd_builder_run_timer_reset()
 {
-    memset(&RUN_DATA, 0, sizeof(RUN_DATA));
+    memset(&lcd_builder_run_data, 0, sizeof(lcd_builder_run_data));
 }
 
-void buildRun_LCD(){
-    buildTopBar_LCD(true);
+void lcd_builder_build_run()
+{
+    lcd_builder_build_top_bar(true);
 
     clearLines(13,96);
     setCursor(0, 14);
@@ -399,23 +323,23 @@ void buildRun_LCD(){
     transferString("time");
 
     setCursor(0, 28);
-    if(RUN_DATA.timer_hours < 10){
+    if (lcd_builder_run_data.timer_hours < 10) {
         transferBigNumInt(0);
     }
-    transferBigNumInt(RUN_DATA.timer_hours);
+    transferBigNumInt(lcd_builder_run_data.timer_hours);
     transferSpecialBigChar(':');
-    if(RUN_DATA.timer_minutes < 10){
+    if (lcd_builder_run_data.timer_minutes < 10) {
         transferBigNumInt(0);
     }
-    transferBigNumInt(RUN_DATA.timer_minutes);
+    transferBigNumInt(lcd_builder_run_data.timer_minutes);
     setCursor(9, 38);
     transferSpecialChar(':');
-    if(RUN_DATA.timer_seconds < 10){
+    if (lcd_builder_run_data.timer_seconds < 10) {
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(RUN_DATA.timer_seconds);
+    transferSmallNumInt(lcd_builder_run_data.timer_seconds);
 
-    if(RUN_DATA.startFlag == false)
+    if (lcd_builder_run_data.timer_running == false)
     {
         setCursor(5,52);
       	transferString("stopped");
@@ -428,11 +352,11 @@ void buildRun_LCD(){
     transferSpecialChar(':');
     Cursor.row+=2;
     
-    // THERE IS A BETTER WAY TO DO THIS
-    transferSmallNumInt(RUN_DATA.meters/1000);
+    // TODO Is there a better way to do this?
+    transferSmallNumInt(lcd_builder_run_data.meters/1000);
     transferSpecialChar('.');
-    transferSmallNumInt((RUN_DATA.meters%1000)/100);
-    transferSmallNumInt((RUN_DATA.meters%100)/10);
+    transferSmallNumInt((lcd_builder_run_data.meters%1000)/100);
+    transferSmallNumInt((lcd_builder_run_data.meters%100)/10);
 
     drawLine(82);
 
@@ -440,26 +364,17 @@ void buildRun_LCD(){
     transferString("pace");
     transferSpecialChar(':');
     Cursor.row+=2;
-    transferSmallNumInt(RUN_DATA.pace_minutes);
+    transferSmallNumInt(lcd_builder_run_data.pace_minutes);
     transferSpecialChar(':');
-    if (RUN_DATA.pace_seconds < 10)
+    if (lcd_builder_run_data.pace_seconds < 10)
     {
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(RUN_DATA.pace_seconds);
+    transferSmallNumInt(lcd_builder_run_data.pace_seconds);
 }
 
-  /**************************************************************************/
-/*!
-    @brief    Macro function which builds the "TOP BAR" portion of the bitmap.
-    @         Currently is not dynamic. Dynamics will be implemented
-    @         between 11/11/15 - 11/13/15.
-
-    @size     Uses all 12 rows on the top 13 lines 
-*/
-/**************************************************************************/
-
-void buildTopBar_LCD(bool time) {
+void lcd_builder_build_top_bar(bool time)
+{
     clearLines(1,11);
     if (time) {
         drawLine(12);
@@ -471,19 +386,19 @@ void buildTopBar_LCD(bool time) {
         transferChar('a');
     } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
         transferSpecialChar('&'); // Bluetooth symbol
-        transferChar('c');    // Took this out for aesthetics
+        transferChar('c');
     } else {
         Cursor.row += 2;
     }
     Cursor.row += 3;
 
     if (time) {
-        if (date_time.hours < 10){
+        if (date_time.hours < 10) {
             transferSmallNumInt(0);
         }
         transferSmallNumInt(date_time.hours);
         transferSpecialChar(':');
-        if (date_time.minutes < 10){
+        if (date_time.minutes < 10) {
             transferSmallNumInt(0);
         }
         transferSmallNumInt(date_time.minutes);

@@ -16,8 +16,8 @@ enum state_machine_state_enum {
     STATE_RUN_TIMER_ON,
     STATE_GPS_OFF,
     STATE_GPS_ON,
-    STATE_TIMER_OFF,
-    STATE_TIMER_ON,
+    STATE_STOPWATCH_TIMER_OFF,
+    STATE_STOPWATCH_TIMER_ON,
 };
 
 /**

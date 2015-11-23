@@ -5,9 +5,10 @@
 #include "lcd_builder.h"
 #include "lcd_driver.h"
 #include "ble_config.h"
-
+#include "date_time.h"
 #include "scheduler_config.h"
 #include "timer_config.h"
+
 
 
 // The current state of the state machine
@@ -19,7 +20,7 @@ void state_machine_init()
     clearDisplay();
     current_state = STATE_WATCH_FACE;
     date_time_init(state_machine_refresh_screen);
-    initStructs(); // FIXME I think using this function is funky...
+    lcd_builder_init_structs(); // FIXME I think using this function is funky...
     state_machine_refresh_screen();
 }
 
@@ -27,27 +28,27 @@ void state_machine_refresh_screen()
 {
     switch (current_state) {
         case STATE_WATCH_FACE:
-            buildWatchFace_LCD();
+            lcd_builder_build_watch_face();
             break;
 
         case STATE_STEPS:
         case STATE_STEPS_GOAL:
-            buildSteps_LCD();
+            lcd_builder_build_steps();
             break;
 
         case STATE_RUN_TIMER_OFF:
         case STATE_RUN_TIMER_ON:
-            buildRun_LCD();
+            lcd_builder_build_run();
             break;
 
         case STATE_GPS_OFF:
         case STATE_GPS_ON:
-            buildGPS_LCD();
+            lcd_builder_build_gps();
             break;
 
-        case STATE_TIMER_OFF:
-        case STATE_TIMER_ON:
-            buildTimer_LCD();
+        case STATE_STOPWATCH_TIMER_OFF:
+        case STATE_STOPWATCH_TIMER_ON:
+            lcd_builder_build_stopwatch();
             break;
 
         default: // ERROR
@@ -80,8 +81,8 @@ void state_machine_on_button_0()
 
         case STATE_STEPS_GOAL:
             // Cycle numbers in step goal
-            if (++STEPS_DATA.goal[STEPS_DATA.goal_digit] > 9) {
-                STEPS_DATA.goal[STEPS_DATA.goal_digit] = 0;
+            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > 9) {
+                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = 0;
             }
             state_machine_refresh_screen();
             break;
@@ -96,12 +97,13 @@ void state_machine_on_button_0()
             // Run timer reset
             current_state = STATE_RUN_TIMER_OFF;
             timer_stop_1hz_periodic_1();
-            runTimerReset();
+            lcd_builder_run_data.timer_running = false;
+            lcd_builder_build_run();
             state_machine_refresh_screen();
             break;
 
         case STATE_GPS_OFF:
-            current_state = STATE_TIMER_OFF;
+            current_state = STATE_STOPWATCH_TIMER_OFF;
             clearDisplay();
             state_machine_refresh_screen();
             break;
@@ -110,15 +112,15 @@ void state_machine_on_button_0()
             // No effect 
             break;
 
-        case STATE_TIMER_OFF:
+        case STATE_STOPWATCH_TIMER_OFF:
             current_state = STATE_WATCH_FACE;
             clearDisplay();
             state_machine_refresh_screen();
             break;
 
-        case STATE_TIMER_ON:
+        case STATE_STOPWATCH_TIMER_ON:
             // Lap timer 
-            timerLap();
+            lcd_builder_stopwatch_timer_lap();
             break;
 
         default: // ERROR
@@ -126,7 +128,6 @@ void state_machine_on_button_0()
             break;
     }
 }
-
 
 // Select
 void state_machine_on_button_1()
@@ -144,13 +145,13 @@ void state_machine_on_button_1()
         case STATE_STEPS:
             // Go to goal setting
             current_state = STATE_STEPS_GOAL;
-            STEPS_DATA.goal_digit = 0;
+            lcd_builder_step_data.goal_digit = 0;
             state_machine_refresh_screen();
             break;
 
         case STATE_STEPS_GOAL:
             // Go to next goal digit
-            if (++STEPS_DATA.goal_digit > 4) {
+            if (++lcd_builder_step_data.goal_digit > 4) {
                 current_state = STATE_STEPS;
             }
             state_machine_refresh_screen();
@@ -159,20 +160,20 @@ void state_machine_on_button_1()
         case STATE_RUN_TIMER_OFF:
             // Start timer
             current_state = STATE_RUN_TIMER_ON;
-            runTimerReset();
+            lcd_builder_run_timer_reset();
             timer_start_1hz_periodic_1(); 
-            RUN_DATA.startFlag = true;
+            lcd_builder_run_data.timer_running = true;
             state_machine_refresh_screen();
             break;
 
         case STATE_RUN_TIMER_ON:
             // Pause or restart timer
-            if (RUN_DATA.startFlag) {
+            if (lcd_builder_run_data.timer_running) {
                 timer_stop_1hz_periodic_1();
-                RUN_DATA.startFlag = false;
+                lcd_builder_run_data.timer_running = false;
             } else {
                 timer_start_1hz_periodic_1();
-                RUN_DATA.startFlag = true;
+                lcd_builder_run_data.timer_running = true;
             }
             state_machine_refresh_screen();
             break;
@@ -183,15 +184,15 @@ void state_machine_on_button_1()
         case STATE_GPS_ON:
             break;
 
-        case STATE_TIMER_OFF:
-            timerReset();
+        case STATE_STOPWATCH_TIMER_OFF:
+            lcd_builder_stopwatch_timer_reset();
             timer_start_10hz_periodic();
-            current_state = STATE_TIMER_ON;
+            current_state = STATE_STOPWATCH_TIMER_ON;
             break;
 
-        case STATE_TIMER_ON:
+        case STATE_STOPWATCH_TIMER_ON:
             timer_stop_10hz_periodic();
-            current_state = STATE_TIMER_OFF;
+            current_state = STATE_STOPWATCH_TIMER_OFF;
             break;
 
         default: // ERROR
@@ -199,7 +200,6 @@ void state_machine_on_button_1()
     }
 
 }
-
 
 // TODO ?
 void state_machine_on_button_2()
@@ -219,9 +219,9 @@ void state_machine_on_button_2()
             break;
         case STATE_GPS_ON:
             break;
-        case STATE_TIMER_OFF:
+        case STATE_STOPWATCH_TIMER_OFF:
             break;
-        case STATE_TIMER_ON:
+        case STATE_STOPWATCH_TIMER_ON:
             break;
         default: // ERROR
             break;

@@ -25,6 +25,7 @@
 #include "spi_driver.h"
 #include "lcd_builder.h"
 #include "state_machine.h"
+#include "date_time.h"
 
 #include "blue_dev_board.h"
 
@@ -126,6 +127,7 @@ static void buttons_init()
     APP_ERROR_CHECK(error_code);
 }
 
+// TODO this should probably be moved to state_machine.c
 /**
  * The function to run when the 10 Hz timer from timer_config goes off. We are
  * using it to count tenths of seconds for the stopwatch.
@@ -134,18 +136,19 @@ static void buttons_init()
  */
 void task_10hz(void * arg_ptr)
 {
-    if (++TIMER_DATA.timer_tenths > 9) {
-        TIMER_DATA.timer_tenths = 0;
-        if (++TIMER_DATA.timer_seconds > 59) { 
-            TIMER_DATA.timer_seconds = 0;
-            if (++TIMER_DATA.timer_minutes > 59) { 
-                TIMER_DATA.timer_minutes = 0;
+    if (++lcd_builder_stopwatch_data.timer_tenths > 9) {
+        lcd_builder_stopwatch_data.timer_tenths = 0;
+        if (++lcd_builder_stopwatch_data.timer_seconds > 59) { 
+            lcd_builder_stopwatch_data.timer_seconds = 0;
+            if (++lcd_builder_stopwatch_data.timer_minutes > 59) { 
+                lcd_builder_stopwatch_data.timer_minutes = 0;
             }
         }
     }
     state_machine_refresh_screen();
 }
 
+// TODO this should probably be moved to state_machine.c
 /**
  * The function to run when the 1 Hz timer number 1 from timer_config goes off.
  * We are using it to count seconds for the run timer.
@@ -154,18 +157,19 @@ void task_10hz(void * arg_ptr)
  */
 void task_1hz_1(void * arg_ptr)
 {
-    if (++RUN_DATA.timer_seconds > 59) {
-        RUN_DATA.timer_seconds = 0;
-        if (++RUN_DATA.timer_minutes > 59) { 
-            RUN_DATA.timer_minutes = 0;
-            if (++RUN_DATA.timer_hours > 23) { 
-                RUN_DATA.timer_hours = 0;
+    if (++lcd_builder_run_data.timer_seconds > 59) {
+        lcd_builder_run_data.timer_seconds = 0;
+        if (++lcd_builder_run_data.timer_minutes > 59) { 
+            lcd_builder_run_data.timer_minutes = 0;
+            if (++lcd_builder_run_data.timer_hours > 23) { 
+                lcd_builder_run_data.timer_hours = 0;
             }
         }
     }
     state_machine_refresh_screen();
 }
 
+// TODO this should probably be moved to state_machine.c
 // TODO decide on functionality
 /**
  * The function to run when the 1 Hz timer number 0 from timer_config goes off.
@@ -181,7 +185,7 @@ void task_1hz_0(void * arg_ptr)
     --battery_level;
     ++heart_rate_bpm;
     //----
-    STEPS_DATA.steps = get_steps();
+    lcd_builder_step_data.steps = get_steps();
     date_time_increment_second();
 }
 
@@ -202,12 +206,12 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
         case PACKET_TYPE_REQUEST_PED_STEP_COUNT:
             // Send step count
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
-            uint32_t step_count_rev = __REV(STEPS_DATA.steps);
+            uint32_t step_count_rev = __REV(lcd_builder_step_data.steps);
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
                 (void *) &step_count_rev,
-                sizeof(STEPS_DATA.steps),
+                sizeof(lcd_builder_step_data.steps),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
