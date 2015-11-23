@@ -33,6 +33,7 @@ void drawLine(uint8_t line);
 void transferToBitmap(uint8_t data);
 void clearLines(uint8_t start, uint8_t end);
 
+void transferString(char * s);
 void transferChar(char c);
 void transferSmallNumInt(int num);
 void transferBigNumInt(int num);

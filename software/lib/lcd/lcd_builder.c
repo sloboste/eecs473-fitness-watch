@@ -19,6 +19,9 @@
 /**************************************************************************/  
 
 void initStructs(){
+
+  //TIMER
+  TIMER_DATA.lapCounter = 1;
   
   lcd_builder_bluetooth_state = BLE_STATE_IDLE;
 
@@ -74,17 +77,10 @@ void buildGPS_LCD(){
     setCursor(0, 17);
 
     Cursor.row++;
-    transferChar('g');
-    transferChar('p');
-    transferChar('s');
+    transferString("gps");
     Cursor.row++;
 
-    transferChar('c');
-    transferChar('o');
-    transferChar('o');
-    transferChar('r');
-    transferChar('d');
-    transferChar('s');
+    transferString("coords");
 
     drawLine(32);
     setCursor(0, 36);
@@ -121,19 +117,13 @@ void buildGPS_LCD(){
     drawLine(65);
 
     setCursor(0, 69);
-    transferChar('a');
-    transferChar('l');
-    transferChar('t');
+    transferString("alt");
     transferSpecialChar(':');
     Cursor.row++;
     transferSmallNumInt(GPS_DATA.altitude);
 
     setCursor(0, 83);
-    transferChar('s');
-    transferChar('p');
-    transferChar('e');
-    transferChar('e');
-    transferChar('d');
+    transferString("speed");
     transferSpecialChar(':');
     Cursor.row++;
     transferSmallNumInt(GPS_DATA.ground_speed);
@@ -156,15 +146,16 @@ void timerReset()
 void timerLap()
 {
     CRITICAL_REGION_ENTER();
-    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
-    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
-    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
-    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
-    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
-    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
-    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
-    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
-    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
+    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.lapTimesMin[1];
+    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.lapTimesSec[1];
+    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.lapTimesTenths[1];
+    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[2];
+    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[2];
+    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[2];
+    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.timer_minutes;
+    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.timer_seconds;
+    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.timer_tenths;
+    TIMER_DATA.lapCounter++;
     CRITICAL_REGION_EXIT();
 }
 
@@ -174,11 +165,7 @@ void buildTimer_LCD()
   clearLines(13,96);
   setCursor(0, 14);
 
-  transferChar('t');
-  transferChar('i');
-  transferChar('m');
-  transferChar('e');
-  transferChar('r');
+  transferString("timer");
 
   setCursor(0, 28);
   if(TIMER_DATA.timer_minutes < 10){
@@ -200,7 +187,10 @@ void buildTimer_LCD()
   setCursor(0, 56);
 
   transferChar('l');
-  transferSmallNumInt(1);
+  if (TIMER_DATA.lapCounter > 3)
+    transferSmallNumInt(TIMER_DATA.lapCounter-2);
+  else
+    transferSmallNumInt(1);
   transferSpecialChar(':');
   Cursor.row++;
 
@@ -222,7 +212,10 @@ void buildTimer_LCD()
   setCursor(0, 70);
   
   transferChar('l');
-  transferSmallNumInt(2);
+  if (TIMER_DATA.lapCounter > 3)
+    transferSmallNumInt(TIMER_DATA.lapCounter-1);
+  else
+    transferSmallNumInt(2);
   transferSpecialChar(':');
   Cursor.row++;
 
@@ -244,7 +237,10 @@ void buildTimer_LCD()
   setCursor(0, 84);
   
   transferChar('l');
-  transferSmallNumInt(3);
+  if (TIMER_DATA.lapCounter > 3)
+    transferSmallNumInt(TIMER_DATA.lapCounter);
+  else
+    transferSmallNumInt(3);
   transferSpecialChar(':');
   Cursor.row++;
 
@@ -278,11 +274,7 @@ void buildSteps_LCD()
   clearLines(13,96);
   setCursor(0, 20);
 
-  transferChar('s');
-  transferChar('t');
-  transferChar('e');
-  transferChar('p');
-  transferChar('s');
+  transferString("steps");
 
   setCursor(1, 38);
   if(STEPS_DATA.steps < 10000){
@@ -300,8 +292,7 @@ void buildSteps_LCD()
   transferBigNumInt(STEPS_DATA.steps);
 
   setCursor(4, 66);
-  transferChar('o');
-  transferChar('f');
+  transferString("of");
   Cursor.row++;
   for (i = 0; i < 5; i++)
   {
@@ -327,10 +318,7 @@ void buildSteps_LCD()
   drawLine(82);
 
   setCursor(0, 84);
-  transferChar('l');
-  transferChar('a');
-  transferChar('s');
-  transferChar('t');
+  transferString("last");
   transferSpecialChar(':');
   Cursor.row++;
   if(STEPS_DATA.yesterdaySteps < 10000){
@@ -372,9 +360,7 @@ void buildWatchFace_LCD() {
         Cursor.row += 2;
     }
     Cursor.row += 5;
-    transferChar('e');
-    transferChar('i');
-    transferChar('r');
+    transferString("eir");
 
     setCursor(1, 37);
 
@@ -398,15 +384,11 @@ void buildWatchFace_LCD() {
 
     // TODO Make date dynamic
     setCursor(1, 82);
-    transferChar('s');
-    transferChar('a');
-    transferChar('t');
+    transferString(TIME.day_str);
     Cursor.row++;
-    transferChar('d');
-    transferChar('e');
-    transferChar('c');
+    transferString(TIME.month_str);
     Cursor.row++;
-    transferSmallNumInt(12);
+    transferSmallNumInt(TIME.day_num);
 }
 
 /**************************************************************************/
@@ -424,14 +406,9 @@ void buildRun_LCD(){
   clearLines(13,96);
   setCursor(0, 14);
 
-  transferChar('r');
-  transferChar('u');
-  transferChar('n');
+  transferString("run");
   Cursor.row++;
-  transferChar('t');
-  transferChar('i');
-  transferChar('m');
-  transferChar('e');
+  transferString("time");
 
   setCursor(0, 28);
   if(RUN_DATA.timer_hours < 10){
@@ -453,32 +430,17 @@ void buildRun_LCD(){
   setCursor(5,52);
   if(RUN_DATA.startFlag)
   {
-  	transferChar('r');
-	  transferChar('u');
-	  transferChar('n');
-	  transferChar('n');
-	  transferChar('i');
-    transferChar('n');
-    transferChar('g');
+  	transferString("running");
   }
   else
   {
-  	transferChar('s');
-	  transferChar('t');
-	  transferChar('o');
-	  transferChar('p');
-    transferChar('p');
-    transferChar('e');
-    transferChar('d');
+  	transferString("stopped");
   }
 
   drawLine(68);
 
   setCursor(0, 70);
-  transferChar('d');
-  transferChar('i');
-  transferChar('s');
-  transferChar('t');
+  transferString("dist");
   transferSpecialChar(':');
   Cursor.row+=2;
   
@@ -491,10 +453,7 @@ void buildRun_LCD(){
   drawLine(82);
 
   setCursor(0, 84);
-  transferChar('p');
-  transferChar('a');
-  transferChar('c');
-  transferChar('e');
+  transferString("pace");
   transferSpecialChar(':');
   Cursor.row+=2;
   transferSmallNumInt(RUN_DATA.pace_minutes);
@@ -526,7 +485,7 @@ void buildTopBar_LCD(){
         transferChar('a');
     } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
         transferSpecialChar('&'); // Bluetooth symbol
-        transferChar('c');
+        //transferChar('c');    // Took this out for aesthetics
     } else {
         Cursor.row += 2;
     }

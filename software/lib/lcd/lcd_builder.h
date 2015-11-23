@@ -21,6 +21,10 @@ struct time_struct {
 	uint8_t minutes;
 	uint8_t seconds;
 	uint8_t milli;  // FIXME data type
+
+    char * day_str;
+    char * month_str;
+    uint8_t day_num;
 } TIME;
 
 struct GPS_LCD_DATA {
@@ -54,6 +58,8 @@ struct TIMER_LCD_DATA {
     uint8_t lapTimesSec[3];
     uint8_t lapTimesTenths[3];
 
+    uint8_t lapCounter;
+
     uint8_t timer_minutes;
     uint8_t timer_seconds;
     uint8_t timer_tenths;
@@ -82,6 +88,7 @@ void buildSteps_LCD();
 
 void buildRun_LCD();
 
+void WatchFaceHelper();
 void buildWatchFace_LCD();
 
 #endif

@@ -76,12 +76,35 @@ void initCursor(){
 
 /**************************************************************************/
 /*!
+    @brief    Takes in a string and places it at the cursor 
+    @         location on the bitmap.  Function auto increments and 
+    @         repositions cursor to keep text from falling off the screen. 
+    @         This function should be used if you want a small font.   
+
+    @size     Each charachter uses 1 row on 9 lines, 12 charachters per
+              with around 10 lines available
+*/
+/**************************************************************************/  
+
+void transferString(char * s){
+  int i;
+  for (i = 0; s[i] != '\0' ; i++)
+  {
+    if ((int)s[i] > 96)
+      transferChar(s[i]);
+    else
+      transferSmallNumInt((int)s[i]-'0');
+  }
+}
+
+/**************************************************************************/
+/*!
     @brief    Takes in a lowercase letter and places it at the cursor 
     @         location on the bitmap.  Function auto increments and 
     @         repositions cursor to keep text from falling off the screen. 
     @         This function should be used if you want a small font.   
 
-    @size     Uses 1 row1 on 9 lines 
+    @size     Uses 1 row on 9 lines 
 */
 /**************************************************************************/  
 
