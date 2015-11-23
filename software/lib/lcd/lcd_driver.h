@@ -42,6 +42,8 @@ void transferSpecialBigChar(char c);
 
 void transferBatteryLevel(int num);
 
+void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines);
+
 /* ***************************** */
 /* LCD Transfer Helper Functions */
 /* ***************************** */

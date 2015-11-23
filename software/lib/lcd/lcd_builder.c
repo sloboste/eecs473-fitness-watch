@@ -492,7 +492,9 @@ void buildRun_LCD(){
 
 void buildTopBar_LCD(date_time_t * date_time_ptr, bool time){
     clearLines(1,11);
-    drawLine(12);
+    if (time) {
+        drawLine(12);
+    }
     setCursor(0,1);
     transferBatteryLevel(3);
     if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {

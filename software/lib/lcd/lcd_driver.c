@@ -433,6 +433,22 @@ uint8_t reverseBitOrder(uint8_t MSB){
 }
 
 /**************************************************************************/
+/*!
+    @brief    Flips the bit values in uint8_t at position "row", and
+              continues for "lines" number of lines.
+*/
+/**************************************************************************/
+
+void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines)
+{
+    int i;
+    for (i = line; i < (line + numLines); i++)
+    {
+        bitmap[i*12+row] = ~bitmap[i*12+row];
+    }
+}
+
+/**************************************************************************/
 /*! 
     @brief    Clears the screen and bitmap.
 */
