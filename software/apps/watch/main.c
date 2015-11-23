@@ -329,7 +329,7 @@ int main(void)
     while (1) {
         // Run an event from the scheduler queue
         app_sched_execute();
-        // Wait for an event with softdevice enabled
+        // Wait for an event in low power mode with softdevice enabled
         sd_app_evt_wait();
     }
 }
