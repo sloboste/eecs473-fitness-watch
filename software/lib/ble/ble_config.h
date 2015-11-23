@@ -1,65 +1,67 @@
-/**
- *  Configuration of the BLE softdevice stack for the fitness watch application.
+/*  Configuration of the BLE softdevice stack for the Eir watch application.
  */
 
-#ifndef __BLE_CONFIG_H
-#define __BLE_CONFIG_H
+#ifndef BLE_CONFIG_H
+#define BLE_CONFIG_H
 
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "app_util.h"
+#include "ble_gap.h"
 
 #include "watch_service.h"
-// TODO add include for ble_gap stuff
-//#include "???"
 
-/**
- * No structural changes to attributes are allowed.
- */
+
+//No structural changes to attributes are allowed.
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 0
 
-// TODO Should we change this or just use the stop_advertising function?
-/**
- * Time in seconds for which the device must be advertising. 0 disables timeout.
- */
+// Time in seconds for which the device must be advertising. 0 disables timeout.
 #define APP_ADV_TIMEOUT_SECONDS         0    
 
-/**
- * The advertising interval. This affects discovery and connect performance.
- * Apple recommends 20ms so we'll do that.
- * https://developer.apple.com/hardwaredrivers/BluetoothDesignGuidelines.pdf
- */
+// The advertising interval. This affects discovery and connect performance.
+// Apple recommends 20ms so we'll do that.
+// https://developer.apple.com/hardwaredrivers/BluetoothDesignGuidelines.pdf
 #define APP_ADV_INTERVAL                MSEC_TO_UNITS(20, UNIT_0_625_MS)
 
-// TODO Customize
-/** 
- * BLE connection parameters. See link for description.
- * https://devzone.nordicsemi.com/question/60/what-is-connection-parameters/
- */
+// TODO Tune these
+// BLE connection parameters. See link for description.
+// https://devzone.nordicsemi.com/question/60/what-is-connection-parameters/
 #define CONN_INTERVAL_MIN               BLE_GAP_CP_MIN_CONN_INTVL_MIN
 #define CONN_INTERVAL_MAX               BLE_GAP_CP_MIN_CONN_INTVL_MAX
 #define CONN_SLAVE_LATENCY              0
 #define CONN_SUPERVISION_TIMEOUT        BLE_GAP_CP_CONN_SUP_TIMEOUT_MAX 
 
+// The states of the BLE device that are passed to on_ble_adv_con when called.
 #define BLE_STATE_IDLE          0
 #define BLE_STATE_ADVERTISING   1
 #define BLE_STATE_CONNECTED     2
 
+
 /**
  * Call this to set up the BLE configuration.
  *
- * NOTE: the timers must have already been set up properly otherwise the
- *       softdevice won't work properly.
+ * Note: the timers must have already been set up properly otherwise the
+ *       softdevice won't work properly (it needs Nordic's app_timer module for
+ *       the connection parameter timing).
+ *
+ * handler -- the request handler function for the BLE watch service.
+ * on_ble_adv_con -- the handler function for BLE advertising and connection
+ *                   status changes. Use this to know when the device is
+ *                   advertising, connected, or neither.
  */
 extern void ble_init(ble_watch_request_handler_t handler,
                      void (*on_ble_adv_con)(uint8_t));
 
 /**
- * Call this to start sending BLE advertising packets.
+ * Start sending BLE advertising packets. The device will contiue to advertise
+ * until it is connected to or ble_advertising_stop is called.
  */
-extern void advertising_start(void);
+extern void ble_advertising_start();
 
 /**
- * Call this to stop sending BLE advertising packets.
+ * Stop sending BLE advertising packets.
  */
-void advertising_stop(void);
+void ble_advertising_stop();
 
 #endif

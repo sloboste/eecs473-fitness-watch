@@ -142,9 +142,9 @@ void state_machine_on_button_1()
     switch (current_state) {
         case STATE_WATCH_FACE:
             if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
-                advertising_stop();
+                ble_advertising_stop();
             } else if (lcd_builder_bluetooth_state == BLE_STATE_IDLE) {
-                advertising_start();
+                ble_advertising_start();
             }
             state_machine_refresh_screen();
             break;
