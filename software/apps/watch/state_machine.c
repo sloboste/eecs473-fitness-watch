@@ -18,8 +18,8 @@ void state_machine_init()
 {
     clearDisplay();
     current_state = STATE_WATCH_FACE;
-initStructs(); // FIXME I think using this function is funky...
     date_time_init(state_machine_refresh_screen);
+    initStructs(); // FIXME I think using this function is funky...
     state_machine_refresh_screen();
 }
 
@@ -80,8 +80,7 @@ void state_machine_on_button_0()
 
         case STATE_STEPS_GOAL:
             // Cycle numbers in step goal
-            ++STEPS_DATA.goal[STEPS_DATA.goal_digit];
-            if (STEPS_DATA.goal[STEPS_DATA.goal_digit] > 9) {
+            if (++STEPS_DATA.goal[STEPS_DATA.goal_digit] > 9) {
                 STEPS_DATA.goal[STEPS_DATA.goal_digit] = 0;
             }
             state_machine_refresh_screen();
@@ -151,8 +150,7 @@ void state_machine_on_button_1()
 
         case STATE_STEPS_GOAL:
             // Go to next goal digit
-            ++STEPS_DATA.goal_digit;
-            if (STEPS_DATA.goal_digit == 5) {
+            if (++STEPS_DATA.goal_digit > 4) {
                 current_state = STATE_STEPS;
             }
             state_machine_refresh_screen();
