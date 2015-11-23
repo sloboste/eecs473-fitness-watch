@@ -144,15 +144,22 @@ void timerReset()
 void timerLap()
 {
     CRITICAL_REGION_ENTER();
-    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.lapTimesMin[1];
-    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.lapTimesSec[1];
-    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.lapTimesTenths[1];
-    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[2];
-    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[2];
-    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[2];
-    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.timer_minutes;
-    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.timer_seconds;
-    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.timer_tenths;
+    if (TIMER_DATA.lapCounter > 3){
+        TIMER_DATA.lapTimesMin[0] = TIMER_DATA.lapTimesMin[1];
+        TIMER_DATA.lapTimesSec[0] = TIMER_DATA.lapTimesSec[1];
+        TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.lapTimesTenths[1];
+        TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[2];
+        TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[2];
+        TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[2];
+        TIMER_DATA.lapTimesMin[2] = TIMER_DATA.timer_minutes;
+        TIMER_DATA.lapTimesSec[2] = TIMER_DATA.timer_seconds;
+        TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.timer_tenths;
+    }
+    else{
+        TIMER_DATA.lapTimesMin[TIMER_DATA.lapCounter] = TIMER_DATA.timer_minutes;
+        TIMER_DATA.lapTimesSec[TIMER_DATA.lapCounter] = TIMER_DATA.timer_seconds;
+        TIMER_DATA.lapTimesTenths[TIMER_DATA.lapCounter] = TIMER_DATA.timer_tenths;
+    }
     TIMER_DATA.lapCounter++;
     CRITICAL_REGION_EXIT();
 }
@@ -162,100 +169,114 @@ void buildTimer_LCD()
     date_time_t date_time;
     date_time_get_current_date_time(&date_time);
     buildTopBar_LCD(&date_time, true);
-  clearLines(13,96);
-  setCursor(0, 14);
+    clearLines(13,96);
+    setCursor(0, 14);
 
-  transferString("timer");
+    transferString("stop");
+    Cursor.row++;
+    transferString("watch");
 
-  setCursor(0, 28);
-  if(TIMER_DATA.timer_minutes < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(TIMER_DATA.timer_minutes);
-  transferSpecialBigChar(':');
-  if(TIMER_DATA.timer_seconds < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(TIMER_DATA.timer_seconds);
-  setCursor(9, 38);
-  transferSpecialChar('.');
-  transferSmallNumInt(TIMER_DATA.timer_tenths);
-  transferSmallNumInt(0);
-
-  drawLine(54);
-
-  setCursor(0, 56);
-
-  transferChar('l');
-  if (TIMER_DATA.lapCounter > 3)
-    transferSmallNumInt(TIMER_DATA.lapCounter-2);
-  else
-    transferSmallNumInt(1);
-  transferSpecialChar(':');
-  Cursor.row++;
-
-  if(TIMER_DATA.lapTimesMin[0] < 10){
+    setCursor(0, 28);
+    if(TIMER_DATA.timer_minutes < 10){
+      transferBigNumInt(0);
+    }
+    transferBigNumInt(TIMER_DATA.timer_minutes);
+    transferSpecialBigChar(':');
+    if(TIMER_DATA.timer_seconds < 10){
+      transferBigNumInt(0);
+    }
+    transferBigNumInt(TIMER_DATA.timer_seconds);
+    setCursor(9, 38);
+    transferSpecialChar('.');
+    transferSmallNumInt(TIMER_DATA.timer_tenths);
     transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
-  transferSpecialChar(':');
-  if(TIMER_DATA.lapTimesSec[0] < 10){
+
+    drawLine(54);
+
+    setCursor(0, 56);
+
+    transferChar('l');
+    if (TIMER_DATA.lapCounter > 3){
+        transferSmallNumInt(TIMER_DATA.lapCounter-2);
+    }
+    else{
+        transferSmallNumInt(1);
+    }
+    transferSpecialChar(':');
+    if (TIMER_DATA.lapCounter < 10){
+        Cursor.row++;
+    }
+
+    if(TIMER_DATA.lapTimesMin[0] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
+    transferSpecialChar(':');
+    if(TIMER_DATA.lapTimesSec[0] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
+    transferSpecialChar('.');
+    transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
     transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
-  transferSpecialChar('.');
-  transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
-  transferSmallNumInt(0);
 
-  drawLine(68);
+    drawLine(68);
 
-  setCursor(0, 70);
-  
-  transferChar('l');
-  if (TIMER_DATA.lapCounter > 3)
-    transferSmallNumInt(TIMER_DATA.lapCounter-1);
-  else
-    transferSmallNumInt(2);
-  transferSpecialChar(':');
-  Cursor.row++;
+    setCursor(0, 70);
+    
+    transferChar('l');
+    if (TIMER_DATA.lapCounter > 3){
+        transferSmallNumInt(TIMER_DATA.lapCounter-1);
+    }
+    else{
+        transferSmallNumInt(2);
+    }
+    transferSpecialChar(':');
+    if (TIMER_DATA.lapCounter < 10){
+        Cursor.row++;
+    }
 
-  if(TIMER_DATA.lapTimesMin[1] < 10){
+    if(TIMER_DATA.lapTimesMin[1] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
+    transferSpecialChar(':');
+    if(TIMER_DATA.lapTimesSec[1] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
+    transferSpecialChar('.');
+    transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
     transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
-  transferSpecialChar(':');
-  if(TIMER_DATA.lapTimesSec[1] < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
-  transferSpecialChar('.');
-  transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
-  transferSmallNumInt(0);
 
-  drawLine(82);
+    drawLine(82);
 
-  setCursor(0, 84);
-  
-  transferChar('l');
-  if (TIMER_DATA.lapCounter > 3)
-    transferSmallNumInt(TIMER_DATA.lapCounter);
-  else
-    transferSmallNumInt(3);
-  transferSpecialChar(':');
-  Cursor.row++;
+    setCursor(0, 84);
+    
+    transferChar('l');
+    if (TIMER_DATA.lapCounter > 3){
+        transferSmallNumInt(TIMER_DATA.lapCounter);
+    }
+    else{
+        transferSmallNumInt(3);
+    }
+    transferSpecialChar(':');
+    if (TIMER_DATA.lapCounter < 10){
+        Cursor.row++;
+    }
 
-  if(TIMER_DATA.lapTimesMin[2] < 10){
+    if(TIMER_DATA.lapTimesMin[2] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
+    transferSpecialChar(':');
+    if(TIMER_DATA.lapTimesSec[2] < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
+    transferSpecialChar('.');
+    transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
     transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
-  transferSpecialChar(':');
-  if(TIMER_DATA.lapTimesSec[2] < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
-  transferSpecialChar('.');
-  transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
-  transferSmallNumInt(0);
 }
 
 /**************************************************************************/
