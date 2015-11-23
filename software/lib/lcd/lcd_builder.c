@@ -21,36 +21,36 @@
 
 void initStructs(){
 
-  //TIMER
-  TIMER_DATA.lapCounter = 0;
-  
-  lcd_builder_bluetooth_state = BLE_STATE_IDLE;
+    //TIMER
+    TIMER_DATA.lapCounter = 0;
+    
+    lcd_builder_bluetooth_state = BLE_STATE_IDLE;
 
-  // GPS
-  GPS_DATA.longitude = "012 23.5678 S";
-  GPS_DATA.latitude = "98 87.5432 W";
-  GPS_DATA.altitude = 5898;
-  GPS_DATA.ground_speed = 23;
+    // GPS
+    GPS_DATA.longitude = "012 23.5678 S";
+    GPS_DATA.latitude = "98 87.5432 W";
+    GPS_DATA.altitude = 5898;
+    GPS_DATA.ground_speed = 23;
 
-  // RUN - DONE
-	RUN_DATA.meters = 1260;
+    // RUN - DONE
+  	RUN_DATA.meters = 1260;
 
-	RUN_DATA.pace_minutes = 3;
-	RUN_DATA.pace_seconds = 12;
+  	RUN_DATA.pace_minutes = 3;
+  	RUN_DATA.pace_seconds = 12;
 
-	RUN_DATA.timer_hours = 14;
-	RUN_DATA.timer_minutes = 69;
-	RUN_DATA.timer_seconds = 59;
+  	RUN_DATA.timer_hours = 14;
+  	RUN_DATA.timer_minutes = 69;
+  	RUN_DATA.timer_seconds = 59;
 
-	RUN_DATA.startFlag = false;
+  	RUN_DATA.startFlag = false;
 
-    // TIMER
-    timerReset();
+      // TIMER
+      timerReset();
 
-  // RUN - DONE
-  STEPS_DATA.steps = 12345;
-  STEPS_DATA.yesterdaySteps = 54321;
-  memset(&STEPS_DATA.goal, 4, 5);
+    // RUN - DONE
+    STEPS_DATA.steps = 12345;
+    STEPS_DATA.yesterdaySteps = 54321;
+    memset(&STEPS_DATA.goal, 4, 5);
 }
 
 /* ******************* */
@@ -274,58 +274,41 @@ void buildTimer_LCD()
 
 void buildSteps_LCD()
 {
-  int i;
+    int i;
     date_time_t date_time;
     date_time_get_current_date_time(&date_time);
     buildTopBar_LCD(&date_time, true);
-  clearLines(13,96);
-  setCursor(0, 20);
+    clearLines(13,96);
+    setCursor(0, 20);
 
-  transferString("steps");
+    transferString("steps");
 
-  setCursor(1, 38);
-  if(STEPS_DATA.steps < 10000){
-    transferBigNumInt(0);
-  }
-  if(STEPS_DATA.steps < 1000){
-    transferBigNumInt(0);
-  }
-  if(STEPS_DATA.steps < 100){
-    transferBigNumInt(0);
-  }
-  if(STEPS_DATA.steps < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(STEPS_DATA.steps);
-
-  setCursor(4, 66);
-  transferString("of");
-  Cursor.row++;
-  for (i = 0; i < 5; i++)
-  {
-    transferSmallNumInt(STEPS_DATA.goal[i]);
-    if (STEPS_DATA.oal_digit == i)
-    {
-      invertBitMap(7+i, 66, 9);
+    setCursor(1, 38);
+    if(STEPS_DATA.steps < 10000){
+        transferBigNumInt(0);
     }
+    if(STEPS_DATA.steps < 1000){
+        transferBigNumInt(0);
+    }
+    if(STEPS_DATA.steps < 100){
+        transferBigNumInt(0);
+    }
+    if(STEPS_DATA.steps < 10){
+        transferBigNumInt(0);
+    }
+    transferBigNumInt(STEPS_DATA.steps);
 
-  }
-
-  // drawLine(68);
-
-  // setCursor(0, 70);
-  // transferChar('d');
-  // transferChar('i');
-  // transferChar('s');
-  // transferChar('t');
-  // transferSpecialChar(':');
-  // Cursor.row+=2;
-  
-  // // THERE IS A BETTER WAY TO DO THIS
-  // transferSmallNumInt(RUN_DATA.meters/1000);
-  // transferSpecialChar('.');
-  // transferSmallNumInt((RUN_DATA.meters%1000)/100);
-  // transferSmallNumInt((RUN_DATA.meters%100)/10);
+    setCursor(4, 66);
+    transferString("of");
+    Cursor.row++;
+    for (i = 0; i < 5; i++)
+    {
+        transferSmallNumInt(STEPS_DATA.goal[i]);
+        if (STEPS_DATA.oal_digit == i)
+        {
+            invertBitMap(7+i, 66, 9);
+        }
+    }
 
   drawLine(82);
 
@@ -382,13 +365,13 @@ void buildWatchFace_LCD() {
     setCursor(1, 37);
 
     if(date_time.hours < 10){
-    transferBigNumInt(0);
+        transferBigNumInt(0);
     }
     transferBigNumInt(date_time.hours);
     transferBigNumInt(99999); // Big colon
     //transferSpecialBigChar(':');
     if(date_time.minutes < 10){
-    transferBigNumInt(0);
+        transferBigNumInt(0);
     }
     transferBigNumInt(date_time.minutes);
 
@@ -423,62 +406,62 @@ void buildRun_LCD(){
     date_time_get_current_date_time(&date_time);
     buildTopBar_LCD(&date_time, true);
 
-  clearLines(13,96);
-  setCursor(0, 14);
+    clearLines(13,96);
+    setCursor(0, 14);
 
-  transferString("run");
-  Cursor.row++;
-  transferString("time");
+    transferString("run");
+    Cursor.row++;
+    transferString("time");
 
-  setCursor(0, 28);
-  if(RUN_DATA.timer_hours < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(RUN_DATA.timer_hours);
-  transferSpecialBigChar(':');
-  if(RUN_DATA.timer_minutes < 10){
-    transferBigNumInt(0);
-  }
-  transferBigNumInt(RUN_DATA.timer_minutes);
-  setCursor(9, 38);
-  transferSpecialChar(':');
-  if(RUN_DATA.timer_seconds < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(RUN_DATA.timer_seconds);
+    setCursor(0, 28);
+    if(RUN_DATA.timer_hours < 10){
+        transferBigNumInt(0);
+    }
+    transferBigNumInt(RUN_DATA.timer_hours);
+    transferSpecialBigChar(':');
+    if(RUN_DATA.timer_minutes < 10){
+        transferBigNumInt(0);
+    }
+    transferBigNumInt(RUN_DATA.timer_minutes);
+    setCursor(9, 38);
+    transferSpecialChar(':');
+    if(RUN_DATA.timer_seconds < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(RUN_DATA.timer_seconds);
 
-  if(RUN_DATA.startFlag == flase)
-  {
-    setCursor(5,52);
-  	transferString("stopped");
-  }
+    if(RUN_DATA.startFlag == flase)
+    {
+        setCursor(5,52);
+      	transferString("stopped");
+    }
 
-  drawLine(68);
+    drawLine(68);
 
-  setCursor(0, 70);
-  transferString("dist");
-  transferSpecialChar(':');
-  Cursor.row+=2;
-  
-  // THERE IS A BETTER WAY TO DO THIS
-  transferSmallNumInt(RUN_DATA.meters/1000);
-  transferSpecialChar('.');
-  transferSmallNumInt((RUN_DATA.meters%1000)/100);
-  transferSmallNumInt((RUN_DATA.meters%100)/10);
+    setCursor(0, 70);
+    transferString("dist");
+    transferSpecialChar(':');
+    Cursor.row+=2;
+    
+    // THERE IS A BETTER WAY TO DO THIS
+    transferSmallNumInt(RUN_DATA.meters/1000);
+    transferSpecialChar('.');
+    transferSmallNumInt((RUN_DATA.meters%1000)/100);
+    transferSmallNumInt((RUN_DATA.meters%100)/10);
 
-  drawLine(82);
+    drawLine(82);
 
-  setCursor(0, 84);
-  transferString("pace");
-  transferSpecialChar(':');
-  Cursor.row+=2;
-  transferSmallNumInt(RUN_DATA.pace_minutes);
-  transferSpecialChar(':');
-  if (RUN_DATA.pace_seconds < 10)
-  {
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(RUN_DATA.pace_seconds);
+    setCursor(0, 84);
+    transferString("pace");
+    transferSpecialChar(':');
+    Cursor.row+=2;
+    transferSmallNumInt(RUN_DATA.pace_minutes);
+    transferSpecialChar(':');
+    if (RUN_DATA.pace_seconds < 10)
+    {
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(RUN_DATA.pace_seconds);
 }
 
   /**************************************************************************/
@@ -519,7 +502,8 @@ void buildTopBar_LCD(date_time_t * date_time_ptr, bool time){
             transferSmallNumInt(0);
         }
         transferSmallNumInt(date_time_ptr->minutes);
-    } else {
+    } 
+    else {
         Cursor.row += 2;
         transferString("eir");
     }

@@ -70,8 +70,8 @@ uint8_t bitmap[(LCD_WIDTH * LCD_HEIGHT)/8] = { 0 };
 */
 /**************************************************************************/ 
 void initCursor(){
-  Cursor.line = 0;
-  Cursor.row = 0;
+    Cursor.line = 0;
+    Cursor.row = 0;
 }
 
 /**************************************************************************/
@@ -87,14 +87,14 @@ void initCursor(){
 /**************************************************************************/  
 
 void transferString(char * s){
-  int i;
-  for (i = 0; s[i] != '\0' ; i++)
-  {
-    if ((int)s[i] > 96)
-      transferChar(s[i]);
-    else
-      transferSmallNumInt((int)s[i]-'0');
-  }
+    int i;
+    for (i = 0; s[i] != '\0' ; i++)
+    {
+        if ((int)s[i] > 96)
+            transferChar(s[i]);
+        else
+            transferSmallNumInt((int)s[i]-'0');
+    }
 }
 
 /**************************************************************************/
@@ -109,24 +109,24 @@ void transferString(char * s){
 /**************************************************************************/  
 
 void transferChar(char c){
-  int i;
-  uint8_t size;
-  size = 9;
-  for (i = 0; i < size; i++){
-    transferToBitmap(chars[9*((int)c - 97)+i]);
-    Cursor.line++;
-  }
-  Cursor.line -= size;
-  Cursor.row++;
-  if (Cursor.row >= 12)
-  {
-    Cursor.row = 0;
-    Cursor.line = Cursor.line + size;
-    if (Cursor.line >= 97)
-    {
-      Cursor.line = 1;
+    int i;
+    uint8_t size;
+    size = 9;
+    for (i = 0; i < size; i++){
+        transferToBitmap(chars[9*((int)c - 97)+i]);
+        Cursor.line++;
     }
-  }
+    Cursor.line -= size;
+    Cursor.row++;
+    if (Cursor.row >= 12)
+    {
+        Cursor.row = 0;
+        Cursor.line = Cursor.line + size;
+        if (Cursor.line >= 97)
+        {
+            Cursor.line = 1;
+        }
+    }
 }
 
 /**************************************************************************/
@@ -141,45 +141,45 @@ void transferChar(char c){
 /**************************************************************************/  
 
 void transferSpecialChar(char c){
-  int i;
-  int offset;
-  uint8_t size;
-  size = 9;
-  if (c == ':')
-  {
-    offset = 26;
-  }
-  if (c == '.')
-  {
-    offset = 27;
-  }
-  if (c == '/')
-  {
-    offset = 28;
-  }
-  if (c == '&')
-  {
-    offset = 29;
-  }
-  if (c == '.')
-  {
-    offset = 30;
-  }
-  for (i = 0; i < size; i++){
-    transferToBitmap(chars[9*offset+i]);
-    Cursor.line++;
-  }
-  Cursor.line -= size;
-  Cursor.row++;
-  if (Cursor.row >= 12)
-  {
-    Cursor.row = 0;
-    Cursor.line = Cursor.line + size;
-    if (Cursor.line >= 97)
+    int i;
+    int offset;
+    uint8_t size;
+    size = 9;
+    if (c == ':')
     {
-      Cursor.line = 1;
+        offset = 26;
     }
-  }
+    if (c == '.')
+    {
+        offset = 27;
+    }
+    if (c == '/')
+    {
+        offset = 28;
+    }
+    if (c == '&')
+    {
+        offset = 29;
+    }
+    if (c == '.')
+    {
+        offset = 30;
+    }
+    for (i = 0; i < size; i++){
+        transferToBitmap(chars[9*offset+i]);
+        Cursor.line++;
+    }
+    Cursor.line -= size;
+    Cursor.row++;
+    if (Cursor.row >= 12)
+    {
+        Cursor.row = 0;
+        Cursor.line = Cursor.line + size;
+        if (Cursor.line >= 97)
+        {
+            Cursor.line = 1;
+        }
+    }
 }
 
 /**************************************************************************/
@@ -196,29 +196,29 @@ void transferSpecialChar(char c){
 /**************************************************************************/ 
 
 void transferSpecialBigChar(char c){
-  uint8_t i;
-  uint8_t offset;
-  uint8_t size;
-  size = 19;
-  if (c == ':')
-  {
-    offset = 11;
-  }
-  for (i = 0; i < size; i++){
-    transferToBitmap(bignums[19*2*offset+i]);
-    Cursor.line++;
-  }
-  Cursor.line -= size;
-  Cursor.row++;
-  if (Cursor.row >= 12)
-  {
-    Cursor.row = 0;
-    Cursor.line = Cursor.line + size;
-    if (Cursor.line >= 97)
+    uint8_t i;
+    uint8_t offset;
+    uint8_t size;
+    size = 19;
+    if (c == ':')
     {
-      Cursor.line = 1;
+        offset = 11;
     }
-  }
+    for (i = 0; i < size; i++){
+        transferToBitmap(bignums[19*2*offset+i]);
+        Cursor.line++;
+    }
+    Cursor.line -= size;
+    Cursor.row++;
+    if (Cursor.row >= 12)
+    {
+        Cursor.row = 0;
+        Cursor.line = Cursor.line + size;
+        if (Cursor.line >= 97)
+        {
+            Cursor.line = 1;
+        }
+    }
 }
 
 /**************************************************************************/
@@ -234,44 +234,44 @@ void transferSpecialBigChar(char c){
 /**************************************************************************/ 
 
 void transferSmallNumInt(int num){
-  int divisor;
-  int numCopy;
-  uint8_t size;
-  uint8_t realNum;
-  uint8_t i;
-  uint8_t j;
-  uint8_t numLength;
-  size = 9;
-  numCopy = num;
-  divisor = 1;
-  for (numLength = 0; numCopy != 0 || numLength == 0;){
-    numCopy = numCopy / 10;
-    numLength++;
-  }
-  for (i = 0; i < numLength-1; i++){
-    divisor = divisor * 10;
-  }
-  for (i = 0; i < numLength; i++){
-    realNum = num/divisor;
-    for (j = 0; j < size; j++)
-    {
-      transferToBitmap(smallnums[9*(realNum)+j]);
-      Cursor.line++;
+    int divisor;
+    int numCopy;
+    uint8_t size;
+    uint8_t realNum;
+    uint8_t i;
+    uint8_t j;
+    uint8_t numLength;
+    size = 9;
+    numCopy = num;
+    divisor = 1;
+    for (numLength = 0; numCopy != 0 || numLength == 0;){
+        numCopy = numCopy / 10;
+        numLength++;
     }
-    Cursor.line -= size;
-    num = num % divisor;
-    divisor = divisor / 10;
-    Cursor.row++;
-    if (Cursor.row >= 12)
-    {
-      Cursor.row = 0;
-      Cursor.line = Cursor.line + size;
-      if (Cursor.line >= 97)
-      {
-        Cursor.line = 1;
-      }
+    for (i = 0; i < numLength-1; i++){
+        divisor = divisor * 10;
     }
-  }
+    for (i = 0; i < numLength; i++){
+        realNum = num/divisor;
+        for (j = 0; j < size; j++)
+        {
+            transferToBitmap(smallnums[9*(realNum)+j]);
+            Cursor.line++;
+        }
+        Cursor.line -= size;
+        num = num % divisor;
+        divisor = divisor / 10;
+        Cursor.row++;
+        if (Cursor.row >= 12)
+        {
+            Cursor.row = 0;
+            Cursor.line = Cursor.line + size;
+            if (Cursor.line >= 97)
+            {
+                Cursor.line = 1;
+            }
+        }
+    }
 }
 
 /**************************************************************************/
@@ -287,53 +287,53 @@ void transferSmallNumInt(int num){
 /**************************************************************************/ 
 
 void transferBigNumInt(int num){
-  int divisor;
-  int numCopy;
-  uint8_t realNum;
-  uint8_t i;
-  uint8_t j;
-  uint8_t numLength;
-  uint8_t size;
-  size = 19;
-  numCopy = num;
-  divisor = 1;
-  for (numLength = 0; numCopy != 0 || numLength == 0;){
-    numCopy = numCopy / 10;
-    numLength++;
-  }
-  for (i = 0; i < numLength-1; i++){
-    divisor = divisor * 10;
-  }
-  if (num == 99999)
-  {
+    int divisor;
+    int numCopy;
+    uint8_t realNum;
+    uint8_t i;
+    uint8_t j;
+    uint8_t numLength;
+    uint8_t size;
+    size = 19;
+    numCopy = num;
     divisor = 1;
-    numLength = 1;
-    num = 10;
-  }
-  for (i = 0; i < numLength; i++){
-    realNum = num/divisor;
-    for (j = 0; j < size; j++)
-    {
-      transferToBitmap(bignums[19*2*(realNum)+(j*2)]);
-      Cursor.row++;
-      transferToBitmap(bignums[19*2*(realNum)+(j*2)+1]);
-      Cursor.line++;
-      Cursor.row--;
+    for (numLength = 0; numCopy != 0 || numLength == 0;){
+        numCopy = numCopy / 10;
+        numLength++;
     }
-    Cursor.line -= size;
-    num = num % divisor;
-    divisor = divisor / 10;
-    Cursor.row += 2;
-    if (Cursor.row >= 12)
-    {
-      Cursor.row = 0;
-      Cursor.line = Cursor.line + size;
-      if (Cursor.line >= 97)
-      {
-        Cursor.line = 1;
-      }
+    for (i = 0; i < numLength-1; i++){
+        divisor = divisor * 10;
     }
-  }
+    if (num == 99999)
+    {
+        divisor = 1;
+        numLength = 1;
+        num = 10;
+    }
+    for (i = 0; i < numLength; i++){
+        realNum = num/divisor;
+        for (j = 0; j < size; j++)
+        {
+            transferToBitmap(bignums[19*2*(realNum)+(j*2)]);
+            Cursor.row++;
+            transferToBitmap(bignums[19*2*(realNum)+(j*2)+1]);
+            Cursor.line++;
+            Cursor.row--;
+        }
+        Cursor.line -= size;
+        num = num % divisor;
+        divisor = divisor / 10;
+        Cursor.row += 2;
+        if (Cursor.row >= 12)
+        {
+            Cursor.row = 0;
+            Cursor.line = Cursor.line + size;
+            if (Cursor.line >= 97)
+            {
+                Cursor.line = 1;
+            }
+        }
+    }
 }
 
 /**************************************************************************/
@@ -347,47 +347,47 @@ void transferBigNumInt(int num){
 /**************************************************************************/ 
 
 void transferBatteryLevel(int num){
-  int divisor;
-  int numCopy;
-  uint8_t realNum;
-  uint8_t i;
-  uint8_t j;
-  uint8_t numLength;
-  uint8_t size;
-  size = 9;
-  numCopy = num;
-  divisor = 1;
-  for (numLength = 0; numCopy != 0 || numLength == 0;){
-    numCopy = numCopy / 10;
-    numLength++;
-  }
-  for (i = 0; i < numLength-1; i++){
-    divisor = divisor * 10;
-  }
-  for (i = 0; i < numLength; i++){
-    realNum = num/divisor;
-    for (j = 0; j < size; j++)
-    {
-      transferToBitmap(battery[9*2*(realNum)+(j*2)]);
-      Cursor.row++;
-      transferToBitmap(battery[9*2*(realNum)+(j*2)+1]);
-      Cursor.line++;
-      Cursor.row--;
+    int divisor;
+    int numCopy;
+    uint8_t realNum;
+    uint8_t i;
+    uint8_t j;
+    uint8_t numLength;
+    uint8_t size;
+    size = 9;
+    numCopy = num;
+    divisor = 1;
+    for (numLength = 0; numCopy != 0 || numLength == 0;){
+        numCopy = numCopy / 10;
+        numLength++;
     }
-    Cursor.line -= size;
-    num = num % divisor;
-    divisor = divisor / 10;
-    Cursor.row += 2;
-    if (Cursor.row >= 12)
-    {
-      Cursor.row = 0;
-      Cursor.line = Cursor.line + size;
-      if (Cursor.line >= 97)
-      {
-        Cursor.line = 1;
-      }
+    for (i = 0; i < numLength-1; i++){
+        divisor = divisor * 10;
     }
-  }
+    for (i = 0; i < numLength; i++){
+        realNum = num/divisor;
+        for (j = 0; j < size; j++)
+        {
+            transferToBitmap(battery[9*2*(realNum)+(j*2)]);
+            Cursor.row++;
+            transferToBitmap(battery[9*2*(realNum)+(j*2)+1]);
+            Cursor.line++;
+            Cursor.row--;
+        }
+        Cursor.line -= size;
+        num = num % divisor;
+        divisor = divisor / 10;
+        Cursor.row += 2;
+        if (Cursor.row >= 12)
+        {
+            Cursor.row = 0;
+            Cursor.line = Cursor.line + size;
+            if (Cursor.line >= 97)
+            {
+                Cursor.line = 1;
+            }
+        }
+    }
 }
 
 /**************************************************************************/
@@ -400,7 +400,7 @@ void transferBatteryLevel(int num){
 /**************************************************************************/ 
 
 void transferToBitmap(uint8_t data){
-  bitmap[Cursor.line*12+Cursor.row] = data;
+    bitmap[Cursor.line*12+Cursor.row] = data;
 }
 
 /**************************************************************************/
@@ -410,8 +410,8 @@ void transferToBitmap(uint8_t data){
 /**************************************************************************/ 
 
 void setCursor(int x, int y){
-  Cursor.line = y;
-  Cursor.row = x;
+    Cursor.line = y;
+    Cursor.row = x;
 }
  
 /**************************************************************************/
@@ -456,16 +456,16 @@ void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines)
 
 void clearDisplay() 
 {
-  int i;
-  initCursor();
-	nrf_gpio_pin_set(SPI_SS_PIN);
-  spi_write(LCD_CLEAR);
-  spi_write(0x00);
-  nrf_gpio_pin_clear(SPI_SS_PIN);
-  for (i = 0; i < 96*12; i++)
-  {
-    bitmap[i] = 0x00;
-  }
+    int i;
+    initCursor();
+  	nrf_gpio_pin_set(SPI_SS_PIN);
+    spi_write(LCD_CLEAR);
+    spi_write(0x00);
+    nrf_gpio_pin_clear(SPI_SS_PIN);
+    for (i = 0; i < 96*12; i++)
+    {
+        bitmap[i] = 0x00;
+    }
 }
 
 /**************************************************************************/
@@ -476,15 +476,15 @@ void clearDisplay()
 /**************************************************************************/
 
 void clearLines(uint8_t start, uint8_t end){
-  uint8_t i;
-  uint8_t j;
-  for (i = (start-1); i < (end-1); i++)
-  {
-    for (j = 0; j < 12; j++)
+    uint8_t i;
+    uint8_t j;
+    for (i = (start-1); i < (end-1); i++)
     {
-      bitmap[i*12+j] = 0x00;
+        for (j = 0; j < 12; j++)
+        {
+            bitmap[i*12+j] = 0x00;
+        }
     }
-  }
 }
 
 /**************************************************************************/
@@ -495,22 +495,22 @@ void clearLines(uint8_t start, uint8_t end){
 
 void refresh(void) 
 {
-	nrf_gpio_pin_set(SPI_SS_PIN);
-  uint8_t addr;
-  uint8_t byteNum;
-  spi_write(DATA_WRITE);
-  for(addr = 1; addr <= 96; addr++)
-  {
+  	nrf_gpio_pin_set(SPI_SS_PIN);
+    uint8_t addr;
+    uint8_t byteNum;
+    spi_write(DATA_WRITE);
+    for(addr = 1; addr <= 96; addr++)
+    {
 
-      spi_write(reverseBitOrder(addr));
-      for(byteNum = 0; byteNum < 12; byteNum++)
-      {
-          spi_write(~bitmap[(addr-1)*12+byteNum]);
-      }
-      spi_write(0x00);
-  }
-  spi_write(0x00);
-  nrf_gpio_pin_clear(SPI_SS_PIN);
+        spi_write(reverseBitOrder(addr));
+        for(byteNum = 0; byteNum < 12; byteNum++)
+        {
+            spi_write(~bitmap[(addr-1)*12+byteNum]);
+        }
+        spi_write(0x00);
+    }
+    spi_write(0x00);
+    nrf_gpio_pin_clear(SPI_SS_PIN);
 }
 
 /**************************************************************************/
@@ -522,13 +522,13 @@ void refresh(void)
 /**************************************************************************/ 
 
 void drawLine(uint8_t line){
-  uint8_t i;
-  setCursor(0, line-1);
-  for (i = 0; i < 12; i++)
-  {
-    transferToBitmap(0xFF);
-    Cursor.row++;
-  }
+    uint8_t i;
+    setCursor(0, line-1);
+    for (i = 0; i < 12; i++)
+    {
+        transferToBitmap(0xFF);
+        Cursor.row++;
+    }
 }
 
 // /**************************************************************************/
