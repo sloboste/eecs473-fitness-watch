@@ -22,7 +22,7 @@
 void initStructs(){
 
   //TIMER
-  TIMER_DATA.lapCounter = 1;
+  TIMER_DATA.lapCounter = 0;
   
   lcd_builder_bluetooth_state = BLE_STATE_IDLE;
 
@@ -145,25 +145,20 @@ void timerLap()
 {
     CRITICAL_REGION_ENTER();
     if (TIMER_DATA.lapCounter > 3){
-        TIMER_DATA.lapTimesMin[0] = TIMER_DATA.lapTimesMin[1];
-        TIMER_DATA.lapTimesSec[0] = TIMER_DATA.lapTimesSec[1];
-        TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.lapTimesTenths[1];
-        TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[2];
-        TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[2];
-        TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[2];
-        TIMER_DATA.lapTimesMin[2] = TIMER_DATA.timer_minutes;
-        TIMER_DATA.lapTimesSec[2] = TIMER_DATA.timer_seconds;
-        TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.timer_tenths;
-    }
-    else{
-        TIMER_DATA.lapTimesMin[TIMER_DATA.lapCounter-1] = TIMER_DATA.timer_minutes;
-        TIMER_DATA.lapTimesSec[TIMER_DATA.lapCounter-1] = TIMER_DATA.timer_seconds;
-        TIMER_DATA.lapTimesTenths[TIMER_DATA.lapCounter-1] = TIMER_DATA.timer_tenths;
+        TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
+        TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
+        TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
+        TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
+        TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
+        TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
+        TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
+        TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
+        TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
     }
     TIMER_DATA.lapCounter++;
     if (TIMER_DATA.lapCounter => 100)
     {
-        TIMER_DATA.lapCounter = 1;
+        TIMER_DATA.lapCounter = 0;
     }
     CRITICAL_REGION_EXIT();
 }
@@ -197,90 +192,94 @@ void buildTimer_LCD()
 
     drawLine(54);
 
-    setCursor(0, 56);
-
-    transferChar('l');
-    if (TIMER_DATA.lapCounter > 3){
-        transferSmallNumInt(TIMER_DATA.lapCounter-2);
-    }
-    else{
-        transferSmallNumInt(1);
-    }
-    transferSpecialChar(':');
-    if (TIMER_DATA.lapCounter < 10-2){
+    if (TIMER_DATA.lapCounter > 0)
+    {
+        setCursor(0, 56);
+        transferChar('l');
+        if (TIMER_DATA.lapCounter > 3){
+            transferSmallNumInt(TIMER_DATA.lapCounter);
+        }
+        else{
+            transferSmallNumInt(1);
+        }
+        if (TIMER_DATA.lapCounter < 10){
+            transferSpecialChar(':');
+        }
         Cursor.row++;
-    }
-
-    if(TIMER_DATA.lapTimesMin[0] < 10){
+        if(TIMER_DATA.lapTimesMin[0] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
+        transferSpecialChar(':');
+        if(TIMER_DATA.lapTimesSec[0] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
+        transferSpecialChar('.');
+        transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(TIMER_DATA.lapTimesMin[0]);
-    transferSpecialChar(':');
-    if(TIMER_DATA.lapTimesSec[0] < 10){
-        transferSmallNumInt(0);
-    }
-    transferSmallNumInt(TIMER_DATA.lapTimesSec[0]);
-    transferSpecialChar('.');
-    transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
-    transferSmallNumInt(0);
 
     drawLine(68);
 
-    setCursor(0, 70);
-    
-    transferChar('l');
-    if (TIMER_DATA.lapCounter > 3){
-        transferSmallNumInt(TIMER_DATA.lapCounter-1);
-    }
-    else{
-        transferSmallNumInt(2);
-    }
-    transferSpecialChar(':');
-    if (TIMER_DATA.lapCounter < 10-1){
+    if (TIMER_DATA.lapCounter > 1)
+    {
+        setCursor(0, 70);
+        transferChar('l');
+        if (TIMER_DATA.lapCounter > 3){
+            transferSmallNumInt(TIMER_DATA.lapCounter-1);
+        }
+        else{
+            transferSmallNumInt(2);
+        }
+        if (TIMER_DATA.lapCounter-1 < 10){
+            transferSpecialChar(':');
+        }
         Cursor.row++;
-    }
-
-    if(TIMER_DATA.lapTimesMin[1] < 10){
+        if(TIMER_DATA.lapTimesMin[1] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
+        transferSpecialChar(':');
+        if(TIMER_DATA.lapTimesSec[1] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
+        transferSpecialChar('.');
+        transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(TIMER_DATA.lapTimesMin[1]);
-    transferSpecialChar(':');
-    if(TIMER_DATA.lapTimesSec[1] < 10){
-        transferSmallNumInt(0);
-    }
-    transferSmallNumInt(TIMER_DATA.lapTimesSec[1]);
-    transferSpecialChar('.');
-    transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
-    transferSmallNumInt(0);
 
     drawLine(82);
 
-    setCursor(0, 84);
-    
-    transferChar('l');
-    if (TIMER_DATA.lapCounter > 3){
-        transferSmallNumInt(TIMER_DATA.lapCounter);
-    }
-    else{
-        transferSmallNumInt(3);
-    }
-    transferSpecialChar(':');
-    if (TIMER_DATA.lapCounter < 10){
+    if (TIMER_DATA.lapCounter > 2)
+    {
+        setCursor(0, 84);
+        transferChar('l');
+        if (TIMER_DATA.lapCounter > 3){
+            transferSmallNumInt(TIMER_DATA.lapCounter-2);
+        }
+        else{
+            transferSmallNumInt(3);
+        }
+        if (TIMER_DATA.lapCounter-2 < 10){
+            transferSpecialChar(':');
+        }
         Cursor.row++;
-    }
 
-    if(TIMER_DATA.lapTimesMin[2] < 10){
+        if(TIMER_DATA.lapTimesMin[2] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
+        transferSpecialChar(':');
+        if(TIMER_DATA.lapTimesSec[2] < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
+        transferSpecialChar('.');
+        transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
         transferSmallNumInt(0);
     }
-    transferSmallNumInt(TIMER_DATA.lapTimesMin[2]);
-    transferSpecialChar(':');
-    if(TIMER_DATA.lapTimesSec[2] < 10){
-        transferSmallNumInt(0);
-    }
-    transferSmallNumInt(TIMER_DATA.lapTimesSec[2]);
-    transferSpecialChar('.');
-    transferSmallNumInt(TIMER_DATA.lapTimesTenths[2]);
-    transferSmallNumInt(0);
 }
 
 /**************************************************************************/
