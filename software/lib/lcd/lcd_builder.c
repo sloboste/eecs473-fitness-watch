@@ -304,6 +304,11 @@ void buildSteps_LCD()
   for (i = 0; i < 5; i++)
   {
     transferSmallNumInt(STEPS_DATA.goal[i]);
+    if (STEPS_DATA.oal_digit == i)
+    {
+      invertBitMap(7+i, 66, 9);
+    }
+
   }
 
   // drawLine(68);
