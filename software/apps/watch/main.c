@@ -151,10 +151,7 @@ void task_1hz(void * arg_ptr)
     --battery_level; // FIXME do real stuff
     ++heart_rate_bpm; // FIXME do real stuff
 
-    //increment_time(); // FIXME do real stuff
     date_time_increment_second();
-    
-    //state_machine_refresh_screen();
 }
 
 /**

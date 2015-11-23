@@ -64,21 +64,21 @@ typedef struct date_time_struct {
 /**
  *
  */
-void date_time_init(void (*on_minute_hour_change)(void));
+extern void date_time_init(void (*on_minute_hour_change)(void));
 
 /**
  *
  */
-void date_time_increment_second();
+extern void date_time_increment_second();
 
 /**
  *
  */
-void date_time_get_current_date_time(date_time_t * dt_ptr);
+extern void date_time_get_current_date_time(date_time_t * dt_ptr);
 
 /**
  *
  */
-void date_time_set_current_date_time(date_time_t * dt_ptr);
+extern void date_time_set_current_date_time(date_time_t * dt_ptr);
 
 #endif
