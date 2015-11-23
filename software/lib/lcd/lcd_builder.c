@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 #include "nrf_gpio.h" // FIXME needed?
-#include "app_util_platform.h" // CRITICAL SECTION
 
 #include "lcd_driver.h"
 #include "lcd_builder.h"
@@ -63,9 +62,7 @@ void initStructs(){
 
 // TODO make this look pretty
 void buildGPS_LCD(){
-    date_time_t date_time;
-    date_time_get_current_date_time(&date_time);
-    buildTopBar_LCD(&date_time, true);
+    buildTopBar_LCD(true);
     clearLines(13,96);
     setCursor(0, 17);
 
@@ -138,7 +135,6 @@ void timerReset()
 
 void timerLap()
 {
-    CRITICAL_REGION_ENTER();
     TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
     TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
     TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
@@ -153,14 +149,11 @@ void timerLap()
     {
         TIMER_DATA.lapCounter = 0;
     }
-    CRITICAL_REGION_EXIT();
 }
 
 void buildTimer_LCD()
 {
-    date_time_t date_time;
-    date_time_get_current_date_time(&date_time);
-    buildTopBar_LCD(&date_time, true);
+    buildTopBar_LCD(true);
     clearLines(13,96);
     setCursor(0, 14);
 
@@ -270,9 +263,7 @@ void buildTimer_LCD()
 void buildSteps_LCD()
 {
     int i;
-    date_time_t date_time;
-    date_time_get_current_date_time(&date_time);
-    buildTopBar_LCD(&date_time, true);
+    buildTopBar_LCD(true);
     clearLines(13,96);
     setCursor(0, 20);
 
@@ -336,9 +327,7 @@ void buildSteps_LCD()
 /**************************************************************************/  
 
 void buildWatchFace_LCD() {
-    date_time_t date_time;
-    date_time_get_current_date_time(&date_time);
-    buildTopBar_LCD(&date_time, false);
+    buildTopBar_LCD(false);
 /*
     clearLines(1, 11); 
 
@@ -377,7 +366,7 @@ void buildWatchFace_LCD() {
     // }
     // transferSmallNumInt(TIME.seconds);
 
-    // TODO Make date dynamic
+    clearLines(82, 96);
     setCursor(1, 82);
     transferString(date_time.day_str);
     Cursor.row++;
@@ -402,9 +391,7 @@ void runTimerReset()
 }
 
 void buildRun_LCD(){
-    date_time_t date_time;
-    date_time_get_current_date_time(&date_time);
-    buildTopBar_LCD(&date_time, true);
+    buildTopBar_LCD(true);
 
     clearLines(13,96);
     setCursor(0, 14);
@@ -474,7 +461,7 @@ void buildRun_LCD(){
 */
 /**************************************************************************/
 
-void buildTopBar_LCD(date_time_t * date_time_ptr, bool time){
+void buildTopBar_LCD(bool time) {
     clearLines(1,11);
     if (time) {
         drawLine(12);
@@ -493,15 +480,15 @@ void buildTopBar_LCD(date_time_t * date_time_ptr, bool time){
     Cursor.row += 3;
 
     if (time) {
-        if (date_time_ptr->hours < 10){
+        if (date_time.hours < 10){
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(date_time_ptr->hours);
+        transferSmallNumInt(date_time.hours);
         transferSpecialChar(':');
-        if (date_time_ptr->minutes < 10){
+        if (date_time.minutes < 10){
             transferSmallNumInt(0);
         }
-        transferSmallNumInt(date_time_ptr->minutes);
+        transferSmallNumInt(date_time.minutes);
     } 
     else {
         Cursor.row += 2;

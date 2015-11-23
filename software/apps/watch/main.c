@@ -11,7 +11,6 @@
 
 #include "nrf_gpio.h"
 #include "app_gpiote.h"
-#include "app_util_platform.h" // CRITICAL SECTION
 
 #include "timer_config.h"
 #include "scheduler_config.h"
@@ -135,18 +134,15 @@ static void buttons_init()
  */
 void task_10hz(void * arg_ptr)
 {
-    //nrf_gpio_pin_toggle(PIN_LED_4); // FIXME remove
-    CRITICAL_REGION_ENTER();                                                     
     if (++TIMER_DATA.timer_tenths > 9) {
-        TIMER_DATA.timer_tenths -= 10;
+        TIMER_DATA.timer_tenths = 0;
         if (++TIMER_DATA.timer_seconds > 59) { 
-            TIMER_DATA.timer_seconds -= 60;
+            TIMER_DATA.timer_seconds = 0;
             if (++TIMER_DATA.timer_minutes > 59) { 
-                TIMER_DATA.timer_minutes -= 60;
+                TIMER_DATA.timer_minutes = 0;
             }
         }
     }
-    CRITICAL_REGION_EXIT();                                                     
     state_machine_refresh_screen();
 }
 
@@ -158,17 +154,15 @@ void task_10hz(void * arg_ptr)
  */
 void task_1hz_1(void * arg_ptr)
 {
-    CRITICAL_REGION_ENTER(); 
     if (++RUN_DATA.timer_seconds > 59) {
-        RUN_DATA.timer_seconds -= 60;
+        RUN_DATA.timer_seconds = 0;
         if (++RUN_DATA.timer_minutes > 59) { 
-            RUN_DATA.timer_minutes -= 60;
+            RUN_DATA.timer_minutes = 0;
             if (++RUN_DATA.timer_hours > 23) { 
-                RUN_DATA.timer_hours -= 24;
+                RUN_DATA.timer_hours = 0;
             }
         }
     }
-    CRITICAL_REGION_EXIT(); 
     state_machine_refresh_screen();
 }
 
@@ -287,7 +281,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             break;
 
     }
-    //return 0; // FIXME what is the return value supposed to be?
+    //return 0; // FIXME what is the return value supposed to be? It's not used.
 }
 
 /**

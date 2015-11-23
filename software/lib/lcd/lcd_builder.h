@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "lcd_driver.h"
-#include "date_time.h"
 
 /* ************* */
 /* Struct Setups */
@@ -66,7 +65,7 @@ struct TOP_BAR_DATA {
 /* Macro EIR Functions */
 /* ******************* */
 
-extern void buildTopBar_LCD(date_time_t * date_time_ptr, bool time);
+extern void buildTopBar_LCD(bool time);
 
 extern void buildGPS_LCD();
 
