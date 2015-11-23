@@ -144,19 +144,17 @@ void timerReset()
 void timerLap()
 {
     CRITICAL_REGION_ENTER();
-    if (TIMER_DATA.lapCounter > 3){
-        TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
-        TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
-        TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
-        TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
-        TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
-        TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
-        TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
-        TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
-        TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
-    }
+    TIMER_DATA.lapTimesMin[2] = TIMER_DATA.lapTimesMin[1];
+    TIMER_DATA.lapTimesSec[2] = TIMER_DATA.lapTimesSec[1];
+    TIMER_DATA.lapTimesTenths[2] = TIMER_DATA.lapTimesTenths[1];
+    TIMER_DATA.lapTimesMin[1] = TIMER_DATA.lapTimesMin[0];
+    TIMER_DATA.lapTimesSec[1] = TIMER_DATA.lapTimesSec[0];
+    TIMER_DATA.lapTimesTenths[1] = TIMER_DATA.lapTimesTenths[0];
+    TIMER_DATA.lapTimesMin[0] = TIMER_DATA.timer_minutes;
+    TIMER_DATA.lapTimesSec[0] = TIMER_DATA.timer_seconds;
+    TIMER_DATA.lapTimesTenths[0] = TIMER_DATA.timer_tenths;
     TIMER_DATA.lapCounter++;
-    if (TIMER_DATA.lapCounter => 100)
+    if (TIMER_DATA.lapCounter >= 100)
     {
         TIMER_DATA.lapCounter = 0;
     }
@@ -196,12 +194,7 @@ void buildTimer_LCD()
     {
         setCursor(0, 56);
         transferChar('l');
-        if (TIMER_DATA.lapCounter > 3){
-            transferSmallNumInt(TIMER_DATA.lapCounter);
-        }
-        else{
-            transferSmallNumInt(1);
-        }
+        transferSmallNumInt(TIMER_DATA.lapCounter);
         if (TIMER_DATA.lapCounter < 10){
             transferSpecialChar(':');
         }
@@ -218,20 +211,14 @@ void buildTimer_LCD()
         transferSpecialChar('.');
         transferSmallNumInt(TIMER_DATA.lapTimesTenths[0]);
         transferSmallNumInt(0);
+        drawLine(68);
     }
-
-    drawLine(68);
 
     if (TIMER_DATA.lapCounter > 1)
     {
         setCursor(0, 70);
         transferChar('l');
-        if (TIMER_DATA.lapCounter > 3){
-            transferSmallNumInt(TIMER_DATA.lapCounter-1);
-        }
-        else{
-            transferSmallNumInt(2);
-        }
+        transferSmallNumInt(TIMER_DATA.lapCounter-1);
         if (TIMER_DATA.lapCounter-1 < 10){
             transferSpecialChar(':');
         }
@@ -250,18 +237,12 @@ void buildTimer_LCD()
         transferSmallNumInt(0);
     }
 
-    drawLine(82);
-
     if (TIMER_DATA.lapCounter > 2)
     {
+        drawLine(82);
         setCursor(0, 84);
         transferChar('l');
-        if (TIMER_DATA.lapCounter > 3){
-            transferSmallNumInt(TIMER_DATA.lapCounter-2);
-        }
-        else{
-            transferSmallNumInt(3);
-        }
+        transferSmallNumInt(TIMER_DATA.lapCounter-2);
         if (TIMER_DATA.lapCounter-2 < 10){
             transferSpecialChar(':');
         }
