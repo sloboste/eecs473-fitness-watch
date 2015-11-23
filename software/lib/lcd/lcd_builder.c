@@ -235,11 +235,11 @@ void buildTimer_LCD()
         transferSpecialChar('.');
         transferSmallNumInt(TIMER_DATA.lapTimesTenths[1]);
         transferSmallNumInt(0);
+        drawLine(82);
     }
 
     if (TIMER_DATA.lapCounter > 2)
     {
-        drawLine(82);
         setCursor(0, 84);
         transferChar('l');
         transferSmallNumInt(TIMER_DATA.lapCounter-2);
