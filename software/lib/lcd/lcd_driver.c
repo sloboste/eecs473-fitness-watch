@@ -1,25 +1,6 @@
 /*********************************************************************
-FIXME This large comment is very unnecessary...
-
-This is a library built specifically for the EIR watch. The 
-capabilities of this library are limited to only the necessary 
-functions required to get the desired functionality from the LCD.
-
 This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
 interface, not including ground and power.
-
-The Watchmen invest time and resources providing this open source code, 
-so please support the EIR watch project and open-source hardware by 
-referring the developers to Google and other really cool potential jobs
-we may want. Our names can be found below:
-
-Joshua Kaufman
-Nathan Immerman
-Steven Sloboda
-Tyler Kohan
-Amit Shah
-
-We are legends of the computer engineering world.
 
 Written by Joshua Kaufman for the EIR watch by The Watchmen.  
 *********************************************************************/
@@ -32,8 +13,6 @@ Written by Joshua Kaufman for the EIR watch by The Watchmen.
 #include "lcd_driver.h"
 #include "spi_driver.h"
 #include "charData.h"
-
-//#include "led.h"
 
 
 /**************************************************************************
@@ -69,9 +48,9 @@ uint8_t bitmap[(LCD_WIDTH * LCD_HEIGHT)/8] = { 0 };
     @         left position of the LCD.
 */
 /**************************************************************************/ 
-void initCursor(){
-    Cursor.line = 0;
-    Cursor.row = 0;
+void lcd_initCursor(){
+    lcd_Cursor.line = 0;
+    lcd_Cursor.row = 0;
 }
 
 /**************************************************************************/
@@ -86,14 +65,14 @@ void initCursor(){
 */
 /**************************************************************************/  
 
-void transferString(char * s){
+void lcd_transferString(char * s){
     int i;
     for (i = 0; s[i] != '\0' ; i++)
     {
         if ((int)s[i] > 96)
-            transferChar(s[i]);
+            lcd_transferChar(s[i]);
         else
-            transferSmallNumInt((int)s[i]-'0');
+            lcd_transferSmallNumInt((int)s[i]-'0');
     }
 }
 
@@ -108,23 +87,23 @@ void transferString(char * s){
 */
 /**************************************************************************/  
 
-void transferChar(char c){
+void lcd_transferChar(char c){
     int i;
     uint8_t size;
     size = 9;
     for (i = 0; i < size; i++){
-        transferToBitmap(chars[9*((int)c - 97)+i]);
-        Cursor.line++;
+        lcd_transferToBitmap(chars[9*((int)c - 97)+i]);
+        lcd_Cursor.line++;
     }
-    Cursor.line -= size;
-    Cursor.row++;
-    if (Cursor.row >= 12)
+    lcd_Cursor.line -= size;
+    lcd_Cursor.row++;
+    if (lcd_Cursor.row >= 12)
     {
-        Cursor.row = 0;
-        Cursor.line = Cursor.line + size;
-        if (Cursor.line >= 97)
+        lcd_Cursor.row = 0;
+        lcd_Cursor.line = lcd_Cursor.line + size;
+        if (lcd_Cursor.line >= 97)
         {
-            Cursor.line = 1;
+            lcd_Cursor.line = 1;
         }
     }
 }
@@ -140,7 +119,7 @@ void transferChar(char c){
 */
 /**************************************************************************/  
 
-void transferSpecialChar(char c){
+void lcd_transferSpecialChar(char c){
     int i;
     int offset;
     uint8_t size;
@@ -166,18 +145,18 @@ void transferSpecialChar(char c){
         offset = 30;
     }
     for (i = 0; i < size; i++){
-        transferToBitmap(chars[9*offset+i]);
-        Cursor.line++;
+        lcd_transferToBitmap(chars[9*offset+i]);
+        lcd_Cursor.line++;
     }
-    Cursor.line -= size;
-    Cursor.row++;
-    if (Cursor.row >= 12)
+    lcd_Cursor.line -= size;
+    lcd_Cursor.row++;
+    if (lcd_Cursor.row >= 12)
     {
-        Cursor.row = 0;
-        Cursor.line = Cursor.line + size;
-        if (Cursor.line >= 97)
+        lcd_Cursor.row = 0;
+        lcd_Cursor.line = lcd_Cursor.line + size;
+        if (lcd_Cursor.line >= 97)
         {
-            Cursor.line = 1;
+            lcd_Cursor.line = 1;
         }
     }
 }
@@ -195,7 +174,7 @@ void transferSpecialChar(char c){
 */
 /**************************************************************************/ 
 
-void transferSpecialBigChar(char c){
+void lcd_transferSpecialBigChar(char c){
     uint8_t i;
     uint8_t offset;
     uint8_t size;
@@ -205,18 +184,18 @@ void transferSpecialBigChar(char c){
         offset = 11;
     }
     for (i = 0; i < size; i++){
-        transferToBitmap(bignums[19*2*offset+i]);
-        Cursor.line++;
+        lcd_transferToBitmap(bignums[19*2*offset+i]);
+        lcd_Cursor.line++;
     }
-    Cursor.line -= size;
-    Cursor.row++;
-    if (Cursor.row >= 12)
+    lcd_Cursor.line -= size;
+    lcd_Cursor.row++;
+    if (lcd_Cursor.row >= 12)
     {
-        Cursor.row = 0;
-        Cursor.line = Cursor.line + size;
-        if (Cursor.line >= 97)
+        lcd_Cursor.row = 0;
+        lcd_Cursor.line = lcd_Cursor.line + size;
+        if (lcd_Cursor.line >= 97)
         {
-            Cursor.line = 1;
+            lcd_Cursor.line = 1;
         }
     }
 }
@@ -233,7 +212,7 @@ void transferSpecialBigChar(char c){
 */
 /**************************************************************************/ 
 
-void transferSmallNumInt(int num){
+void lcd_transferSmallNumInt(int num){
     int divisor;
     int numCopy;
     uint8_t size;
@@ -255,20 +234,20 @@ void transferSmallNumInt(int num){
         realNum = num/divisor;
         for (j = 0; j < size; j++)
         {
-            transferToBitmap(smallnums[9*(realNum)+j]);
-            Cursor.line++;
+            lcd_transferToBitmap(smallnums[9*(realNum)+j]);
+            lcd_Cursor.line++;
         }
-        Cursor.line -= size;
+        lcd_Cursor.line -= size;
         num = num % divisor;
         divisor = divisor / 10;
-        Cursor.row++;
-        if (Cursor.row >= 12)
+        lcd_Cursor.row++;
+        if (lcd_Cursor.row >= 12)
         {
-            Cursor.row = 0;
-            Cursor.line = Cursor.line + size;
-            if (Cursor.line >= 97)
+            lcd_Cursor.row = 0;
+            lcd_Cursor.line = lcd_Cursor.line + size;
+            if (lcd_Cursor.line >= 97)
             {
-                Cursor.line = 1;
+                lcd_Cursor.line = 1;
             }
         }
     }
@@ -286,7 +265,7 @@ void transferSmallNumInt(int num){
 */
 /**************************************************************************/ 
 
-void transferBigNumInt(int num){
+void lcd_transferBigNumInt(int num){
     int divisor;
     int numCopy;
     uint8_t realNum;
@@ -314,23 +293,23 @@ void transferBigNumInt(int num){
         realNum = num/divisor;
         for (j = 0; j < size; j++)
         {
-            transferToBitmap(bignums[19*2*(realNum)+(j*2)]);
-            Cursor.row++;
-            transferToBitmap(bignums[19*2*(realNum)+(j*2)+1]);
-            Cursor.line++;
-            Cursor.row--;
+            lcd_transferToBitmap(bignums[19*2*(realNum)+(j*2)]);
+            lcd_Cursor.row++;
+            lcd_transferToBitmap(bignums[19*2*(realNum)+(j*2)+1]);
+            lcd_Cursor.line++;
+            lcd_Cursor.row--;
         }
-        Cursor.line -= size;
+        lcd_Cursor.line -= size;
         num = num % divisor;
         divisor = divisor / 10;
-        Cursor.row += 2;
-        if (Cursor.row >= 12)
+        lcd_Cursor.row += 2;
+        if (lcd_Cursor.row >= 12)
         {
-            Cursor.row = 0;
-            Cursor.line = Cursor.line + size;
-            if (Cursor.line >= 97)
+            lcd_Cursor.row = 0;
+            lcd_Cursor.line = lcd_Cursor.line + size;
+            if (lcd_Cursor.line >= 97)
             {
-                Cursor.line = 1;
+                lcd_Cursor.line = 1;
             }
         }
     }
@@ -346,7 +325,7 @@ void transferBigNumInt(int num){
 */
 /**************************************************************************/ 
 
-void transferBatteryLevel(int num){
+void lcd_transferBatteryLevel(int num){
     int divisor;
     int numCopy;
     uint8_t realNum;
@@ -368,23 +347,23 @@ void transferBatteryLevel(int num){
         realNum = num/divisor;
         for (j = 0; j < size; j++)
         {
-            transferToBitmap(battery[9*2*(realNum)+(j*2)]);
-            Cursor.row++;
-            transferToBitmap(battery[9*2*(realNum)+(j*2)+1]);
-            Cursor.line++;
-            Cursor.row--;
+            lcd_transferToBitmap(battery[9*2*(realNum)+(j*2)]);
+            lcd_Cursor.row++;
+            lcd_transferToBitmap(battery[9*2*(realNum)+(j*2)+1]);
+            lcd_Cursor.line++;
+            lcd_Cursor.row--;
         }
-        Cursor.line -= size;
+        lcd_Cursor.line -= size;
         num = num % divisor;
         divisor = divisor / 10;
-        Cursor.row += 2;
-        if (Cursor.row >= 12)
+        lcd_Cursor.row += 2;
+        if (lcd_Cursor.row >= 12)
         {
-            Cursor.row = 0;
-            Cursor.line = Cursor.line + size;
-            if (Cursor.line >= 97)
+            lcd_Cursor.row = 0;
+            lcd_Cursor.line = lcd_Cursor.line + size;
+            if (lcd_Cursor.line >= 97)
             {
-                Cursor.line = 1;
+                lcd_Cursor.line = 1;
             }
         }
     }
@@ -399,8 +378,8 @@ void transferBatteryLevel(int num){
 */
 /**************************************************************************/ 
 
-void transferToBitmap(uint8_t data){
-    bitmap[Cursor.line*12+Cursor.row] = data;
+void lcd_transferToBitmap(uint8_t data){
+    bitmap[lcd_Cursor.line*12+lcd_Cursor.row] = data;
 }
 
 /**************************************************************************/
@@ -409,9 +388,9 @@ void transferToBitmap(uint8_t data){
 */
 /**************************************************************************/ 
 
-void setCursor(int x, int y){
-    Cursor.line = y;
-    Cursor.row = x;
+void lcd_setCursor(int x, int y){
+    lcd_Cursor.line = y;
+    lcd_Cursor.row = x;
 }
  
 /**************************************************************************/
@@ -420,7 +399,7 @@ void setCursor(int x, int y){
 */
 /**************************************************************************/
 
-uint8_t reverseBitOrder(uint8_t MSB){
+uint8_t lcd_reverseBitOrder(uint8_t MSB){
 		uint8_t LSB = 0;
 		LSB |= (((0x01) & MSB)<<7);
     LSB |= (((0x02) & MSB)<<5);
@@ -439,7 +418,7 @@ uint8_t reverseBitOrder(uint8_t MSB){
 */
 /**************************************************************************/
 
-void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines)
+void lcd_invertBitMap(uint8_t row, uint8_t line, uint8_t numLines)
 {
     int i;
     for (i = line; i < (line + numLines); i++)
@@ -454,10 +433,10 @@ void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines)
 */
 /**************************************************************************/
 
-void clearDisplay() 
+void lcd_clearDisplay() 
 {
     int i;
-    initCursor();
+    lcd_initCursor();
   	nrf_gpio_pin_set(SPI_SS_PIN);
     spi_write(LCD_CLEAR);
     spi_write(0x00);
@@ -475,7 +454,7 @@ void clearDisplay()
 */
 /**************************************************************************/
 
-void clearLines(uint8_t start, uint8_t end){
+void lcd_clearLines(uint8_t start, uint8_t end){
     uint8_t i;
     uint8_t j;
     for (i = (start-1); i < (end-1); i++)
@@ -493,7 +472,7 @@ void clearLines(uint8_t start, uint8_t end){
 */
 /**************************************************************************/
 
-void refresh(void) 
+void lcd_refresh(void) 
 {
   	nrf_gpio_pin_set(SPI_SS_PIN);
     uint8_t addr;
@@ -502,7 +481,7 @@ void refresh(void)
     for(addr = 1; addr <= 96; addr++)
     {
 
-        spi_write(reverseBitOrder(addr));
+        spi_write(lcd_reverseBitOrder(addr));
         for(byteNum = 0; byteNum < 12; byteNum++)
         {
             spi_write(~bitmap[(addr-1)*12+byteNum]);
@@ -521,13 +500,13 @@ void refresh(void)
 */
 /**************************************************************************/ 
 
-void drawLine(uint8_t line){
+void lcd_drawLine(uint8_t line){
     uint8_t i;
-    setCursor(0, line-1);
+    lcd_setCursor(0, line-1);
     for (i = 0; i < 12; i++)
     {
-        transferToBitmap(0xFF);
-        Cursor.row++;
+        lcd_transferToBitmap(0xFF);
+        lcd_Cursor.row++;
     }
 }
 

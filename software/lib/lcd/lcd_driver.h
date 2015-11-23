@@ -1,72 +1,71 @@
-#ifndef LCD_DRIVER_H
+/*
+ *
+ * TODO Add proper comments for functions.
+ */
 
+#ifndef LCD_DRIVER_H
 #define LCD_DRIVER_H
 
-//#include "globals.h"
 #include <stdint.h>
 
 
-/* ************** */
-/* LCD Dimensions */
-/* ************** */
-
+// LCD dimensions
 #define LCD_WIDTH       (96)
 #define LCD_HEIGHT      (96) 
 
-struct CURSOR {
+struct lcd_cursor_struct {
 	uint8_t line;
 	uint8_t row;
-}Cursor;
+} lcd_Cursor;
 
 /* ************** */
 /* Init Functions */
 /* ************** */
 
-void initCursor();
-void initStructs();
+extern void lcd_initCursor();
 
 /* *********************************** */
 /* Transfer, Draw, and Erase Functions */
 /* *********************************** */
 
-void drawLine(uint8_t line);
-void transferToBitmap(uint8_t data);
-void clearLines(uint8_t start, uint8_t end);
+extern void lcd_drawLine(uint8_t line);
+extern void lcd_transferToBitmap(uint8_t data);
+extern void lcd_clearLines(uint8_t start, uint8_t end);
 
-void transferString(char * s);
-void transferChar(char c);
-void transferSmallNumInt(int num);
-void transferBigNumInt(int num);
-void transferSpecialChar(char c);
-void transferSpecialBigChar(char c);
+extern void lcd_transferString(char * s);
+extern void lcd_transferChar(char c);
+extern void lcd_transferSmallNumInt(int num);
+extern void lcd_transferBigNumInt(int num);
+extern void lcd_transferSpecialChar(char c);
+extern void lcd_transferSpecialBigChar(char c);
 
-void transferBatteryLevel(int num);
+extern void lcd_transferBatteryLevel(int num);
 
-void invertBitMap(uint8_t row, uint8_t line, uint8_t numLines);
+extern void lcd_invertBitMap(uint8_t row, uint8_t line, uint8_t numLines);
 
 /* ***************************** */
 /* LCD Transfer Helper Functions */
 /* ***************************** */
 
-uint8_t reverseBitOrder(uint8_t MSB);
+extern uint8_t lcd_reverseBitOrder(uint8_t MSB);
 
 /* ******************************** */
 /* Macro LCD Manipulation Functions */
 /* ******************************** */
 
-void refresh(void);
-void clearDisplay();
+extern void lcd_refresh(void);
+extern void lcd_clearDisplay();
 
 /* ********************** */
 /* LCD Mangment Functions */
 /* ********************** */
 
-void setCursor(int x, int y);
+extern void lcd_setCursor(int x, int y);
 
 /* ************** */
 /* Test Functions */
 /* ************** */
 
-void charTest();
+//extern void lcd_charTest();
 
 #endif

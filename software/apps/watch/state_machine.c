@@ -17,7 +17,7 @@ static enum state_machine_state_enum current_state;
 
 void state_machine_init()
 {
-    clearDisplay();
+    lcd_clearDisplay();
     current_state = STATE_WATCH_FACE;
     date_time_init(state_machine_refresh_screen);
     lcd_builder_init_structs(); // FIXME I think using this function is funky...
@@ -54,7 +54,7 @@ void state_machine_refresh_screen()
         default: // ERROR
             break;
     }
-    refresh();
+    lcd_refresh();
 }
 
 void state_machine_on_ble_adv_con(uint8_t ble_state)
@@ -69,13 +69,13 @@ void state_machine_on_button_0()
     switch (current_state) {
         case STATE_WATCH_FACE:
             current_state = STATE_STEPS;
-            clearDisplay();
+            lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
 
         case STATE_STEPS:
             current_state = STATE_RUN_TIMER_OFF;
-            clearDisplay();
+            lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
 
@@ -89,7 +89,7 @@ void state_machine_on_button_0()
 
         case STATE_RUN_TIMER_OFF:
             current_state = STATE_GPS_OFF;
-            clearDisplay();
+            lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
 
@@ -104,7 +104,7 @@ void state_machine_on_button_0()
 
         case STATE_GPS_OFF:
             current_state = STATE_STOPWATCH_TIMER_OFF;
-            clearDisplay();
+            lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
 
@@ -114,7 +114,7 @@ void state_machine_on_button_0()
 
         case STATE_STOPWATCH_TIMER_OFF:
             current_state = STATE_WATCH_FACE;
-            clearDisplay();
+            lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
 
