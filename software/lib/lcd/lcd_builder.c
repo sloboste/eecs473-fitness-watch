@@ -9,6 +9,7 @@
 #include "spi_driver.h"
 #include "charData.h"
 #include "ble_config.h"
+#include "date_time.h"
 
 
 /**************************************************************************/
@@ -46,11 +47,6 @@ void initStructs(){
     // TIMER
     timerReset();
 
-    // TIME FIXME remove
-    TIME.hours = 23;
-    TIME.minutes = 38;
-    TIME.seconds = 55;
-
   // RUN - DONE
   STEPS_DATA.steps = 12345;
   STEPS_DATA.yesterdaySteps = 54321;
@@ -72,7 +68,9 @@ void initStructs(){
 
 // TODO make this look pretty
 void buildGPS_LCD(){
-    buildTopBar_LCD();
+    date_time_t date_time;
+    date_time_get_current_date_time(&date_time);
+    buildTopBar_LCD(&date_time, true);
     clearLines(13,96);
     setCursor(0, 17);
 
@@ -161,7 +159,9 @@ void timerLap()
 
 void buildTimer_LCD()
 {
-  buildTopBar_LCD();
+    date_time_t date_time;
+    date_time_get_current_date_time(&date_time);
+    buildTopBar_LCD(&date_time, true);
   clearLines(13,96);
   setCursor(0, 14);
 
@@ -270,7 +270,9 @@ void buildTimer_LCD()
 void buildSteps_LCD()
 {
   int i;
-  buildTopBar_LCD();
+    date_time_t date_time;
+    date_time_get_current_date_time(&date_time);
+    buildTopBar_LCD(&date_time, true);
   clearLines(13,96);
   setCursor(0, 20);
 
@@ -346,6 +348,10 @@ void buildSteps_LCD()
 /**************************************************************************/  
 
 void buildWatchFace_LCD() {
+    date_time_t date_time;
+    date_time_get_current_date_time(&date_time);
+    buildTopBar_LCD(&date_time, false);
+/*
     clearLines(1, 11); 
 
     setCursor(0,1);
@@ -361,19 +367,20 @@ void buildWatchFace_LCD() {
     }
     Cursor.row += 5;
     transferString("eir");
+*/
 
     setCursor(1, 37);
 
-    if(TIME.hours < 10){
+    if(date_time.hours < 10){
     transferBigNumInt(0);
     }
-    transferBigNumInt(TIME.hours);
+    transferBigNumInt(date_time.hours);
     transferBigNumInt(99999); // Big colon
     //transferSpecialBigChar(':');
-    if(TIME.minutes < 10){
+    if(date_time.minutes < 10){
     transferBigNumInt(0);
     }
-    transferBigNumInt(TIME.minutes);
+    transferBigNumInt(date_time.minutes);
 
     // setCursor(9, 52);
     // transferSpecialChar(':');
@@ -384,11 +391,11 @@ void buildWatchFace_LCD() {
 
     // TODO Make date dynamic
     setCursor(1, 82);
-    transferString(TIME.day_str);
+    transferString(date_time.day_str);
     Cursor.row++;
-    transferString(TIME.month_str);
+    transferString(date_time.month_str);
     Cursor.row++;
-    transferSmallNumInt(TIME.day_num);
+    transferSmallNumInt(date_time.day_num);
 }
 
 /**************************************************************************/
@@ -402,7 +409,10 @@ void buildWatchFace_LCD() {
 /**************************************************************************/
 
 void buildRun_LCD(){
-	buildTopBar_LCD();
+    date_time_t date_time;
+    date_time_get_current_date_time(&date_time);
+    buildTopBar_LCD(&date_time, true);
+
   clearLines(13,96);
   setCursor(0, 14);
 
@@ -475,7 +485,7 @@ void buildRun_LCD(){
 */
 /**************************************************************************/
 
-void buildTopBar_LCD(){
+void buildTopBar_LCD(date_time_t * date_time_ptr, bool time){
     clearLines(1,11);
     drawLine(12);
     setCursor(0,1);
@@ -485,19 +495,24 @@ void buildTopBar_LCD(){
         transferChar('a');
     } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
         transferSpecialChar('&'); // Bluetooth symbol
-        //transferChar('c');    // Took this out for aesthetics
+        transferChar('c');    // Took this out for aesthetics
     } else {
         Cursor.row += 2;
     }
     Cursor.row += 3;
 
-  if(TIME.hours < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIME.hours);
-  transferSpecialChar(':');
-  if(TIME.minutes < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(TIME.minutes);
+    if (time) {
+        if (date_time_ptr->hours < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(date_time_ptr->hours);
+        transferSpecialChar(':');
+        if (date_time_ptr->minutes < 10){
+            transferSmallNumInt(0);
+        }
+        transferSmallNumInt(date_time_ptr->minutes);
+    } else {
+        Cursor.row += 2;
+        transferString("eir");
+    }
 }

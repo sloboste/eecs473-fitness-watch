@@ -120,30 +120,6 @@ void gpio_init(void)
     nrf_gpio_pin_set(PIN_LED_4);
 }
 
-static void set_time(uint8_t hours, uint8_t minutes, uint8_t seconds)
-{
-    CRITICAL_REGION_ENTER();                                                    
-    TIME.seconds = seconds;
-    TIME.minutes = minutes;
-    TIME.hours = hours;
-    CRITICAL_REGION_EXIT();                                                     
-}
-
-static void increment_time()
-{                                                 
-    CRITICAL_REGION_ENTER();                                                    
-    if (++TIME.seconds > 59) {                                              
-        TIME.seconds -= 60;                                                  
-        if (++TIME.minutes > 59) {                                              
-            TIME.minutes -= 60;                                                  
-            if (++TIME.hours > 23) {                                                
-                TIME.hours -= 24;                                                  
-            }                                                                           
-        }                                                                           
-    }                                                                           
-    CRITICAL_REGION_EXIT();                                                     
-}
-
 
 void task_10hz(void * arg_ptr)
 {
@@ -175,9 +151,10 @@ void task_1hz(void * arg_ptr)
     --battery_level; // FIXME do real stuff
     ++heart_rate_bpm; // FIXME do real stuff
 
-    increment_time(); // FIXME do real stuff
+    //increment_time(); // FIXME do real stuff
+    date_time_increment_second();
     
-    state_machine_refresh_screen();
+    //state_machine_refresh_screen();
 }
 
 /**

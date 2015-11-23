@@ -19,9 +19,10 @@ static enum state_machine_state_enum current_state;
 
 void state_machine_init()
 {
-    current_state = STATE_WATCH_FACE;
-    initStructs(); // TODO I think using this function is funky...
     clearDisplay();
+    current_state = STATE_WATCH_FACE;
+initStructs(); // TODO I think using this function is funky...
+    date_time_init(state_machine_refresh_screen);
     state_machine_refresh_screen();
 }
 

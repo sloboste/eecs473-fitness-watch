@@ -9,23 +9,13 @@
 #include <stdint.h>
 
 #include "lcd_driver.h"
+#include "date_time.h"
 
 /* ************* */
 /* Struct Setups */
 /* ************* */
 
 uint8_t lcd_builder_bluetooth_state;
-
-struct time_struct {
-	uint8_t hours;
-	uint8_t minutes;
-	uint8_t seconds;
-	uint8_t milli;  // FIXME data type
-
-    char * day_str;
-    char * month_str;
-    uint8_t day_num;
-} TIME;
 
 struct GPS_LCD_DATA {
    uint32_t ground_speed;
@@ -76,19 +66,19 @@ struct TOP_BAR_DATA {
 /* Macro EIR Functions */
 /* ******************* */
 
-void buildTopBar_LCD();
+extern void buildTopBar_LCD(date_time_t * date_time_ptr, bool time);
 
-void buildGPS_LCD();
+extern void buildGPS_LCD();
 
-void timerLap();
-void timerReset();
-void buildTimer_LCD();
+extern void timerLap();
+extern void timerReset();
+extern void buildTimer_LCD();
 
-void buildSteps_LCD();
+extern void buildSteps_LCD();
 
-void buildRun_LCD();
+extern void buildRun_LCD();
 
-void WatchFaceHelper();
-void buildWatchFace_LCD();
+extern void WatchFaceHelper();
+extern void buildWatchFace_LCD();
 
 #endif
