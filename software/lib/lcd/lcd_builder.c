@@ -447,13 +447,9 @@ void buildRun_LCD(){
   }
   transferSmallNumInt(RUN_DATA.timer_seconds);
 
-  setCursor(5,52);
-  if(RUN_DATA.startFlag)
+  if(!RUN_DATA.startFlag)
   {
-  	transferString("running");
-  }
-  else
-  {
+    setCursor(5,52);
   	transferString("stopped");
   }
 
