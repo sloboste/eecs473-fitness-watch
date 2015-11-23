@@ -39,9 +39,6 @@ static uint16_t heart_rate_bpm = 0;
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
 
-static app_timer_id_t timer_id_1hz;
-static app_timer_id_t timer_id_10hz;
-
 /**
  *
  * Note: this fuction executes in the interrupt context so schedule any function
@@ -140,17 +137,33 @@ void task_10hz(void * arg_ptr)
     state_machine_refresh_screen();
 }
 
-void task_1hz(void * arg_ptr)
+void task_1hz_1(void * arg_ptr)
+{
+    CRITICAL_REGION_ENTER(); 
+    if (++RUN_DATA.timer_seconds > 59) {
+        RUN_DATA.timer_seconds -= 60;
+        if (++RUN_DATA.timer_minutes > 59) { 
+            RUN_DATA.timer_minutes -= 60;
+            if (++RUN_DATA.timer_hours > 23) { 
+                RUN_DATA.timer_hours -= 24;
+            }
+        }
+    }
+    CRITICAL_REGION_EXIT(); 
+    state_machine_refresh_screen();
+}
+
+void task_1hz_0(void * arg_ptr)
 {
     nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
 
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
     //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
 
-    STEPS_DATA.steps = get_steps();
     --battery_level; // FIXME do real stuff
     ++heart_rate_bpm; // FIXME do real stuff
 
+    STEPS_DATA.steps = get_steps();
     date_time_increment_second();
 }
 
@@ -281,7 +294,7 @@ int main(void)
 
     // Start the timer for seconds time keeping
     // This must be the last thing before the main loop
-    timer_start_1hz_periodic();
+    timer_start_1hz_periodic_0();
 
     // Main loop
     while (1) {

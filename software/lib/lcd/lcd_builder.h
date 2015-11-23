@@ -33,7 +33,6 @@ struct RUN_LCD_DATA {
     uint8_t timer_hours;
     uint8_t timer_minutes;
     uint8_t timer_seconds;
-
     bool startFlag;
 }RUN_DATA;
 
@@ -77,6 +76,7 @@ extern void buildTimer_LCD();
 
 extern void buildSteps_LCD();
 
+extern void runTimerReset();
 extern void buildRun_LCD();
 
 extern void WatchFaceHelper();

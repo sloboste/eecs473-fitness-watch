@@ -86,12 +86,12 @@ void state_machine_on_button_0()
             break;
 
         case STATE_STEPS_GOAL:
-            // FIXME why is this visibly slow?
             // Cycle numbers in step goal
             ++STEPS_DATA.goal[STEPS_DATA.goal_digit];
             if (STEPS_DATA.goal[STEPS_DATA.goal_digit] > 9) {
                 STEPS_DATA.goal[STEPS_DATA.goal_digit] = 0;
             }
+            state_machine_refresh_screen();
             break;
 
         case STATE_RUN_TIMER_OFF:
@@ -101,7 +101,11 @@ void state_machine_on_button_0()
             break;
 
         case STATE_RUN_TIMER_ON:
-            // No effect 
+            // Run timer reset
+            current_state = STATE_RUN_TIMER_OFF;
+            timer_stop_1hz_periodic_1();
+            runTimerReset();
+            state_machine_refresh_screen();
             break;
 
         case STATE_GPS_OFF:
@@ -162,8 +166,23 @@ void state_machine_on_button_1()
             break;
 
         case STATE_RUN_TIMER_OFF:
+            // Start timer
+            current_state = STATE_RUN_TIMER_ON;
+            runTimerReset();
+            timer_start_1hz_periodic_1(); 
+            RUN_DATA.startFlag = true;
+            state_machine_refresh_screen();
             break;
         case STATE_RUN_TIMER_ON:
+            // Pause or restart timer
+            if (RUN_DATA.startFlag) {
+                timer_stop_1hz_periodic_1();
+                RUN_DATA.startFlag = false;
+            } else {
+                timer_start_1hz_periodic_1();
+                RUN_DATA.startFlag = true;
+            }
+            state_machine_refresh_screen();
             break;
         case STATE_GPS_OFF:
             break;

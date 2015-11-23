@@ -23,8 +23,11 @@ void initStructs(){
 
     //TIMER
     TIMER_DATA.lapCounter = 0;
+    timerReset();
     
     lcd_builder_bluetooth_state = BLE_STATE_IDLE;
+    
+    //Steps
 
     // GPS
     GPS_DATA.longitude = "012 23.5678 S";
@@ -32,25 +35,17 @@ void initStructs(){
     GPS_DATA.altitude = 5898;
     GPS_DATA.ground_speed = 23;
 
-    // RUN - DONE
+    // RUN
+    runTimerReset(); 
   	RUN_DATA.meters = 1260;
-
   	RUN_DATA.pace_minutes = 3;
   	RUN_DATA.pace_seconds = 12;
 
-  	RUN_DATA.timer_hours = 14;
-  	RUN_DATA.timer_minutes = 69;
-  	RUN_DATA.timer_seconds = 59;
-
-  	RUN_DATA.startFlag = false;
-
-      // TIMER
-      timerReset();
-
-    // RUN - DONE
+    // Steps
     STEPS_DATA.steps = 12345;
     STEPS_DATA.yesterdaySteps = 54321;
     memset(&STEPS_DATA.goal, 4, 5);
+    STEPS_DATA.goal_digit = 5; // NOTE: DO NOT ERASE THIS!
 }
 
 /* ******************* */
@@ -304,31 +299,31 @@ void buildSteps_LCD()
     for (i = 0; i < 5; i++)
     {
         transferSmallNumInt(STEPS_DATA.goal[i]);
-        if (STEPS_DATA.oal_digit == i)
+        if (STEPS_DATA.goal_digit == i)
         {
             invertBitMap(7+i, 66, 9);
         }
     }
 
-  drawLine(82);
+    drawLine(82);
 
-  setCursor(0, 84);
-  transferString("last");
-  transferSpecialChar(':');
-  Cursor.row++;
-  if(STEPS_DATA.yesterdaySteps < 10000){
-    transferSmallNumInt(0);
-  }
-  if(STEPS_DATA.yesterdaySteps < 1000){
-    transferSmallNumInt(0);
-  }
-  if(STEPS_DATA.yesterdaySteps < 100){
-    transferSmallNumInt(0);
-  }
-  if(STEPS_DATA.yesterdaySteps < 10){
-    transferSmallNumInt(0);
-  }
-  transferSmallNumInt(STEPS_DATA.yesterdaySteps);
+    setCursor(0, 84);
+    transferString("last");
+    transferSpecialChar(':');
+    Cursor.row++;
+    if (STEPS_DATA.yesterdaySteps < 10000){
+        transferSmallNumInt(0);
+    }
+    if (STEPS_DATA.yesterdaySteps < 1000){
+        transferSmallNumInt(0);
+    }
+    if (STEPS_DATA.yesterdaySteps < 100){
+        transferSmallNumInt(0);
+    }
+    if (STEPS_DATA.yesterdaySteps < 10){
+        transferSmallNumInt(0);
+    }
+    transferSmallNumInt(STEPS_DATA.yesterdaySteps);
 }
 
 /**************************************************************************/
@@ -401,6 +396,11 @@ void buildWatchFace_LCD() {
 */
 /**************************************************************************/
 
+void runTimerReset()
+{
+    memset(&RUN_DATA, 0, sizeof(RUN_DATA));
+}
+
 void buildRun_LCD(){
     date_time_t date_time;
     date_time_get_current_date_time(&date_time);
@@ -430,7 +430,7 @@ void buildRun_LCD(){
     }
     transferSmallNumInt(RUN_DATA.timer_seconds);
 
-    if(RUN_DATA.startFlag == flase)
+    if(RUN_DATA.startFlag == false)
     {
         setCursor(5,52);
       	transferString("stopped");
