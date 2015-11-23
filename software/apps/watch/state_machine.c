@@ -36,6 +36,7 @@ void state_machine_refresh_screen()
             break;
 
         case STATE_STEPS:
+        case STATE_STEPS_GOAL:
             buildSteps_LCD();
             break;
 
@@ -82,6 +83,15 @@ void state_machine_on_button_0()
             current_state = STATE_RUN_TIMER_OFF;
             clearDisplay();
             state_machine_refresh_screen();
+            break;
+
+        case STATE_STEPS_GOAL:
+            // FIXME why is this visibly slow?
+            // Cycle numbers in step goal
+            ++STEPS_DATA.goal[STEPS_DATA.goal_digit];
+            if (STEPS_DATA.goal[STEPS_DATA.goal_digit] > 9) {
+                STEPS_DATA.goal[STEPS_DATA.goal_digit] = 0;
+            }
             break;
 
         case STATE_RUN_TIMER_OFF:
@@ -136,7 +146,21 @@ void state_machine_on_button_1()
             break;
 
         case STATE_STEPS:
+            // Go to goal setting
+            current_state = STATE_STEPS_GOAL;
+            STEPS_DATA.goal_digit = 0;
+            state_machine_refresh_screen();
             break;
+
+        case STATE_STEPS_GOAL:
+            // Go to next goal digit
+            ++STEPS_DATA.goal_digit;
+            if (STEPS_DATA.goal_digit == 5) {
+                current_state = STATE_STEPS;
+            }
+            state_machine_refresh_screen();
+            break;
+
         case STATE_RUN_TIMER_OFF:
             break;
         case STATE_RUN_TIMER_ON:
@@ -168,6 +192,8 @@ void state_machine_on_button_2()
         case STATE_WATCH_FACE:
             break;
         case STATE_STEPS:
+            break;
+        case STATE_STEPS_GOAL:
             break;
         case STATE_RUN_TIMER_OFF:
             break;

@@ -10,6 +10,7 @@
 enum state_machine_state_enum {
     STATE_WATCH_FACE,
     STATE_STEPS,
+    STATE_STEPS_GOAL,
     STATE_RUN_TIMER_OFF,
     STATE_RUN_TIMER_ON,
     STATE_GPS_OFF,

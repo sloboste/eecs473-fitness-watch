@@ -41,6 +41,7 @@ struct STEPS_LCD_DATA {
     uint32_t steps;
     uint32_t yesterdaySteps;
     uint8_t goal[5];
+    uint8_t goal_digit;
 }STEPS_DATA;
 
 struct TIMER_LCD_DATA {

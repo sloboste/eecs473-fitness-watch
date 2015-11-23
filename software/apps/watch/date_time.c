@@ -119,6 +119,7 @@ void date_time_init(void (*on_minute_hour_change)(void))
 
 void date_time_increment_second()
 {
+    bool day_update = false;
     CRITICAL_REGION_ENTER();                                                    
     if (++current_date_time.seconds > 59) {                                                  
     current_date_time.seconds -= 60;                                                     
@@ -126,10 +127,15 @@ void date_time_increment_second()
             current_date_time.minutes -= 60;                                                 
             if (++current_date_time.hours > 23) {                                            
                 current_date_time.hours -= 24;                                               
+                day_update = true;
             }                                                                   
         }                                                                       
     }                                                                           
     CRITICAL_REGION_EXIT(); 
+    if (day_update) {
+        // FIXME the day counter doesnt increase...
+        update_day_month_str();
+    }
     on_min_hr_change();
 }
 
