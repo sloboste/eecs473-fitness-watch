@@ -186,7 +186,8 @@ static void on_ble_evt(ble_evt_t * ble_evt_ptr)
 /**
  * Function that dispatches a BLE stack event to all modules with a handler.
  * This function is called from the BLE stack event interrupt handler after a
- * a BLE stack event as been received.
+ * a BLE stack event as been received. This function executes in the interrupt
+ * context.
  */
 static void ble_evt_dispatch(ble_evt_t * ble_evt_ptr)
 {
@@ -203,9 +204,8 @@ static void ble_stack_init()
 {
     uint32_t error_code;
 
-    // Initialize the SoftDevice handler module.
-    // TODO Do we want a better clock?
-    // Use a really crappy clock because we want fast start.
+    // Initialize the SoftDevice handler module. 
+    // Use a really crappy clock because we want fast start. TODO Do we want a better clock?
     SOFTDEVICE_HANDLER_INIT(
         NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION, false);
 

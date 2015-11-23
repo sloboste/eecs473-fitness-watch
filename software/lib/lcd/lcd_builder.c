@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
-
-#include "nrf_gpio.h" // FIXME needed?
+#include <string.h>
 
 #include "lcd_driver.h"
 #include "lcd_builder.h"
@@ -25,26 +24,25 @@ void initStructs(){
     timerReset();
     
     lcd_builder_bluetooth_state = BLE_STATE_IDLE;
-    
-    //Steps
 
     // GPS
+    memset(&GPS_DATA, 0, sizeof(GPS_DATA));
     GPS_DATA.longitude = "012 23.5678 S";
     GPS_DATA.latitude = "98 87.5432 W";
     GPS_DATA.altitude = 5898;
     GPS_DATA.ground_speed = 23;
 
-    // RUN
+    // Run
     runTimerReset(); 
   	RUN_DATA.meters = 1260;
   	RUN_DATA.pace_minutes = 3;
   	RUN_DATA.pace_seconds = 12;
 
     // Steps
-    STEPS_DATA.steps = 12345;
-    STEPS_DATA.yesterdaySteps = 54321;
-    memset(&STEPS_DATA.goal, 4, 5);
-    STEPS_DATA.goal_digit = 5; // NOTE: DO NOT ERASE THIS!
+    memset(&STEPS_DATA, 0, sizeof(STEPS_DATA));
+    STEPS_DATA.yesterdaySteps = 12345;
+    // Set goal digit index to one past the end (no highlight)
+    STEPS_DATA.goal_digit = 5;
 }
 
 /* ******************* */
