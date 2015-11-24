@@ -1,111 +1,71 @@
-#ifndef LCD_DRIVER_H
+/*
+ *
+ * TODO Add proper comments for functions.
+ */
 
+#ifndef LCD_DRIVER_H
 #define LCD_DRIVER_H
 
-//#include "globals.h"
 #include <stdint.h>
 
-#include "time_keeper.h"
 
-
-/* ************** */
-/* LCD Dimensions */
-/* ************** */
-
+// LCD dimensions
 #define LCD_WIDTH       (96)
 #define LCD_HEIGHT      (96) 
 
-/* *********************** */
-/* Potential Struct Setups */
-/* *********************** */
-
-struct CURSOR {
+struct lcd_cursor_struct {
 	uint8_t line;
 	uint8_t row;
-}Cursor;
-
-struct GPS_LCD_DATA {
-	double longitude;
-	double latitude;
-	int altitude;
-	int velocity;
-}GPS_DATA;
-
-struct RUN_LCD_DATA {
-	double dist;
-	double pace;
-	int timer;
-}RUN_DATA;
-
-struct TIMER_LCD_DATA {
-	double lapTimes[4];
-	int timer;
-	int numLaps;
-}TIMER_DATA;
-
-struct TOP_BAR_DATA {
-	int time;
-	uint8_t batLevel;
-	bool flag;
-}TIMER_BAR;
-
+} lcd_Cursor;
 
 /* ************** */
 /* Init Functions */
 /* ************** */
 
-void initCursor();
-void initStructs();
+extern void lcd_initCursor();
 
 /* *********************************** */
 /* Transfer, Draw, and Erase Functions */
 /* *********************************** */
 
-void drawLine(uint8_t line);
-void transferToBitmap(uint8_t data);
-void clearLines(uint8_t start, uint8_t end);
+extern void lcd_drawLine(uint8_t line);
+extern void lcd_transferToBitmap(uint8_t data);
+extern void lcd_clearLines(uint8_t start, uint8_t end);
 
-void transferChar(char c);
-void transferSmallNumInt(int num);
-void transferBigNumInt(int num);
-void transferSpecialChar(char c);
-void transferSpecialBigChar(char c);
+extern void lcd_transferString(char * s);
+extern void lcd_transferChar(char c);
+extern void lcd_transferSmallNumInt(int num);
+extern void lcd_transferBigNumInt(int num);
+extern void lcd_transferSpecialChar(char c);
+extern void lcd_transferSpecialBigChar(char c);
 
-void transferBatteryLevel(int num);
+extern void lcd_transferBatteryLevel(int num);
+
+extern void lcd_invertBitMap(uint8_t row, uint8_t line, uint8_t numLines);
 
 /* ***************************** */
 /* LCD Transfer Helper Functions */
 /* ***************************** */
 
-uint8_t reverseBitOrder(uint8_t MSB);
+extern uint8_t lcd_reverseBitOrder(uint8_t MSB);
 
 /* ******************************** */
 /* Macro LCD Manipulation Functions */
 /* ******************************** */
 
-void refresh(void);
-void clearDisplay();
+extern void lcd_refresh(void);
+extern void lcd_clearDisplay();
 
 /* ********************** */
 /* LCD Mangment Functions */
 /* ********************** */
 
-void setCursor(int x, int y);
-
-/* ******************* */
-/* Macro EIR Functions */
-/* ******************* */
-
-void buildGPS_LCD();
-void buildTimer_LCD();
-void buildRun_LCD();
-void buildTopBar_LCD();
-void buildWatchFace_LCD(rtc_time_t * time_ptr, uint32_t steps);
+extern void lcd_setCursor(int x, int y);
 
 /* ************** */
 /* Test Functions */
 /* ************** */
 
-void charTest();
+//extern void lcd_charTest();
 
 #endif
