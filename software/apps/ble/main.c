@@ -1,155 +1,191 @@
+/* Test application for bluetooth functionality.
+ * 
+ * This application will continuously advertise (if not connected). When
+ * connected, it will offer the same BLE service as the watch app, but with
+ * fake data (see lib/ble/packets.h and lib/ble/watch_service.h for a
+ * description of how it works). One of the LED's on the board should blink at
+ * 1 Hz and the other will flash for 100ms whenever a request is handled.
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
+#include "app_error.h"
 #include "nrf.h"
-#include "nrf_gpio.h"
 #include "softdevice_handler.h"
+
+#include "nrf_gpio.h"
+
+#include "timer_config.h"
+#include "scheduler_config.h"
+
+#include "ble_config.h"
+#include "watch_service.h"
+#include "packets.h"
+
+#include "pcb.h"
 
 #include "nrf_delay.h"
 
-#include "timer_config.h"
-#include "ble_config.h"
-#include "heart_rate_service.h"
-#include "battery_service.h"
-#include "gps_service.h"
-#include "ped_service.h"
+static uint8_t battery_level = 0;
+static uint16_t heart_rate_bpm = 0;
 
-//#include "blue_dev_board.h"
-#include "green_dev_board.h"
-#include "gps.h"
-
-/*
-#define ADVERTISING_LED                 PIN_LED_0   // On when advertising 
-#define CONNECTED_LED                   PIN_LED_1   // On when connected
-#define ADVERTISING_BUTTON              PIN_BUTTON_0  // Activate advertising
-*/
-
-
-/**@brief Function for error handling, which is called when an error has occurred.
- *
- * @warning This handler is an example only and does not fit a final product. You need to analyze
- *          how your product is supposed to react in case of error.
- *
- * @param[in] error_code  Error code supplied to the handler.
- * @param[in] line_num    Line number where the handler is called.
- * @param[in] p_file_name Pointer to the file name.
- */
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name)
+static void on_adv_con_change(uint8_t ble_state)
 {
-    // This call can be used for debug purposes during application development.
-    // @note CAUTION: Activating this code will write the stack to flash on an error.
-    //                This function should NOT be used in a final product.
-    //                It is intended STRICTLY for development/debugging purposes.
-    //                The flash write will happen EVEN if the radio is active, thus interrupting
-    //                any communication.
-    //                Use with care. Un-comment the line below to use.
-    // ble_debug_assert_handler(error_code, line_num, p_file_name);
+    if (ble_state == BLE_STATE_IDLE) {
+        ble_advertising_start();
+    }
+}
 
+void pcb_gpio_init(void)
+{
+    nrf_gpio_cfg_output(PIN_LED_1);
+    nrf_gpio_cfg_output(PIN_LED_2);
+
+    nrf_gpio_pin_set(PIN_LED_1);
+    nrf_gpio_pin_set(PIN_LED_2);
+}
+
+void app_error_handler(uint32_t error_code, uint32_t line_num,
+                       const uint8_t * p_file_name)
+{
     // On assert, the system can only recover on reset.
     NVIC_SystemReset();
 }
 
-
-/**@brief Function for doing power management.
- */
-static void power_manage(void)
+void task_1hz_1(void * arg_ptr)
 {
-    // TODO: maybe move this to BLE config because of the sd_app_event_wait
-    uint32_t err_code = sd_app_evt_wait();
-    APP_ERROR_CHECK(err_code);
+    // Do nothing
 }
 
-
-void gpio_init(void)
+void task_10hz(void * arg_ptr)
 {
-    /*
-    nrf_gpio_cfg_input(ADVERTISING_BUTTON, GPIO_PIN_CNF_PULL_Pullup);
-    nrf_gpio_cfg_output(ADVERTISING_LED);
-    nrf_gpio_cfg_output(CONNECTED_LED);
-    nrf_gpio_pin_clear(ADVERTISING_LED);
-    nrf_gpio_pin_clear(CONNECTED_LED);
-    */
-
-    //nrf_gpio_cfg_output(PIN_LED_0);
-    //nrf_gpio_cfg_output(PIN_LED_1);
-    //nrf_gpio_cfg_output(PIN_LED_2);
-    //nrf_gpio_pin_clear(PIN_LED_0);
-    //nrf_gpio_pin_set(PIN_LED_1);
-    //nrf_gpio_pin_set(PIN_LED_2);
+    // Do nothing
 }
 
+void task_1hz_0(void * arg_ptr)
+{
+    --battery_level;
+    ++heart_rate_bpm;
+    nrf_gpio_pin_toggle(PIN_LED_1);
+}
 
+static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
+{
+    static uint8_t packet_buf[PACKET_BUF_LEN];
+    uint8_t packet_type;
+    packet_type = packets_decode_request_packet(data, (uint8_t) len);
 
-/**
- * @brief Function for application main entry.
- */
+    uint32_t fake_step_count = 473;
+    char * fake_latitude = "42 17.5400 N";
+    char * fake_longitude = "083 42.8600 W"; 
+    uint32_t fake_speed = 12345; 
+
+    nrf_gpio_pin_clear(PIN_LED_2);
+    nrf_delay_ms(100);
+    nrf_gpio_pin_set(PIN_LED_2);
+
+    // TODO finish
+    switch (packet_type) {
+        case PACKET_TYPE_REQUEST_PED_STEP_COUNT:
+            // Send step count
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            uint32_t step_count_rev = __REV(fake_step_count);
+            packets_build_reply_packet(
+                packet_buf,
+                PACKET_TYPE_REPLY_PED_STEP_COUNT,
+                (void *) &step_count_rev,
+                sizeof(fake_step_count),
+                true); 
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+
+        case PACKET_TYPE_REQUEST_GPS_DATA: 
+            // Send latitude
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf,
+                PACKET_TYPE_REPLY_GPS_LATITUDE,
+                (void *) fake_latitude,
+                sizeof(fake_latitude),
+                true); 
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            // Send longitude
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_GPS_LONGITUDE,
+                (void *) fake_longitude,
+                sizeof(fake_longitude),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            // Send speed
+            uint32_t speed_rev = __REV(fake_speed); 
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_GPS_SPEED,
+                (void *) &speed_rev,
+                sizeof(fake_speed),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+
+        case PACKET_TYPE_REQUEST_GPS_LOG: 
+            // Send GPS logs
+            // TODO
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            break;
+
+        case PACKET_TYPE_REQUEST_BATTERY_LEVEL:
+            // Send battery level
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_BATTERY_LEVEL,
+                (void *) &battery_level,
+                sizeof(battery_level),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+
+        case PACKET_TYPE_REQUEST_HEART_RATE:
+            // Send heart rate
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            uint32_t heart_rate_bpm_rev = __REV16(heart_rate_bpm);
+            packets_build_reply_packet(
+                packet_buf, 
+                PACKET_TYPE_REPLY_HEART_RATE,
+                (void *) &heart_rate_bpm_rev,
+                sizeof(heart_rate_bpm_rev),
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+
+        default:
+            // Unrecognized request. Send all 0's
+            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
+
+    }
+
+    //nrf_gpio_pin_toggle(PIN_LED_2);
+
+    //return 0; // FIXME what is the return value supposed to be? It's not used.
+}
+
 int main(void)
 {
-    gpio_init();
-    timers_init(false);
-    ble_init();
+    pcb_gpio_init();
+    timers_init(true);
+    scheduler_init();
+    ble_init(request_handler, on_adv_con_change);
+    timer_start_1hz_periodic_0();
+    ble_advertising_start();
 
-    // Wait for button press
-    //while (nrf_gpio_pin_read(ADVERTISING_BUTTON)) {}; 
-
-    //gps_init(PIN_LED_1);
-    gps_init();
-    nrf_delay_ms(1000);
-    gps_enable();
-    gps_config();
-
-    gps_info_t gps_info;
-
-    advertising_start();
-
-    uint32_t gval = 0; // FIXME remove later
-    uint8_t pstatus = 0x1; // FIXME remove later
-    uint8_t gstatus = 0x1; // FIXME remove later
-    uint32_t pval = 0; // FIXME remove later
-    uint8_t battery_level = 100;
-    uint16_t heart_rate_bpm = 1000;
-    
-    char * lat1 = "12 34.5678 N";
-    char * lat2 = "90 87.1234 S";
-    
-    char * long1 = "012 34.5678 E";
-    char * long2 = "180 87.1234 W";
-    
-    //char * info = NULL;
-    //uint32_t len;
-
-    int x = 0;
     while (1) {
-        x ^= 1;
-        //power_manage();
-        
-        // FIXME remove later
-        nrf_delay_ms(500);
-        bas_update(battery_level--);
-        hrs_update(heart_rate_bpm++);
-        
-        gps_get_info(&gps_info, GPS_TYPE_GPRMC); 
-        ble_gps_update_latitude(gps_info.latitude, 16);
-        //ble_gps_update_speed((uint32_t) (gps_info.speed * 1000 + 0.5 ));
-        //ble_gps_update_location(gps_info.longitude, 16);
-
-        /*
-        if (x) {
-            ble_gps_update_latitude(lat1, strlen(lat1));
-            ble_gps_update_longitude(long1, strlen(long1));
-        } else {
-            ble_gps_update_latitude(lat2, strlen(lat2));
-            ble_gps_update_longitude(long2, strlen(long2));
-        }
-        ble_gps_update_speed(gval++);
-        gstatus ^= 0x1;
-        ble_gps_update_status(gstatus);
-
-        ble_ped_update_step_count(pval--);
-        pstatus ^= 0x1;
-        ble_ped_update_status(pstatus);
-        */
-        // ---
+        app_sched_execute();
     }
 }
