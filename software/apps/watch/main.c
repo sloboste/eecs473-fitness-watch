@@ -232,7 +232,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
                 (void *) gps_info.longitude,
-                sizeof(gps_info.latitude),
+                sizeof(gps_info.longitude),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
