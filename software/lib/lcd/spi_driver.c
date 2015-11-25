@@ -1,5 +1,6 @@
-#include "nrf_gpio.h"
 #include <stdint.h>
+
+#include "nrf_gpio.h"
 #include "spi_driver.h"
 
 //Commands

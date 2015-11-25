@@ -1,6 +1,3 @@
 [submodule "software/nrf5x-base"]
 	path = software/nrf5x-base
 	url = https://github.com/sloboste/nrf5x-base.git
-[submodule "fitness-watch-app"]
-	path = fitness-watch-app
-	url = https://github.com/amitshah326/fitness-watch-app.git

@@ -4,12 +4,12 @@
 //#include "nrf_gpio.h"
 
 // Push button switches
-#define PIN_BUTTON_0 17
-#define PIN_BUTTON_1 18
-#define PIN_BUTTON_2 19
-#define PIN_BUTTON_3 20
+#define PIN_BUTTON_1 17
+#define PIN_BUTTON_2 18
+#define PIN_BUTTON_3 19
+#define PIN_BUTTON_4 20
 
-//#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
+#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
 
 // LEDs
 #define PIN_LED_1 21

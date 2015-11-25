@@ -11443,18 +11443,11 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <label x="-2.54" y="12.7" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="QST_FG" class="0">
+<net name="ALT_FG" class="0">
 <segment>
 <pinref part="U17" gate="G$1" pin="P12"/>
 <wire x1="15.24" y1="10.16" x2="7.62" y2="10.16" width="0.1524" layer="91"/>
 <label x="-2.54" y="10.16" size="1.778" layer="95"/>
-</segment>
-</net>
-<net name="ALT_FG" class="0">
-<segment>
-<pinref part="U17" gate="G$1" pin="P13"/>
-<wire x1="15.24" y1="7.62" x2="7.62" y2="7.62" width="0.1524" layer="91"/>
-<label x="-2.54" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SCLK_LCD" class="0">
@@ -11490,6 +11483,13 @@ Source: http://www.national.com/ds/LP/LP2950.pdf</description>
 <pinref part="U17" gate="G$1" pin="P01/AIN2"/>
 <wire x1="15.24" y1="40.64" x2="5.08" y2="40.64" width="0.1524" layer="91"/>
 <label x="2.54" y="38.1" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="QST_FG" class="0">
+<segment>
+<pinref part="U17" gate="G$1" pin="P13"/>
+<wire x1="15.24" y1="7.62" x2="7.62" y2="7.62" width="0.1524" layer="91"/>
+<label x="-2.54" y="7.62" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

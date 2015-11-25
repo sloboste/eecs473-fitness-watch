@@ -14,15 +14,11 @@ APPLICATION_SRCS += nrf_drv_gpiote.c
 APPLICATION_SRCS += nrf_drv_twi.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += app_scheduler.c
-#APPLICATION_SRCS += spi_master.c
-APPLICATION_SRCS += lcd_driver.c
-APPLICATION_SRCS += time_keeper.c
-APPLICATION_SRCS += spi_driver.c
-APPLICATION_SRCS += globals.c
-
+APPLICATION_SRCS += SEGGER_RTT.c
+APPLICATION_SRCS += SEGGER_RTT_printf.c
 
 ifndef TARGET
-    TARGET = BLUE_DEV_BOARD
+    TARGET = GREEN_DEV_BOARD
 endif
 
 TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)
@@ -33,12 +29,10 @@ APPLICATION_SRCS += $(TARGET_LOWER).c
 
 LIBRARY_PATHS += ./ ../../platform/
 SOURCE_PATHS += ../../platform/
-LIBRARY_PATHS += ../../lib/lcd/
-SOURCE_PATHS += ../../lib/lcd/
-LIBRARY_PATHS += ../../lib/rtc/
-SOURCE_PATHS += ../../lib/rtc/
-LIBRARY_PATHS += ../../lib/
-SOURCE_PATHS += ../../lib/
+
+## Add Serial prints
+LIBRARY_PATHS += ./ ../../platform/RTT/
+SOURCE_PATHS += ../../platform/RTT/
 
 NRF_BASE_PATH ?= ../../nrf5x-base/
 TEMPLATE_PATH ?= $(NRF_BASE_PATH)/nrf51-pure-gcc-setup/template/
