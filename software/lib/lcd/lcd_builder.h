@@ -103,6 +103,13 @@ extern void lcd_builder_init_structs();
 //------------------------------------------------------------------------------
 
 /**
+ * Update the LCD bitmap for the pre-sleep mode message.
+ *
+ * Note: this only changes the bitmap and doesn't make the changes visible.
+ */
+extern void lcd_builder_build_sleep_message();
+
+/**
  * Update the LCD bitmap for the top bar portion of the screen.
  *
  * time -- do or do not display the time on the top bar. 

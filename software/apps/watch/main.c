@@ -33,7 +33,7 @@
 // TODO change pin assignments for custom PCB
 #define PIN_BUTTON_CYCLE        PIN_BUTTON_1
 #define PIN_BUTTON_SELECT       PIN_BUTTON_2
-#define PIN_BUTTON_WAKE_SLEEP   PIN_BUTTON_3
+#define PIN_BUTTON_SLEEP        PIN_BUTTON_3
 
 
 // TODO
@@ -41,7 +41,6 @@ static gps_info_t gps_info;
 static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 //--
-
 
 // TODO remove when using custom PCB
 void dev_board_gpio_init(void)
@@ -94,10 +93,11 @@ static void button_handler(uint32_t event_pins_low_to_high,
         error_code = app_sched_event_put(NULL, 0, state_machine_on_button_1);
         APP_ERROR_CHECK(error_code);
 
-    } else if ((event_pins_high_to_low >> PIN_BUTTON_WAKE_SLEEP) & 0x1) {
-        // Wakeup/Sleep
-        //  TODO impelement
-
+    } else if ((event_pins_high_to_low >> PIN_BUTTON_SLEEP) & 0x1) {
+        // Sleep
+        timer_stop_1hz_periodic_0();
+        error_code = app_sched_event_put(NULL, 0, state_machine_on_button_2);
+        APP_ERROR_CHECK(error_code);
     }
 }
 
@@ -112,11 +112,11 @@ static void buttons_init()
     nrf_gpio_cfg_sense_input(
         PIN_BUTTON_SELECT, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
     nrf_gpio_cfg_sense_input(
-        PIN_BUTTON_WAKE_SLEEP, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+        PIN_BUTTON_SLEEP, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
     uint32_t low_to_high_bitmask = 0x00000000;
     uint32_t high_to_low_bitmask = (1 << PIN_BUTTON_CYCLE) +
                                    (1 << PIN_BUTTON_SELECT) +
-                                   (1 << PIN_BUTTON_WAKE_SLEEP);
+                                   (1 << PIN_BUTTON_SLEEP);
     APP_GPIOTE_INIT(1);
     static app_gpiote_user_id_t gpiote_user_id;
     error_code = app_gpiote_user_register(

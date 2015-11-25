@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "softdevice_handler.h"
+
 #include "state_machine.h"
 #include "lcd_builder.h"
 #include "lcd_driver.h"
@@ -201,30 +203,17 @@ void state_machine_on_button_1()
 
 }
 
-// TODO ?
+// Power off
 void state_machine_on_button_2()
 {
-    switch (current_state) {
-        case STATE_WATCH_FACE:
-            break;
-        case STATE_STEPS:
-            break;
-        case STATE_STEPS_GOAL:
-            break;
-        case STATE_RUN_TIMER_OFF:
-            break;
-        case STATE_RUN_TIMER_ON:
-            break;
-        case STATE_GPS_OFF:
-            break;
-        case STATE_GPS_ON:
-            break;
-        case STATE_STOPWATCH_TIMER_OFF:
-            break;
-        case STATE_STOPWATCH_TIMER_ON:
-            break;
-        default: // ERROR
-            break;
-    }
-
+    // Note: It hardfaults if this delay is not here. Maybe because of a
+    // timer interrupt that goes off before the system has a chance to finish
+    // shutting down. 
+    lcd_clearDisplay();
+    lcd_builder_build_sleep_message();
+    lcd_refresh();
+    nrf_delay_ms(1000);
+    lcd_clearDisplay();
+    sd_power_system_off();
+    // Never returns
 }

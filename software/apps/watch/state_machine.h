@@ -57,7 +57,11 @@ extern void state_machine_on_button_0();
 extern void state_machine_on_button_1();
 
 /**
- * TODO what is this for?
+ * The function to be scheduled in response to the "Sleep" button press. This
+ * will power down the watch immediately and never return. When powered down,
+ * any button press will wake up the system and run main() from the top.
+ * 
+ * Note: DO NOT run this in the interrupt context.
  */
 extern void state_machine_on_button_2();
 

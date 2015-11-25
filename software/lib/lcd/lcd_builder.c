@@ -37,6 +37,15 @@ void lcd_builder_init_structs()
     lcd_builder_step_data.goal_digit = 5;
 }
 
+void lcd_builder_build_sleep_message()
+{
+    // Note: the screen must be cleared prior to this!
+    lcd_setCursor(2, 37);
+    lcd_transferString("shutting");
+    lcd_setCursor(4, 57);
+    lcd_transferString("down");
+}
+
 void lcd_builder_build_gps()
 {
     lcd_builder_build_top_bar(true);
