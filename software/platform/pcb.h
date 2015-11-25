@@ -7,16 +7,16 @@
 #define PCB_H
 
 // Push button switches
-//#define PIN_BUTTON_1 ?
-//#define PIN_BUTTON_2 ? 
-//#define PIN_BUTTON_3 ?
+#define PIN_BUTTON_1 23
+#define PIN_BUTTON_2 22 
+#define PIN_BUTTON_3 21
 
-//#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
+#define BUTTON_PULL GPIO_PIN_CNF_PULL_Pullup
 
 // LEDs
-#define PIN_LED_1 21 // 8
-#define PIN_LED_2 22 // 9
-#define PIN_LED_3 23 // 10
+#define PIN_LED_1 8
+#define PIN_LED_2 9
+#define PIN_LED_3 10
 
 // UART
 //#define PIN_RTS ? 

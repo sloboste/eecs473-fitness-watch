@@ -13,8 +13,8 @@
 #include "app_gpiote.h"
 #include "nrf_delay.h"
 
-#include "blue_dev_board.h"
-//#include "pcb.h"
+//#include "blue_dev_board.h"
+#include "pcb.h"
 
 
 void board_led_init(void)
