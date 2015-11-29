@@ -41,6 +41,9 @@ int main(void)
     nrf_gpio_cfg_output(PIN_LED_1);
     nrf_gpio_pin_set(PIN_LED_1);
 
+    nrf_gpio_cfg_output(PIN_LED_2);
+    nrf_gpio_pin_set(PIN_LED_2);
+
     mympu_open(200);
 
     spi_init();
@@ -48,6 +51,11 @@ int main(void)
 
     while (1) {
         step_count = get_steps(); 
+        if (step_count > 10) {
+            nrf_gpio_pin_toggle(PIN_LED_1);
+        } else {
+            nrf_gpio_pin_toggle(PIN_LED_2);
+        } 
         lcd_clearDisplay();
         lcd_setCursor(1, 37);
         lcd_transferBigNumInt(step_count); 
