@@ -39,6 +39,7 @@ APPLICATION_SRCS += lcd_builder.c
 #APPLICATION_SRCS += globals.c
 
 APPLICATION_SRCS += twi_sw_master.c
+APPLICATION_SRCS += fuel_gauge.c
 
 APPLICATION_SRCS += app_gpiote.c
 

@@ -21,7 +21,7 @@
 
 #include "mpu.h"
 #include "gps.h"
-#include "i2c.h" // FIXME/TODO fuel gauge 
+#include "fuel_gauge.h" // FIXME/TODO fuel gauge 
 
 #include "spi_driver.h"
 #include "lcd_builder.h"
@@ -185,12 +185,8 @@ void task_1hz_0(void * arg_ptr)
     ++heart_rate_bpm;
     //----
 
-    date_time_increment_second();
-
-    // TODO
-    lcd_builder_battery_level = fuel_get_battery_level();
-
     lcd_builder_step_data.steps = get_steps();
+    date_time_increment_second(); // This will trigger an lcd_refresh()
 }
 
 /**
@@ -293,6 +289,16 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
 }
 
 /**
+ * The function to call when a minute passes. We are going to poll the battery
+ * levle every minute with this function.
+ */
+static void on_minute_change()
+{
+    lcd_builder_battery_level = fuel_get_battery_level();
+    state_machine_refresh_screen();
+}
+
+/**
  * Watch app main.
  */
 int main(void)
@@ -308,11 +314,13 @@ int main(void)
     buttons_init();
 
     // Init sw I2C and fuel gague
-    // TODO
-    //twi_sw_master_init();
-
+    // TODO nothing?
+    
     // Init IMU
     mympu_open(200);
+
+    // Init time keeping mechanism
+    date_time_init(on_minute_change);
 
     // Init SPI, LCD, and state machine
     spi_init();

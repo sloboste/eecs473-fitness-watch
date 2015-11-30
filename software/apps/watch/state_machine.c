@@ -21,7 +21,6 @@ void state_machine_init()
 {
     lcd_clearDisplay();
     current_state = STATE_WATCH_FACE;
-    date_time_init(state_machine_refresh_screen);
     lcd_builder_init_structs(); // FIXME I think using this function is funky...
     state_machine_refresh_screen();
 }

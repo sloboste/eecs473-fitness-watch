@@ -55,9 +55,11 @@ void date_time_init(void (*on_minute_hour_change)(void))
 void date_time_increment_second()
 {
     uint8_t max_days_feb = 29;
+    bool min_update = false;
     bool day_update = false;
     if (++date_time.seconds > 59) {                                                  
-    date_time.seconds = 0;                                                     
+        date_time.seconds = 0;                                                     
+        min_update = true;
         if (++date_time.minutes > 59) {                                              
             date_time.minutes = 0;                                                 
             if (++date_time.hours > 23) {                                            
@@ -106,5 +108,7 @@ void date_time_increment_second()
         }
         update_day_month_str();
     }
-    on_min_hr_change();
+    if (min_update) {
+        on_min_hr_change();
+    }
 }

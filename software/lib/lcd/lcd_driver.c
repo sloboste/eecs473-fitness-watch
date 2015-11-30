@@ -317,6 +317,8 @@ void lcd_transferBigNumInt(int num){
 
 /**************************************************************************/
 /*!
+    TODO fix comment
+
     @brief    Takes in an integer of size 0 - 4, inclusive, and places the
     @         corresponding battery level image at the cursor location.
     @         0 being for very low, and 4 being for full.
@@ -325,8 +327,9 @@ void lcd_transferBigNumInt(int num){
 */
 /**************************************************************************/ 
 
-void lcd_transferBatteryLevel(int num){
+void lcd_transferBatteryLevel(uint8_t percentage){
     int divisor;
+    int num = percentage / 20;
     int numCopy;
     uint8_t realNum;
     uint8_t i;

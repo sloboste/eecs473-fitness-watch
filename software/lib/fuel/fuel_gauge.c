@@ -1,16 +1,13 @@
-/* Fuel gauge driver and I2C software bit banging driver. This has to be
- * combined due to the dependency of the fuel gauge functions on the gpio pin
- * configuration.
- */
-
-#ifndef SW_I2C_H
-#define SW_I2C_H
+//TODO/FIXME try to separate I2C from fuel driver.
 
 #include "nrf_delay.h"
 #include "nrf_gpio.h"
 #include "twi_sw_master.h"
 
+#include "fuel_gauge.h"
+
 #include "blue_dev_board.h"
+//#include "pcb.h"
 
 #define MAX17043_ADDRESS  0x36
 #define MAX17043_SOC      0x04 // R - 16-bit state of charge (SOC)
@@ -27,7 +24,7 @@ static bool started = false;
 /**
  * Set SDA as input and return current level of line, 0 or 1.
  */
-bool read_SDA()
+static bool read_SDA()
 {
     nrf_gpio_cfg_input(PIN_SW_I2C_SDA, NRF_GPIO_PIN_PULLUP);
     return nrf_gpio_pin_read(PIN_SW_I2C_SDA);
@@ -36,7 +33,7 @@ bool read_SDA()
 /**
  * Actively drive SDA signal high.
  */
-void set_SCL()
+static void set_SCL()
 {
     nrf_gpio_cfg_output(PIN_SW_I2C_SCL);
     nrf_gpio_pin_set(PIN_SW_I2C_SCL);
@@ -45,7 +42,7 @@ void set_SCL()
 /**
  * Actively drive SCL signal low.
  */
-void clear_SCL()
+static void clear_SCL()
 {
     nrf_gpio_cfg_output(PIN_SW_I2C_SCL);
     nrf_gpio_pin_clear(PIN_SW_I2C_SCL);
@@ -54,7 +51,7 @@ void clear_SCL()
 /**
  * Actively drive SDA signal high.
  */
-void set_SDA()
+static void set_SDA()
 {
     nrf_gpio_cfg_output(PIN_SW_I2C_SDA);
     nrf_gpio_pin_set(PIN_SW_I2C_SDA);
@@ -63,16 +60,16 @@ void set_SDA()
 /**
  * Actively drive SDA signal low.
  */
-void clear_SDA()
+static void clear_SDA()
 {
     nrf_gpio_cfg_output(PIN_SW_I2C_SDA);
     nrf_gpio_pin_clear(PIN_SW_I2C_SDA);
 }
 
 /**
- * TODO
+ * TODO comment
  */
-void i2c_start_cond() 
+static void i2c_start_cond() 
 {
     // SCL is high, set SDA from 1 to 0.
     set_SDA();
@@ -87,9 +84,9 @@ void i2c_start_cond()
 }
 
 /**
- * TODO
+ * TODO comment
  */
-void i2c_stop_cond()
+static void i2c_stop_cond()
 {
     // set SDA to 0
     clear_SDA();
@@ -105,7 +102,7 @@ void i2c_stop_cond()
 /**
  * Write a bit to I2C bus
  */
-void i2c_write_bit(bool bit) 
+static void i2c_write_bit(bool bit) 
 {
     if (bit) {
         set_SDA();
@@ -127,7 +124,7 @@ void i2c_write_bit(bool bit)
 /**
  * Read a bit from I2C bus
  */
-bool i2c_read_bit() 
+static bool i2c_read_bit() 
 {
     bool bit;
     nrf_delay_us(3);
@@ -146,12 +143,12 @@ bool i2c_read_bit()
 /**
  *  Write a byte to I2C bus. Return 0 if ack by the slave.
  */
-bool i2c_write_byte(bool send_start, bool send_stop, unsigned char byte) 
+static bool i2c_write_byte(bool send_start, bool send_stop, unsigned char byte) 
 {
     unsigned bit;
-    bool     nack;
+    bool nack;
 
-    if(send_start) {
+    if (send_start) {
         i2c_start_cond();
     }
 
@@ -172,7 +169,7 @@ bool i2c_write_byte(bool send_start, bool send_stop, unsigned char byte)
 /**
  *  Read a byte from I2C bus.
  */
-unsigned char i2c_read_byte(bool nack, bool send_stop) 
+static unsigned char i2c_read_byte(bool nack, bool send_stop) 
 {
     unsigned char byte = 0;
     unsigned char bit;
@@ -191,12 +188,6 @@ unsigned char i2c_read_byte(bool nack, bool send_stop)
     return byte;
 }
 
-
-/**
- * Get the battery level from the fuel gauge with resolution of 1%.
- *
- * Returns the battery level as a uint8_t in the range [0, 100].
- */
 uint8_t fuel_get_battery_level()
 {
     uint8_t msb;
@@ -220,5 +211,3 @@ uint8_t fuel_get_battery_level()
 
     return msb;
 }
-
-#endif

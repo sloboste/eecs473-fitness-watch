@@ -389,7 +389,12 @@ void lcd_builder_build_top_bar(bool time)
         lcd_drawLine(12);
     }
     lcd_setCursor(0,1);
-    lcd_transferBatteryLevel(lcd_builder_battery_level / 20);
+
+    // FIXME change back to battery icon
+    //lcd_transferBatteryLevel(lcd_builder_battery_level);
+    lcd_transferSmallNumInt(lcd_builder_battery_level);
+    //------
+
     if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
         lcd_transferSpecialChar('&'); // Bluetooth symbol
         lcd_transferChar('a');
