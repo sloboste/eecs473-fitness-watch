@@ -73,15 +73,22 @@ void task_1hz_0(void * arg_ptr)
 {
     --battery_level;
     ++heart_rate_bpm;
-    step_count = mpu_reg_dump();
-    //step_count = get_steps();
-    if (step_count == 0) {
-        nrf_gpio_pin_toggle(PIN_LED_1);
-    } else if (step_count == 1) {
+    //step_count = mpu_reg_dump();
+    step_count = get_steps();
+    if(step_count == 0xFFFFFFFF)
+        nrf_gpio_pin_toggle(PIN_LED_1); // blue
+    else if(step_count > 10)
         nrf_gpio_pin_toggle(PIN_LED_2);
-    } else {
-        nrf_gpio_pin_toggle(PIN_LED_3);
-    }
+    else
+        nrf_gpio_pin_toggle(PIN_LED_3); //green
+
+    // if (step_count == 0) {
+    //     nrf_gpio_pin_toggle(PIN_LED_1); // blue
+    // } else if (step_count == 1) {
+    //     nrf_gpio_pin_toggle(PIN_LED_2);
+    // } else {
+    //     nrf_gpio_pin_toggle(PIN_LED_3);
+    // }
 }
 
 static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
