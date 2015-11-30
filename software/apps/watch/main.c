@@ -313,8 +313,9 @@ int main(void)
     // Init buttons
     buttons_init();
 
-    // Init sw I2C and fuel gague
-    // TODO nothing?
+    // Init SW I2C and fuel gague
+    fuel_init(PIN_SW_I2C_SDA, PIN_SW_I2C_SCL, PIN_FUEL_QST);
+    fuel_quick_start(false);
     
     // Init IMU
     mympu_open(200);

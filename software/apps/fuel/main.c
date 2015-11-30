@@ -125,6 +125,8 @@ int main(void)
     gpio_init();
     timers_init(true);
     scheduler_init();
+    fuel_init(PIN_SW_I2C_SDA, PIN_SW_I2C_SCL, PIN_FUEL_QST);
+    fuel_quick_start(false);
     ble_init(request_handler, dummy);
     timer_start_1hz_periodic_0();
     ble_advertising_start();

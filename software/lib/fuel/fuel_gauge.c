@@ -6,11 +6,12 @@
 
 #include "fuel_gauge.h"
 
-#include "blue_dev_board.h"
-//#include "pcb.h"
+#define MAX17043_ADDRESS            0x36
 
-#define MAX17043_ADDRESS  0x36
-#define MAX17043_SOC      0x04 // R - 16-bit state of charge (SOC)
+#define MAX17043_SOC                0x04 // R - 16-bit state of charge (SOC)
+#define MAX17043_MODE               0x06 // W - Sends special commands to IC
+
+#define MAX17043_MODE_QUICKSTART    0x4000
 
 #define START 1
 #define NOSTART 0
@@ -19,6 +20,9 @@
 
 
 static bool started = false;
+static uint32_t pin_sda;
+static uint32_t pin_scl;
+static uint32_t pin_qst;
 
 
 /**
@@ -26,8 +30,8 @@ static bool started = false;
  */
 static bool read_SDA()
 {
-    nrf_gpio_cfg_input(PIN_SW_I2C_SDA, NRF_GPIO_PIN_PULLUP);
-    return nrf_gpio_pin_read(PIN_SW_I2C_SDA);
+    nrf_gpio_cfg_input(pin_sda, NRF_GPIO_PIN_PULLUP);
+    return nrf_gpio_pin_read(pin_sda);
 }
 
 /**
@@ -35,8 +39,8 @@ static bool read_SDA()
  */
 static void set_SCL()
 {
-    nrf_gpio_cfg_output(PIN_SW_I2C_SCL);
-    nrf_gpio_pin_set(PIN_SW_I2C_SCL);
+    nrf_gpio_cfg_output(pin_scl);
+    nrf_gpio_pin_set(pin_scl);
 }
 
 /**
@@ -44,8 +48,8 @@ static void set_SCL()
  */
 static void clear_SCL()
 {
-    nrf_gpio_cfg_output(PIN_SW_I2C_SCL);
-    nrf_gpio_pin_clear(PIN_SW_I2C_SCL);
+    nrf_gpio_cfg_output(pin_scl);
+    nrf_gpio_pin_clear(pin_scl);
 }
 
 /**
@@ -53,8 +57,8 @@ static void clear_SCL()
  */
 static void set_SDA()
 {
-    nrf_gpio_cfg_output(PIN_SW_I2C_SDA);
-    nrf_gpio_pin_set(PIN_SW_I2C_SDA);
+    nrf_gpio_cfg_output(pin_sda);
+    nrf_gpio_pin_set(pin_sda);
 }
 
 /**
@@ -62,8 +66,8 @@ static void set_SDA()
  */
 static void clear_SDA()
 {
-    nrf_gpio_cfg_output(PIN_SW_I2C_SDA);
-    nrf_gpio_pin_clear(PIN_SW_I2C_SDA);
+    nrf_gpio_cfg_output(pin_sda);
+    nrf_gpio_pin_clear(pin_sda);
 }
 
 /**
@@ -188,12 +192,22 @@ static unsigned char i2c_read_byte(bool nack, bool send_stop)
     return byte;
 }
 
+void fuel_init(uint32_t sda, uint32_t scl, uint32_t qst)
+{
+    pin_sda = sda;
+    pin_scl = scl;
+    pin_qst = qst;
+
+    nrf_gpio_cfg_output(pin_qst);
+    nrf_gpio_pin_clear(pin_qst);
+}
+
 uint8_t fuel_get_battery_level()
 {
     uint8_t msb;
     uint8_t lsb;
 
-    nrf_gpio_cfg_output(PIN_SW_I2C_SDA);
+    nrf_gpio_cfg_output(pin_sda);
 
     // Reads from the state of charge register (battery level). The MSB holds
     // the battery level with a resolution of 1% and the LSB provides additional
@@ -210,4 +224,18 @@ uint8_t fuel_get_battery_level()
     lsb = i2c_read_byte(1, END);
 
     return msb;
+}
+
+void fuel_quick_start(bool software)
+{
+    // A quick-start is initiated by a rising edge on the QSTRT pin, or through
+    // software by writing 4000h to MODE register.
+    if (software) {
+        // TODO
+
+    } else {
+        nrf_gpio_pin_set(pin_qst);
+        nrf_delay_us(200);
+        nrf_gpio_pin_clear(pin_qst);
+    } 
 }

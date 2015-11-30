@@ -31,7 +31,12 @@
 #define SPI_SS_PIN   7 
 #define NRF_SPI NRF_SPI0 // TODO should we have an include for this?
 
-// I2C
+// SW I2C / Fuel gauge
+#define PIN_SW_I2C_SDA  19
+#define PIN_SW_I2C_SCL  20
+#define PIN_FUEL_QST    21
+
+// HW I2C
 // TODO
 
 #endif
