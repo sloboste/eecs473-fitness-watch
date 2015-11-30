@@ -30,6 +30,7 @@
 #include "nrf_delay.h"
 
 #include "mpu.h"
+#include "inv_mpu.h"
 
 static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
@@ -44,9 +45,11 @@ void pcb_gpio_init(void)
 {
     nrf_gpio_cfg_output(PIN_LED_1);
     nrf_gpio_cfg_output(PIN_LED_2);
+    nrf_gpio_cfg_output(PIN_LED_3);
 
     nrf_gpio_pin_set(PIN_LED_1);
     nrf_gpio_pin_set(PIN_LED_2);
+    nrf_gpio_pin_set(PIN_LED_3);
 }
 
 void app_error_handler(uint32_t error_code, uint32_t line_num,
@@ -70,11 +73,14 @@ void task_1hz_0(void * arg_ptr)
 {
     --battery_level;
     ++heart_rate_bpm;
-    step_count = get_steps();
-    if (step_count > 10) {
+    step_count = mpu_reg_dump();
+    //step_count = get_steps();
+    if (step_count == 0) {
         nrf_gpio_pin_toggle(PIN_LED_1);
-    } else {
+    } else if (step_count == 1) {
         nrf_gpio_pin_toggle(PIN_LED_2);
+    } else {
+        nrf_gpio_pin_toggle(PIN_LED_3);
     }
 }
 
