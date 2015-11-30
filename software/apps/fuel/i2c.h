@@ -1,5 +1,5 @@
-#define SDA 8
-#define SCL 9
+#define SDA 1
+#define SCL 2
 #define MAX17043_ADDRESS  0x36
 #define MAX17043_SOC      0x04 // R - 16-bit state of charge (SOC)
 
@@ -11,30 +11,32 @@
 #include "nrf_delay.h"
 #include "twi_sw_master.h"
 
+#include "nrf_gpio.h"
+
 bool read_SDA( void ){
-    nrf_gpio_cfg_input(SDA, NRF_GPIO_PIN_NOPULL );
+    nrf_gpio_cfg_input(SDA, NRF_GPIO_PIN_PULLUP);
     return nrf_gpio_pin_read(SDA);
-}; // Set SDA as input and return current level of line, 0 or 1
+} // Set SDA as input and return current level of line, 0 or 1
 
 void set_SCL( void ){
     nrf_gpio_cfg_output(SCL);
     nrf_gpio_pin_set(SCL);
-}; // Actively drive SDA signal high
+} // Actively drive SDA signal high
 
 void clear_SCL( void ){
     nrf_gpio_cfg_output(SCL);
     nrf_gpio_pin_clear(SCL);
-}; // Actively drive SCL signal low
+} // Actively drive SCL signal low
 
 void set_SDA( void ){
     nrf_gpio_cfg_output(SDA);
     nrf_gpio_pin_set(SDA);
-}; // Actively drive SDA signal high
+} // Actively drive SDA signal high
 
 void clear_SDA( void ){
     nrf_gpio_cfg_output(SDA);
     nrf_gpio_pin_clear(SDA);
-}; // Actively drive SDA signal low
+} // Actively drive SDA signal low
 
 void arbitration_lost( void );
 
@@ -42,28 +44,6 @@ bool started = false; // global data
 
 void i2c_start_cond( void ) 
 {
-  // if( started ) 
-  // { 
-  //   // if started, do a restart cond
-  //   // set SDA to 1
-  //   read_SDA();
-  //   I2C_delay();
-
-  //   while( read_SCL() == 0 ) 
-  //   {  // Clock stretching
-  //     // You should add timeout to this loop
-  //   }
-
-  //   // Repeated start setup time, minimum 4.7us
-  //   I2C_delay();
-
-  // }
-
-  // if( read_SDA() == 0 ) 
-  // {
-  //   arbitration_lost();
-  // }
-
   // SCL is high, set SDA from 1 to 0.
   set_SDA();
   nrf_delay_us(2);
@@ -126,14 +106,10 @@ bool i2c_read_bit( void )
 {
   bool bit;
   nrf_delay_us(3);
-  //bit = read_SDA();
+  bit = read_SDA();
   nrf_delay_us(1);
   set_SCL();
   nrf_delay_us(4);
-  // while( read_SCL() == 0 ) 
-  // { // Clock stretching
-  //   // You should add timeout to this loop
-  // }
 
   // SCL is high, now data is valid
   clear_SCL();
@@ -161,9 +137,9 @@ bool i2c_write_byte( bool          send_start ,
     i2c_write_bit( ( byte & 0x80 ) != 0 );
     byte <<= 1;
   }
-  i2c_write_bit( 0 );
+  // i2c_write_bit( 0 );
 
-  //nack = i2c_read_bit();
+  nack = i2c_read_bit();
 
   if (send_stop) 
   {
@@ -185,9 +161,6 @@ unsigned char i2c_read_byte( bool nack , bool send_stop )
     byte |= i2c_read_bit();
     byte <<= 1;
   }
-  // set_SCL();
-  // nrf_delay_us(1);
-  // clear_SCL();
 
   i2c_write_bit( nack );
 
@@ -218,30 +191,32 @@ unsigned char i2c_read_byte( bool nack , bool send_stop )
 // return ((uint16_t) msb << 8) | lsb;
 // }
 
-bool i2c_write_sw(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t const *data){
-  slave_addr = slave_addr << 1;
-  int tx_size = length+1;
-  uint8_t w2_data[tx_size];
-  w2_data[0] = reg_addr;
-  for(int i = 1; i < tx_size; ++i){
-      w2_data[i] = *(data+i-1);
-  }
+// bool i2c_write_sw(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t const *data){
+//   slave_addr = slave_addr << 1;
+//   int tx_size = length+1;
+//   uint8_t w2_data[tx_size];
+//   w2_data[0] = reg_addr;
+//   for(int i = 1; i < tx_size; ++i){
+//       w2_data[i] = *(data+i-1);
+//   }
   
-  return !twi_master_sw_transfer(slave_addr, w2_data, sizeof(w2_data), TWI_ISSUE_STOP);;
-}
+//   return !twi_master_sw_transfer(slave_addr, w2_data, sizeof(w2_data), TWI_ISSUE_STOP);;
+// }
 
 
-bool i2c_read_sw(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *data){
-  slave_addr = slave_addr << 1;
-  bool transfer_succeeded;
+// bool i2c_read_sw(uint8_t slave_addr, uint8_t reg_addr, uint8_t length, uint8_t *data){
+//   slave_addr = slave_addr << 1;
+//   bool transfer_succeeded;
 
-  transfer_succeeded  = twi_master_sw_transfer(slave_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
+//   transfer_succeeded  = twi_master_sw_transfer(slave_addr, &reg_addr, 1, TWI_DONT_ISSUE_STOP);
 
-  transfer_succeeded &= twi_master_sw_transfer(slave_addr|TWI_READ_BIT, data, length, TWI_ISSUE_STOP);
+//   transfer_succeeded &= twi_master_sw_transfer(slave_addr|TWI_READ_BIT, data, length, TWI_ISSUE_STOP);
 
-  return !transfer_succeeded;
-}
+//   return !transfer_succeeded;
+// }
 
+
+/*
 uint16_t read2byte(){
   uint8_t data[2];
   uint8_t msb, lsb;
@@ -261,15 +236,44 @@ uint16_t read2byte(){
 
   return ((uint16_t) msb << 8) | lsb;  
 }
+*/
 
-float getSOC(){
-  uint16_t soc;
-  float percent;
-  soc = read2byte();
-  percent = (soc & 0xFF00) >> 8;
-  percent += (float) (((uint8_t) soc) / 256.0);
 
-  return percent;
+
+/**
+ * Initialize the battery fuel gauge.
+ *
+void fuel_gauge_init()
+{
+
 }
+*/
 
+/**
+ * Get the battery level from the fuel gauge with resolution of 1%.
+ *
+ * Returns the battery level as a uint8_t in the range [0, 100].
+ */
+uint8_t fuel_get_battery_level()
+{
+    uint8_t msb;
+    uint8_t lsb;
 
+    nrf_gpio_cfg_output(SDA);
+
+    // Reads from the state of charge register (battery level). The MSB holds
+    // the battery level with a resolution of 1% and the LSB provides additional
+    // resolution in units of 1/256%.
+    // TODO/FIXME explain transaction, magic number bs
+    i2c_write_byte(START, NOEND, 0x6C);
+    nrf_delay_us(10);
+    i2c_write_byte(NOSTART, NOEND, 0x04);
+    nrf_delay_us(10);
+    i2c_write_byte(START, NOEND, 0x6D);
+    nrf_delay_us(10);
+    msb = i2c_read_byte(0, NOEND);
+    nrf_delay_us(10);
+    lsb = i2c_read_byte(1, END);
+
+    return msb;
+}

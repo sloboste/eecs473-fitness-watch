@@ -21,6 +21,7 @@
 
 #include "mpu.h"
 #include "gps.h"
+#include "i2c.h" // FIXME/TODO fuel gauge 
 
 #include "spi_driver.h"
 #include "lcd_builder.h"
@@ -38,7 +39,6 @@
 
 // TODO
 static gps_info_t gps_info;
-static uint8_t battery_level = 0;
 static uint16_t heart_rate_bpm = 0;
 //--
 
@@ -182,11 +182,15 @@ void task_1hz_0(void * arg_ptr)
     // TODO/FIXME do real stuff
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
     //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
-    --battery_level;
     ++heart_rate_bpm;
     //----
-    lcd_builder_step_data.steps = get_steps();
+
     date_time_increment_second();
+
+    // TODO
+    lcd_builder_battery_level = fuel_get_battery_level();
+
+    lcd_builder_step_data.steps = get_steps();
 }
 
 /**
@@ -259,8 +263,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_BATTERY_LEVEL,
-                (void *) &battery_level,
-                sizeof(battery_level),
+                (void *) &lcd_builder_battery_level,
+                sizeof(lcd_builder_battery_level),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -303,15 +307,19 @@ int main(void)
     // Init buttons
     buttons_init();
 
+    // Init sw I2C and fuel gague
+    // TODO
+    //twi_sw_master_init();
+
     // Init IMU
     mympu_open(200);
 
-    // Init LCD and state machine
+    // Init SPI, LCD, and state machine
     spi_init();
     state_machine_init();
 
     // TODO
-    // Init GPS
+    // Init UART, GPS
     //gps_init();
     //gps_config();
     //gps_enable();

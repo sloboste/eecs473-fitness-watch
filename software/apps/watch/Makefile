@@ -38,11 +38,13 @@ APPLICATION_SRCS += lcd_driver.c
 APPLICATION_SRCS += lcd_builder.c
 #APPLICATION_SRCS += globals.c
 
+APPLICATION_SRCS += twi_sw_master.c
+
 APPLICATION_SRCS += app_gpiote.c
 
 
 ifndef TARGET
-    TARGET = GREEN_DEV_BOARD
+    TARGET = BLUE_DEV_BOARD
 endif
 
 TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)
@@ -67,6 +69,8 @@ LIBRARY_PATHS += ../../lib/
 SOURCE_PATHS += ../../lib/
 LIBRARY_PATHS += ../../lib/ble/
 SOURCE_PATHS += ../../lib/ble/
+LIBRARY_PATHS += ../../lib/fuel/
+SOURCE_PATHS += ../../lib/fuel/
 LIBRARY_PATHS +=  ../../lib/gps/
 SOURCE_PATHS += ../../lib/gps/
 #LIBRARY_PATHS += ../../lib/hrm/
