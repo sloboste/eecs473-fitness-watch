@@ -37,6 +37,17 @@ public class SampleGattAttributes {
     //desc
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
+    //data request constants
+    public static enum PACKET_TYPE_REQUEST{
+        PED_STEP_COUNT, //= 01;
+        GPS_DATA,       //= 02;
+        GPS_LOG,        //= 03;
+        BATTERY_LEVEL,  //= 04;
+        HEART_RATE,     //= 05;
+    };
+
+
+
     static {
         // Sample Services.
         attributes.put("78c10001-801a-11e5-8bcf-feff819cdc9f", "Eir Watch Service");

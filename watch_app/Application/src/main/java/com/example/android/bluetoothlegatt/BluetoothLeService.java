@@ -335,7 +335,7 @@ public class BluetoothLeService extends Service {
 
         if (UUID_Read.equals(characteristic.getUuid())) {
             //MAGIC or I just need a sufficient delay
-            for(int i = 0; i < 100000; i++){
+            for(int i = 0; i < 10000; i++){
                 System.out.println(i);
             }
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));

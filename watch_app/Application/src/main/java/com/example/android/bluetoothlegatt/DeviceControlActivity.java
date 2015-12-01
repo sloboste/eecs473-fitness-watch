@@ -38,6 +38,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * For a given BLE device, this Activity provides the user interface to connect, display data,
@@ -77,6 +78,11 @@ public class DeviceControlActivity extends Activity {
             }
             // Automatically connects to the device upon successful start-up initialization.
             mBluetoothLeService.connect(mDeviceAddress);
+
+//            //final BluetoothGattCharacteristic characteristic = mGattCharacteristics.; //SampleGattAttributes.Read
+//            final BluetoothGattCharacteristic characteristic = new BluetoothGattCharacteristic(UUID.fromString(SampleGattAttributes.Read), 2, 2);
+//            characteristic.s
+//            final int charaProp = characteristic.getProperties();
         }
 
         @Override
@@ -139,6 +145,7 @@ public class DeviceControlActivity extends Activity {
                             mNotifyCharacteristic = characteristic;
                             mBluetoothLeService.setCharacteristicNotification(characteristic, true);
                         }
+
                         //if write
                         if( (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) >0 ){
                             byte[] value = new byte[1];
@@ -319,6 +326,32 @@ public class DeviceControlActivity extends Activity {
             mGattCharacteristics.add(charas);
             gattCharacteristicData.add(gattCharacteristicGroupData);
         }
+
+        //find read characteristic
+        BluetoothGattCharacteristic characteristic = null;
+        for(ArrayList<BluetoothGattCharacteristic> charalist: mGattCharacteristics){
+            for(BluetoothGattCharacteristic chara: charalist){
+                String ruuid = chara.getUuid().toString();
+                if(ruuid.equalsIgnoreCase(SampleGattAttributes.Read)) {
+                    //found read characteristic
+                    characteristic = chara;
+                    break;
+                }
+            }
+        }
+
+        //if found, send read characteristic
+        if(characteristic != null){
+            final int charaProp = characteristic.getProperties();
+            if( (charaProp & (BluetoothGattCharacteristic.PROPERTY_READ|BluetoothGattCharacteristic.PROPERTY_NOTIFY)) > 0  ){
+                mBluetoothLeService.readCharacteristic(characteristic);
+                mNotifyCharacteristic = characteristic;
+                mBluetoothLeService.setCharacteristicNotification(characteristic, true);
+            }
+        }else{
+            System.out.println("READ FAILED!");
+        }
+
 
         SimpleExpandableListAdapter gattServiceAdapter = new SimpleExpandableListAdapter(
                 this,
