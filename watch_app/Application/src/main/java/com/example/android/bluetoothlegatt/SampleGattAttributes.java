@@ -38,15 +38,22 @@ public class SampleGattAttributes {
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
     //data request constants
-    public static enum PACKET_TYPE_REQUEST{
-        PED_STEP_COUNT, //= 01;
-        GPS_DATA,       //= 02;
-        GPS_LOG,        //= 03;
-        BATTERY_LEVEL,  //= 04;
-        HEART_RATE,     //= 05;
-    };
+    //public static enum PACKET_TYPE_REQUEST{
+    public static byte    REQUEST_PED_STEP_COUNT  = 01;
+    public static byte    REQUEST_GPS_DATA        = 02;
+    public static byte    REQUEST_GPS_LOG         = 03;
+    public static byte    REQUEST_BATTERY_LEVEL   = 04;
+    public static byte    REQUEST_HEART_RATE      = 05;
+    //};
 
-
+    //data reply constants
+    public static byte    REPLY_PED_STEP_COUNT    = 01;
+    public static byte    REPLY_GPS_LATITUDE      = 02;
+    public static byte    REPLY_GPS_LONGITUDE     = 03;
+    public static byte    REPLY_GPS_SPEED         = 04;
+    public static byte    REPLY_GPS_LOG           = 05;
+    public static byte    REPLY_BATTERY_LEVEL     = 06;
+    public static byte    REPLY_HEART_RATE        = 07;
 
     static {
         // Sample Services.
