@@ -53,7 +53,7 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private TextView mConnectionState;
-    private TextView mDataField;
+    private TextView tvPed, tvBat, tvGPSd, tvGPSl;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -192,7 +192,29 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
+        tvPed.setText(R.string.no_data);
+        tvBat.setText(R.string.no_data);
+        tvGPSd.setText(R.string.no_data);
+        tvGPSl.setText(R.string.no_data);
+    }
+
+    private void updateCharacteristic(byte packet){
+        if (mGattCharacteristics != null) {
+            for(ArrayList<BluetoothGattCharacteristic> service:mGattCharacteristics) {
+                for (BluetoothGattCharacteristic characteristic : service) {
+                    //final BluetoothGattCharacteristic characteristic =
+                    //       mGattCharacteristics.get(groupPosition).get(childPosition);
+
+                    final int charaProp = characteristic.getProperties();
+                    //if write
+                    if( (charaProp & BluetoothGattCharacteristic.PROPERTY_WRITE) >0 ){
+                        byte[] value = new byte[1];
+                        value[0] = packet;
+                        mBluetoothLeService.writeCharacteristic(characteristic, value);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -209,12 +231,42 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
+        tvPed = (TextView) findViewById(R.id.tvPed);
+        tvBat = (TextView) findViewById(R.id.tvBat);
+        tvGPSd = (TextView) findViewById(R.id.tvGPSd);
+        tvGPSl = (TextView) findViewById(R.id.tvGPSl);
+
+
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+
+        //refresh every second
+        Thread t = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(500);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update TextView here!
+                                //updateCharacteristic(SampleGattAttributes.PED_STEP_COUNT);
+                                updateCharacteristic(SampleGattAttributes.REQUEST_BATTERY_LEVEL);
+                                //updateCharacteristic(SampleGattAttributes.GPS_DATA);
+                                //updateCharacteristic(SampleGattAttributes.GPS_LOG);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        t.start();
     }
 
     @Override
@@ -280,7 +332,31 @@ public class DeviceControlActivity extends Activity {
 
     private void displayData(String data) {
         if (data != null) {
-            mDataField.setText(data);
+            //extract first byte
+            byte first_byte = (byte)Integer.parseInt(data.substring(21, 23), 16);
+            long unsigned_first_byte = first_byte & 0x00000000ffffffffL;
+
+            //get packet type
+            long packet_type = unsigned_first_byte & 0x7F; // & 0111 1111
+
+            //Is it terminated?
+            long terminated = (unsigned_first_byte & 0x80) >> 7; // & 1000 0000
+
+            if(packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT){
+                tvPed.setText(data);
+            }else if(packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL){
+                tvBat.setText(data);
+            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE){
+                tvGPSd.setText(data);
+            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE){
+                tvGPSd.setText(data);
+            }else if(packet_type == SampleGattAttributes.REPLY_GPS_SPEED){
+                tvGPSd.setText(data);
+            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LOG){
+                tvGPSl.setText(data);
+            }
+
+
         }
     }
 
