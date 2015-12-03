@@ -25,13 +25,18 @@
 //#define PIN_RXD ?
 
 // SPI
-//#define SPI_SCK_PIN ?                                                          
-//#define SPI_MISO_PIN ?                                                         
-//#define SPI_MOSI_PIN ?                                                         
-//#define SPI_SS_PIN ? 
-//#define NRF_SPI NRF_SPI0 // TODO should we have an include for this?
+#define SPI_SCK_PIN  5                                                          
+#define SPI_MISO_PIN 6                                                         
+#define SPI_MOSI_PIN 0 // Not connected                                                         
+#define SPI_SS_PIN   7 
+#define NRF_SPI NRF_SPI0 // TODO should we have an include for this?
 
-// I2C
+// SW I2C / Fuel gauge
+#define PIN_SW_I2C_SDA  13
+#define PIN_SW_I2C_SCL  14
+#define PIN_FUEL_QST    15
+
+// HW I2C
 // TODO
 
 #endif

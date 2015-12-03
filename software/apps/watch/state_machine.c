@@ -1,6 +1,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "softdevice_handler.h"
+#include "nrf_delay.h"
+
 #include "state_machine.h"
 #include "lcd_builder.h"
 #include "lcd_driver.h"
@@ -8,7 +11,12 @@
 #include "date_time.h"
 #include "scheduler_config.h"
 #include "timer_config.h"
+#include "flash.h"
 
+// FIXME remove
+#include "blue_dev_board.h"
+#include "nrf_gpio.h"
+//---
 
 
 // The current state of the state machine
@@ -19,8 +27,14 @@ void state_machine_init()
 {
     lcd_clearDisplay();
     current_state = STATE_WATCH_FACE;
-    date_time_init(state_machine_refresh_screen);
+
     lcd_builder_init_structs(); // FIXME I think using this function is funky...
+
+    flash_load_step_count(&lcd_builder_step_data.steps_offset);
+    lcd_builder_step_data.steps = lcd_builder_step_data.steps_offset;
+    flash_load_step_yesterday(&lcd_builder_step_data.yesterday_steps);
+    flash_load_step_goal(lcd_builder_step_data.goal);
+    
     state_machine_refresh_screen();
 }
 
@@ -81,8 +95,8 @@ void state_machine_on_button_0()
 
         case STATE_STEPS_GOAL:
             // Cycle numbers in step goal
-            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > 9) {
-                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = 0;
+            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > '9') {
+                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = '0';
             }
             state_machine_refresh_screen();
             break;
@@ -201,30 +215,21 @@ void state_machine_on_button_1()
 
 }
 
-// TODO ?
+// Power off
 void state_machine_on_button_2()
 {
-    switch (current_state) {
-        case STATE_WATCH_FACE:
-            break;
-        case STATE_STEPS:
-            break;
-        case STATE_STEPS_GOAL:
-            break;
-        case STATE_RUN_TIMER_OFF:
-            break;
-        case STATE_RUN_TIMER_ON:
-            break;
-        case STATE_GPS_OFF:
-            break;
-        case STATE_GPS_ON:
-            break;
-        case STATE_STOPWATCH_TIMER_OFF:
-            break;
-        case STATE_STOPWATCH_TIMER_ON:
-            break;
-        default: // ERROR
-            break;
-    }
-
+    // Note: It hardfaults if this delay is not here. Maybe because of a
+    // timer interrupt that goes off before the system has a chance to finish
+    // shutting down. 
+    lcd_clearDisplay();
+    lcd_builder_build_sleep_message();
+    lcd_refresh();
+    flash_store_step_count(&lcd_builder_step_data.steps);
+    flash_store_step_yesterday(&lcd_builder_step_data.yesterday_steps);
+    flash_store_step_goal(lcd_builder_step_data.goal);
+    flash_store_date_time(&date_time);
+    nrf_delay_ms(1000);
+    lcd_clearDisplay();
+    sd_power_system_off();
+    // Never returns
 }

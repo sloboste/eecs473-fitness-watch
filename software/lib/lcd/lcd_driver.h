@@ -39,7 +39,7 @@ extern void lcd_transferBigNumInt(int num);
 extern void lcd_transferSpecialChar(char c);
 extern void lcd_transferSpecialBigChar(char c);
 
-extern void lcd_transferBatteryLevel(int num);
+extern void lcd_transferBatteryLevel(uint8_t percentage);
 
 extern void lcd_invertBitMap(uint8_t row, uint8_t line, uint8_t numLines);
 

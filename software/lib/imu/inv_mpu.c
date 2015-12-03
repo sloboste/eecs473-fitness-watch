@@ -448,15 +448,16 @@ void mpu_init_structures()
     reg->s1_do            = 0x64;
     reg->i2c_delay_ctrl   = 0x67;
 #endif
-    switch (deviceIndex) {
-      case 0:
-        hw->addr = 0x68;
-        break;
+    // switch (deviceIndex) {
+    //   case 0:
+    //     hw->addr = 0x68;
+    //     break;
 
-      case 1:
-        hw->addr = 0x69;
-        break;
-    }
+    //   case 1:
+    //     hw->addr = 0x69;
+    //     break;
+    // }
+    hw->addr = 0x69;
     hw->max_fifo          = 1024;
     hw->num_reg           = 118;
     hw->temp_sens         = 340;

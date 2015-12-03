@@ -37,9 +37,10 @@ typedef struct lcd_builder_run_data_struct {
 // Holds step data in an LCD friendly format.
 typedef struct lcd_builder_step_data_struct {
     uint32_t steps;
+    uint32_t steps_offset;
     uint32_t yesterday_steps;
     uint8_t goal_digit;
-    uint8_t goal[5];
+    char goal[6];
 } lcd_builder_step_data_t;
 
 // Holds stopwatch data in an LCD friendly format.
@@ -101,6 +102,13 @@ extern void lcd_builder_run_timer_reset();
 extern void lcd_builder_init_structs();
 
 //------------------------------------------------------------------------------
+
+/**
+ * Update the LCD bitmap for the pre-sleep mode message.
+ *
+ * Note: this only changes the bitmap and doesn't make the changes visible.
+ */
+extern void lcd_builder_build_sleep_message();
 
 /**
  * Update the LCD bitmap for the top bar portion of the screen.

@@ -30,7 +30,8 @@ date_time_t date_time;
  *                          the date/time by an interval of 1 minute or greater
  *                          occurs. Callback will be called by the scheduler. 
  */
-extern void date_time_init(void (*on_minute_hour_change)(void));
+extern void date_time_init(void (*on_minute_hour_change)(void),
+                           void (*on_day_change)(void));
 
 /**
  * Increment the second field of the date_time struct. 
