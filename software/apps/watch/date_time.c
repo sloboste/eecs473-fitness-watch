@@ -17,6 +17,7 @@ static char * day_strings[7] = {
 
 // Stores the callback
 static void (*on_min_hr_change)(void);
+static void (*on_dy_change)(void);
 
 
 /**
@@ -37,9 +38,11 @@ static void update_day_month_str()
     date_time.month_str = month_strings[date_time.month_num-1];
 }
 
-void date_time_init(void (*on_minute_hour_change)(void))
+void date_time_init(void (*on_minute_hour_change)(void),
+                    void (*on_day_change)(void))
 {
     on_min_hr_change = on_minute_hour_change;
+    on_dy_change = on_day_change;
     memset(&date_time, 0, sizeof(date_time));
     
     // Default date/time
@@ -107,6 +110,7 @@ void date_time_increment_second()
                 break; 
         }
         update_day_month_str();
+        on_dy_change();
     }
     if (min_update) {
         on_min_hr_change();

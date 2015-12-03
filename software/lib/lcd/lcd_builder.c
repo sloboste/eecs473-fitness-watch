@@ -26,13 +26,13 @@ void lcd_builder_init_structs()
 
     // Run
     lcd_builder_run_timer_reset(); 
-  	lcd_builder_run_data.meters = 1260;
-  	lcd_builder_run_data.pace_minutes = 3;
-  	lcd_builder_run_data.pace_seconds = 12;
 
     // Steps
     memset(&lcd_builder_step_data, 0, sizeof(lcd_builder_step_data));
-    lcd_builder_step_data.yesterday_steps = 12345;
+    uint8_t i;
+    for (i = 0; i < 5; ++i) {
+        lcd_builder_step_data.goal[i] = '0';
+    }
     // Set goal digit index to one past the end (no highlight)
     lcd_builder_step_data.goal_digit = 5;
 }
@@ -263,7 +263,7 @@ void lcd_builder_build_steps()
     lcd_Cursor.row++;
     for (i = 0; i < 5; i++)
     {
-        lcd_transferSmallNumInt(lcd_builder_step_data.goal[i]);
+        lcd_transferSmallNumInt(lcd_builder_step_data.goal[i] - '0');
         if (lcd_builder_step_data.goal_digit == i)
         {
             lcd_invertBitMap(7+i, 66, 9);

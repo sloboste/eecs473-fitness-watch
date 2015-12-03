@@ -37,9 +37,10 @@ typedef struct lcd_builder_run_data_struct {
 // Holds step data in an LCD friendly format.
 typedef struct lcd_builder_step_data_struct {
     uint32_t steps;
+    uint32_t steps_offset;
     uint32_t yesterday_steps;
     uint8_t goal_digit;
-    uint8_t goal[5];
+    char goal[6];
 } lcd_builder_step_data_t;
 
 // Holds stopwatch data in an LCD friendly format.
