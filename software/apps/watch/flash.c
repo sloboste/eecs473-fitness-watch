@@ -24,6 +24,7 @@ static pstorage_ntf_cb_t flash_callback(
     pstorage_handle_t * p_handle, uint8_t op_code, uint32_t result,             
     uint8_t * p_data, uint32_t data_len)                                        
 {                                                                               
+    //nrf_gpio_pin_toggle(PIN_LED_1);
     return 0; // FIXME what is the correct return value?
 }          
 
@@ -54,7 +55,7 @@ static void load_uint32(uint32_t * data_ptr, uint8_t block_offset)
     error_code = pstorage_load((uint8_t *) data_ptr, &base_block_id,
                                sizeof(*data_ptr), block_offset);          
     APP_ERROR_CHECK(error_code);
-    nrf_delay_ms(10);
+    nrf_delay_ms(50);
 }
 
 static void store_uint32(uint32_t * data_ptr, uint8_t block_offset)
@@ -63,7 +64,7 @@ static void store_uint32(uint32_t * data_ptr, uint8_t block_offset)
     error_code = pstorage_update(&base_block_id, (uint8_t*) data_ptr,
                                  sizeof(*data_ptr), block_offset);
     APP_ERROR_CHECK(error_code);                                                
-    nrf_delay_ms(10);
+    nrf_delay_ms(50);
 }
 
 void flash_load_step_count(uint32_t * step_count_ptr)

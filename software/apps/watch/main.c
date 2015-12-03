@@ -217,7 +217,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
                 (void *) &step_count_rev,
-                sizeof(lcd_builder_step_data.steps),
+                sizeof(step_count_rev),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -228,8 +228,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_GPS_LATITUDE,
-                (void *) gps_info.latitude,
-                sizeof(gps_info.latitude),
+                (void *) lcd_builder_gps_data.latitude,
+                sizeof(lcd_builder_gps_data.latitude),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send longitude
@@ -237,18 +237,19 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
-                (void *) gps_info.longitude,
-                sizeof(gps_info.longitude),
+                (void *) lcd_builder_gps_data.longitude,
+                sizeof(lcd_builder_gps_data.longitude),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
-            uint32_t speed_rev = __REV(gps_info.speed); 
+            //uint32_t speed_rev = __REV(gps_info.speed); 
+            uint32_t speed_rev = __REV(lcd_builder_gps_data.ground_speed); 
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_SPEED,
                 (void *) &speed_rev,
-                sizeof(gps_info.speed),
+                sizeof(speed_rev),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
