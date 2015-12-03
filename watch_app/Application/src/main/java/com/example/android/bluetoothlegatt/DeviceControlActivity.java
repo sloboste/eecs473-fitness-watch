@@ -190,6 +190,7 @@ public class DeviceControlActivity extends Activity {
                 }
     };
 
+    //Reset all TextViews
     private void clearUI() {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
         tvPed.setText(R.string.no_data);
@@ -243,21 +244,42 @@ public class DeviceControlActivity extends Activity {
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
-        //refresh every second
+        //Create a thread and refresh all data
         Thread t = new Thread() {
             @Override
             public void run() {
                 try {
                     while (!isInterrupted()) {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                // update TextView here!
-                                //updateCharacteristic(SampleGattAttributes.PED_STEP_COUNT);
+                                // update pedometer TextView
+                                updateCharacteristic(SampleGattAttributes.REPLY_PED_STEP_COUNT);
+                            }
+                        });
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update battery TextView
                                 updateCharacteristic(SampleGattAttributes.REQUEST_BATTERY_LEVEL);
-                                //updateCharacteristic(SampleGattAttributes.GPS_DATA);
-                                //updateCharacteristic(SampleGattAttributes.GPS_LOG);
+                            }
+                        });
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update GPS Data TextView
+                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_DATA);
+                            }
+                        });
+                        Thread.sleep(1000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // update GPS Log TextView
+                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
                             }
                         });
                     }
