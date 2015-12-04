@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #include "softdevice_handler.h"
+#include "nrf_delay.h"
 
 #include "state_machine.h"
 #include "lcd_builder.h"
@@ -10,7 +11,12 @@
 #include "date_time.h"
 #include "scheduler_config.h"
 #include "timer_config.h"
+#include "flash.h"
 
+// FIXME remove
+#include "blue_dev_board.h"
+#include "nrf_gpio.h"
+//---
 
 
 // The current state of the state machine
@@ -21,7 +27,14 @@ void state_machine_init()
 {
     lcd_clearDisplay();
     current_state = STATE_WATCH_FACE;
+
     lcd_builder_init_structs(); // FIXME I think using this function is funky...
+
+    flash_load_step_count(&lcd_builder_step_data.steps_offset);
+    lcd_builder_step_data.steps = lcd_builder_step_data.steps_offset;
+    flash_load_step_yesterday(&lcd_builder_step_data.yesterday_steps);
+    flash_load_step_goal(lcd_builder_step_data.goal);
+    
     state_machine_refresh_screen();
 }
 
@@ -82,8 +95,8 @@ void state_machine_on_button_0()
 
         case STATE_STEPS_GOAL:
             // Cycle numbers in step goal
-            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > 9) {
-                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = 0;
+            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > '9') {
+                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = '0';
             }
             state_machine_refresh_screen();
             break;
@@ -211,6 +224,10 @@ void state_machine_on_button_2()
     lcd_clearDisplay();
     lcd_builder_build_sleep_message();
     lcd_refresh();
+    flash_store_step_count(&lcd_builder_step_data.steps);
+    flash_store_step_yesterday(&lcd_builder_step_data.yesterday_steps);
+    flash_store_step_goal(lcd_builder_step_data.goal);
+    flash_store_date_time(&date_time);
     nrf_delay_ms(1000);
     lcd_clearDisplay();
     sd_power_system_off();

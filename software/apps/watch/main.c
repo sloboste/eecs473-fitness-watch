@@ -21,12 +21,14 @@
 
 #include "mpu.h"
 #include "gps.h"
-#include "fuel_gauge.h" // FIXME/TODO fuel gauge 
+#include "fuel_gauge.h"
 
 #include "spi_driver.h"
 #include "lcd_builder.h"
 #include "state_machine.h"
 #include "date_time.h"
+
+#include "flash.h"
 
 #include "blue_dev_board.h"
 
@@ -42,8 +44,9 @@ static gps_info_t gps_info;
 static uint16_t heart_rate_bpm = 0;
 //--
 
+
 // TODO remove when using custom PCB
-void dev_board_gpio_init(void)
+static void dev_board_gpio_init(void)
 {
     nrf_gpio_cfg_output(PIN_LED_1);
     nrf_gpio_cfg_output(PIN_LED_2);
@@ -179,14 +182,17 @@ void task_1hz_1(void * arg_ptr)
  */
 void task_1hz_0(void * arg_ptr)
 {
+    date_time_increment_second();
+
     // TODO/FIXME do real stuff
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
     //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
     ++heart_rate_bpm;
     //----
 
-    lcd_builder_step_data.steps = get_steps();
-    date_time_increment_second(); // This will trigger an lcd_refresh()
+    uint32_t steps = lcd_builder_step_data.steps_offset + get_steps();
+    lcd_builder_step_data.steps = steps; 
+    state_machine_refresh_screen();
 }
 
 /**
@@ -211,7 +217,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
                 (void *) &step_count_rev,
-                sizeof(lcd_builder_step_data.steps),
+                sizeof(step_count_rev),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -222,8 +228,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_GPS_LATITUDE,
-                (void *) gps_info.latitude,
-                sizeof(gps_info.latitude),
+                (void *) lcd_builder_gps_data.latitude,
+                sizeof(lcd_builder_gps_data.latitude),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send longitude
@@ -231,18 +237,19 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
-                (void *) gps_info.longitude,
-                sizeof(gps_info.longitude),
+                (void *) lcd_builder_gps_data.longitude,
+                sizeof(lcd_builder_gps_data.longitude),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
-            uint32_t speed_rev = __REV(gps_info.speed); 
+            //uint32_t speed_rev = __REV(gps_info.speed); 
+            uint32_t speed_rev = __REV(lcd_builder_gps_data.ground_speed); 
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_SPEED,
                 (void *) &speed_rev,
-                sizeof(gps_info.speed),
+                sizeof(speed_rev),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -299,16 +306,33 @@ static void on_minute_change()
 }
 
 /**
+ * The function to call when a day passes. We are going to put today's steps
+ * into yesterday's steps.
+ */
+static void on_day_change()
+{
+    lcd_builder_step_data.yesterday_steps = lcd_builder_step_data.steps;
+    lcd_builder_step_data.steps = 0;
+    lcd_builder_step_data.steps_offset = 0;
+    reset_steps();
+}
+
+/**
  * Watch app main.
  */
 int main(void)
 {
+    // NOTE: don't change the init order. It may break if you do.
+
     // TODO remove when using custom PCB
     dev_board_gpio_init();
 
     // Init application timer and scheduler
     timers_init(true);
     scheduler_init();
+
+    // Init persistent storage
+    flash_init();
 
     // Init buttons
     buttons_init();
@@ -321,7 +345,8 @@ int main(void)
     mympu_open(200);
 
     // Init time keeping mechanism
-    date_time_init(on_minute_change);
+    date_time_init(on_minute_change, on_day_change);
+    //flash_load_date_time(&date_time); // FIXME uncomment when done testing
 
     // Init SPI, LCD, and state machine
     spi_init();
