@@ -19,10 +19,10 @@
 #define PIN_LED_3 10
 
 // UART
-//#define PIN_RTS ? 
-//#define PIN_TXD ?
-//#define PIN_CTS ?
-//#define PIN_RXD ?
+#define PIN_RTS 2 
+#define PIN_TXD 12
+#define PIN_CTS 3
+#define PIN_RXD 11
 
 // SPI
 #define SPI_SCK_PIN  5                                                          
