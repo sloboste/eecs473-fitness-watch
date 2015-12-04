@@ -17,11 +17,12 @@ APPLICATION_SRCS += watch_service.c
 APPLICATION_SRCS += packets.c 
 APPLICATION_SRCS += timer_config.c 
 APPLICATION_SRCS += scheduler_config.c 
+APPLICATION_SRCS += gps.c 
+APPLICATION_SRCS += uart_adapter.c 
+APPLICATION_SRCS += app_uart.c
+APPLICATION_SRCS += nrf_drv_gpiote.c
+APPLICATION_SRCS += nrf_drv_common.c
 
-#APPLICATION_SRCS += gps.c 
-#APPLICATION_SRCS += uart_adapter.c 
-#APPLICATION_SRCS += app_uart.c
-APPLICATION_SRCS += app_gpiote.c
 
 APPLICATION_SRCS += twi_hw_master.c
 APPLICATION_SRCS += inv_mpu.c

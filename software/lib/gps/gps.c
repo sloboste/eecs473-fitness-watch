@@ -10,10 +10,10 @@
 
 // FIXME we really don't want to have the gps module be dependent on the pins
 // used for uart_init... Find a way to pass in the uart_adapter stuff
-#include "blue_dev_board.h"
+#include "pcb.h"
 //#include "green_dev_board.h"
 
-#define MAX_SENTENCE_LEN 128
+#define MAX_SENTENCE_LEN 130
 
 
 static char gps_buffer[MAX_SENTENCE_LEN];
@@ -64,10 +64,9 @@ static int sentence_type(char * buf)
     return -1;
 }
 
-static void get_sentence(char * buf, uint8_t buf_len)
+void get_sentence(char * buf, uint8_t buf_len)
 {
     memset(buf, 0, buf_len);
-    
     // Find start    
     do {
         uart_adapter_read(&buf[0], 1);
@@ -89,6 +88,7 @@ static void get_sentence(char * buf, uint8_t buf_len)
     ++idx;
     uart_adapter_read(&buf[idx], 1);
     ++idx;
+    //return idx;
 }
 
 static void parse_time(char * buf, uint8_t * hours_ptr, uint8_t * minutes_ptr,
@@ -224,4 +224,120 @@ void gps_get_info(gps_info_t * info_ptr, int type)
         parse_gpgga(gps_buffer, info_ptr);
         break;
     }
+}
+
+// uint16_t gps_flash_dump_partial(uint8_t * buf, uint8_t * buf_len)
+// {
+//     static uint16_t numSentences = 0;
+//     static uint8_t sentencePos = 0;
+//     static uint8_t sentenceSize = 0;
+//     // Initiate flash dump
+//     // Init packetByteCount to 0;
+
+//     // used in for loops
+//     int i = 0;
+//     int j = 0;
+
+//     // Checks to see if its mid dump, if not then begin dump
+//     if (numSentences == 0)
+//     {   
+//         // send dump message
+//         //nrf_gpio_pin_clear(PIN_LED_1);
+//         gps_send_msg(PMTK_LOCUS_GET_FLASH);
+//         // keeps track of sentence size
+//         sentenceSize = 0;
+//         uint16_t multiplier = 1;
+//         //Read in byte from rx_buff and place in buffer (This eats through the buffer until start of dump)
+//         sentenceSize = get_sentence(gps_buffer, 128);
+//         while (gps_buffer[5] != 'L' || gps_buffer[6] != 'O' || gps_buffer[7] != 'X' || gps_buffer[8] != ',' || gps_buffer[9] != '0')
+//         {
+//             sentenceSize = get_sentence(gps_buffer, 128);
+//         }
+//         //Read in the num sentences that will be sent
+//         for (i = 0; gps_buffer[i+12] != '*' ;i++)
+//         {
+//             multiplier = multiplier*10;
+//         }
+//         for (j = 0; j < i ;j++)
+//         {
+//             //multiplier = multiplier/10;
+//             numSentences += multiplier*(((int)gps_buffer[j+11])-48);
+//         }
+//         // resets position in sentence
+//         sentencePos = 0;
+//         // sets end of dump flag to false
+//         sentenceSize = get_sentence(gps_buffer, 128);
+
+//     }
+
+
+//     for (i = 0; i < *buf_len; i++)
+//     {
+//         // nrf_gpio_pin_toggle(PIN_LED_3);
+//         // nrf_delay_ms(500);
+//         if(sentencePos + i == sentenceSize)
+//         {
+//             // nrf_gpio_pin_toggle(PIN_LED_4);
+//             // nrf_delay_ms(500);
+//             numSentences--;
+//             if (numSentences != 0)
+//             {
+//                 // get a new sentence
+//                 sentenceSize = get_sentence(gps_buffer, 128);
+//                 // -i to make up for +i a few lines below.. init to 0
+//                 sentencePos = 0 - i;
+//             }
+//             else
+//             {
+//                 nrf_gpio_pin_toggle(PIN_LED_1);
+//                 break;
+//             }
+//         }
+//         else
+//         {
+//             // copy over buffer
+//             buf[i] = gps_buffer[sentencePos+i];
+//         }
+//     }
+//     *buf_len = i;
+//     sentencePos += i;
+//     return numSentences;
+// }
+
+uint16_t gps_flash_dump_partial(char * buf)
+{
+    uint16_t numSentences = 0;
+    // Initiate flash dump
+    // Init packetByteCount to 0;
+
+    // used in for loops
+    int i = 0;
+    int j = 0;
+
+    // send dump message
+    //nrf_gpio_pin_clear(PIN_LED_1);
+    nrf_gpio_pin_toggle(PIN_LED_1);
+    gps_send_msg(PMTK_LOCUS_GET_FLASH);
+    nrf_gpio_pin_toggle(PIN_LED_2);
+    // keeps track of sentence size
+    uint16_t multiplier = 1;
+    //Read in byte from rx_buff and place in buffer (This eats through the buffer until start of dump)
+    get_sentence(gps_buffer, 128);
+    while (gps_buffer[5] != 'L' || gps_buffer[6] != 'O' || gps_buffer[7] != 'X' || gps_buffer[8] != ',' || gps_buffer[9] != '0')
+    {
+        get_sentence(gps_buffer, 128);
+    }
+    //Read in the num sentences that will be sent
+    for (i = 0; gps_buffer[i+11] != '*' ;i++)
+    {
+        multiplier = multiplier*10;
+    }
+    for (j = 0; j < i ;j++)
+    {
+        multiplier = multiplier/10;
+        numSentences += multiplier*(((int)gps_buffer[j+11])-48);
+    }
+    memcpy(buf, gps_buffer, 17);
+
+    return (numSentences*8);
 }
