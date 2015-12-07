@@ -23,6 +23,9 @@ import java.util.HashMap;
  */
 public class SampleGattAttributes {
     private static HashMap<String, String> attributes = new HashMap();
+//    public static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
+//    public static String HEART_RATE_MEASUREMENT = "00002a37-0000-1000-8000-00805f9b34fb";
+//    public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
     //Service
     public static String Eir_Watch = "78c10001-801a-11e5-8bcf-feff819cdc9f";
@@ -35,11 +38,13 @@ public class SampleGattAttributes {
     public static String CLIENT_CHARACTERISTIC_CONFIG = "00002902-0000-1000-8000-00805f9b34fb";
 
     //data request constants
+    //public static enum PACKET_TYPE_REQUEST{
     public static byte    REQUEST_PED_STEP_COUNT  = 01;
     public static byte    REQUEST_GPS_DATA        = 02;
     public static byte    REQUEST_GPS_LOG         = 03;
     public static byte    REQUEST_BATTERY_LEVEL   = 04;
     public static byte    REQUEST_HEART_RATE      = 05;
+    //};
 
     //data reply constants
     public static byte    REPLY_PED_STEP_COUNT    = 01;
@@ -53,10 +58,13 @@ public class SampleGattAttributes {
     static {
         // Sample Services.
         attributes.put("78c10001-801a-11e5-8bcf-feff819cdc9f", "Eir Watch Service");
+        //attributes.put("0000180a-0000-1000-8000-00805f9b34fb", "Device Information Service");
 
         // Sample Characteristics.
         attributes.put(Write, "Write");
         attributes.put(Read, "Read");
+        //attributes.put(HEART_RATE_MEASUREMENT, "Heart Rate Measurement");
+        //attributes.put("00002a29-0000-1000-8000-00805f9b34fb", "Manufacturer Name String");
     }
 
     public static String lookup(String uuid, String defaultName) {
