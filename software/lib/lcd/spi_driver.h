@@ -4,8 +4,8 @@
 #ifndef SPI_DRIVER_H
 #define SPI_DRIVER_H
 
-#include "blue_dev_board.h"
-//#include "pcb.h"
+//#include "blue_dev_board.h"
+#include "pcb.h"
 
 
 //Initializes and enables spi

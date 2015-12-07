@@ -20,7 +20,6 @@
 #include "packets.h"
 
 #include "mpu.h"
-#include "gps.h"
 #include "fuel_gauge.h"
 
 #include "spi_driver.h"
@@ -30,7 +29,10 @@
 
 #include "flash.h"
 
-#include "blue_dev_board.h"
+#include "uart_adapter.h"
+#include "gps.h"
+
+#include "pcb.h"
 
 
 // TODO change pin assignments for custom PCB
@@ -42,6 +44,7 @@
 // TODO
 static gps_info_t gps_info;
 static uint16_t heart_rate_bpm = 0;
+static uint8_t packet_buf[PACKET_BUF_LEN];
 //--
 
 
@@ -51,12 +54,12 @@ static void dev_board_gpio_init(void)
     nrf_gpio_cfg_output(PIN_LED_1);
     nrf_gpio_cfg_output(PIN_LED_2);
     nrf_gpio_cfg_output(PIN_LED_3);
-    nrf_gpio_cfg_output(PIN_LED_4);
+    //nrf_gpio_cfg_output(PIN_LED_4);
 
     nrf_gpio_pin_set(PIN_LED_1);
     nrf_gpio_pin_set(PIN_LED_2);
     nrf_gpio_pin_set(PIN_LED_3);
-    nrf_gpio_pin_set(PIN_LED_4);
+    //nrf_gpio_pin_set(PIN_LED_4);
 }
 
 /**
@@ -196,6 +199,74 @@ void task_1hz_0(void * arg_ptr)
 }
 
 /**
+ * Called in the LOG case
+ */
+static void GPS_log_helper()
+{
+    timer_stop_1hz_periodic_0();
+    // Used in Log Dump
+    uint16_t loopNum;
+    uint16_t i;
+    uint8_t buf_len;
+    uint8_t buf[18];
+    memset(packet_buf, 0, PACKET_BUF_LEN); 
+    memset(buf, 0, 18); 
+    loopNum = gps_flash_dump_partial(buf);
+    i = 0;
+    buf_len = 16;
+
+    // copy over contents to buffer
+    uart_adapter_read(buf, buf_len);
+    // build and send packet
+    packets_build_reply_packet(
+        packet_buf,
+        PACKET_TYPE_REPLY_GPS_LOG,
+        buf,
+        17,
+        (loopNum-1 == i));
+    ble_watch_send_reply_packet(packet_buf, buf_len);
+    
+    do
+    {
+        memset(packet_buf, 0, PACKET_BUF_LEN); 
+        memset(buf, 0, buf_len); 
+        // Check to see if its the end of the sentence
+
+        // copy over contents to buffer
+        uart_adapter_read(buf, buf_len);
+        // build and send packet
+        packets_build_reply_packet(
+            packet_buf,
+            PACKET_TYPE_REPLY_GPS_LOG,
+            buf,
+            buf_len,
+            (loopNum-1 == i));
+        ble_watch_send_reply_packet(packet_buf, buf_len);
+        // if end of sentence get next, else inc position
+        i++;
+        // gps_send_msg(buf);
+    }
+    while (i < loopNum);
+
+    memset(packet_buf, 0, PACKET_BUF_LEN); 
+    memset(buf, 0, buf_len); 
+    // Check to see if its the end of the sentence
+
+    // copy over contents to buffer
+    uart_adapter_read(buf, buf_len);
+    packets_build_reply_packet(
+    packet_buf,
+    PACKET_TYPE_REPLY_GPS_LOG,
+    buf,
+    17,
+    (loopNum-1 == i));
+    ble_watch_send_reply_packet(packet_buf, buf_len);
+
+    timer_start_1hz_periodic_0();
+    nrf_gpio_pin_toggle(PIN_LED_2);
+}
+
+/**
  * Handle request packets sent by the phone and send a reply.
  * 
  * data -- a buffer containing the data from the BLE request packet.
@@ -203,7 +274,6 @@ void task_1hz_0(void * arg_ptr)
  */
 static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
 {
-    static uint8_t packet_buf[PACKET_BUF_LEN];
     uint8_t packet_type;
     packet_type = packets_decode_request_packet(data, (uint8_t) len);
 
@@ -217,7 +287,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
                 (void *) &step_count_rev,
-                sizeof(lcd_builder_step_data.steps),
+                sizeof(step_count_rev),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -228,8 +298,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_GPS_LATITUDE,
-                (void *) gps_info.latitude,
-                sizeof(gps_info.latitude),
+                (void *) lcd_builder_gps_data.latitude,
+                sizeof(lcd_builder_gps_data.latitude),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send longitude
@@ -237,26 +307,26 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
-                (void *) gps_info.longitude,
-                sizeof(gps_info.longitude),
+                (void *) lcd_builder_gps_data.longitude,
+                sizeof(lcd_builder_gps_data.longitude),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
-            uint32_t speed_rev = __REV(gps_info.speed); 
+            //uint32_t speed_rev = __REV(gps_info.speed); 
+            uint32_t speed_rev = __REV(lcd_builder_gps_data.ground_speed); 
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_SPEED,
                 (void *) &speed_rev,
-                sizeof(gps_info.speed),
+                sizeof(speed_rev),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
 
         case PACKET_TYPE_REQUEST_GPS_LOG: 
             // Send GPS logs
-            // TODO
-            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            app_sched_event_put(NULL, 0, GPS_log_helper);  
             break;
 
         case PACKET_TYPE_REQUEST_BATTERY_LEVEL:
@@ -353,9 +423,9 @@ int main(void)
 
     // TODO
     // Init UART, GPS
-    //gps_init();
-    //gps_config();
-    //gps_enable();
+    gps_init();
+    gps_config();
+    gps_enable();
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
 
     // Init BLE
