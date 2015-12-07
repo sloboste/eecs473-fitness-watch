@@ -66,6 +66,8 @@ public class DeviceControlActivity extends Activity {
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
 
+    ArrayList<String> SavedPacketData = new ArrayList<>();
+
     // Code to manage Service lifecycle.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
 
@@ -229,14 +231,14 @@ public class DeviceControlActivity extends Activity {
                                 updateCharacteristic(SampleGattAttributes.REQUEST_GPS_DATA);
                             }
                         });
-                        Thread.sleep(1000);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                // update GPS Log TextView
-                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
-                            }
-                        });
+//                        Thread.sleep(1000);
+//                        runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // update GPS Log TextView
+//                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
+//                            }
+//                        });
                     }
                 } catch (InterruptedException e) {
                 }
@@ -321,18 +323,50 @@ public class DeviceControlActivity extends Activity {
             //Is it terminated?
             long terminated = (unsigned_first_byte & 0x80) >> 7; // & 1000 0000
 
-            if(packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT){
-                tvPed.setText(data);
-            }else if(packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL){
-                tvBat.setText(data);
-            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE){
-                tvGPSd.setText(data);
-            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE){
-                tvGPSd.setText(data);
-            }else if(packet_type == SampleGattAttributes.REPLY_GPS_SPEED){
-                tvGPSd.setText(data);
-            }else if(packet_type == SampleGattAttributes.REPLY_GPS_LOG){
-                tvGPSl.setText(data);
+            //get second byte which is data length
+            byte second_byte = (byte)Integer.parseInt(data.substring(24, 26), 16);
+            int data_length = second_byte & 0x00000000ffffffff;
+
+            //int disp_data = 0;
+            String display_data = "";
+            //Extract data from packet
+            try {
+                //convert data to hex and remove whitespace
+                display_data = data.substring(26, data.length());                            //get data portion
+                display_data = display_data.replaceAll("\\s+", "");                                 //remove whitespace
+                int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                display_data = Integer.toString(disp_data & 0x00000000ffffffff);                                         //convert
+            }catch(Exception ex){
+                System.out.println("Shit's on fire yo");
+            }
+
+            if(terminated == 1) {
+                //combine Packets if needed
+                if(!SavedPacketData.isEmpty()){
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for(String packet_data:SavedPacketData){
+                        stringBuilder.append(packet_data);
+                    }
+                    display_data = stringBuilder.append(display_data).toString();
+
+                    //clear it for next use
+                    SavedPacketData.clear();
+                }
+                if (packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT) {
+                    tvPed.setText(display_data);
+                } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
+                    tvBat.setText(display_data);
+                } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
+                    tvGPSd.setText(display_data);
+                } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
+                    tvGPSd.setText(display_data);
+                } else if (packet_type == SampleGattAttributes.REPLY_GPS_SPEED) {
+                    tvGPSd.setText(display_data);
+                } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
+                    tvGPSl.setText(display_data);
+                }
+            }else{
+                SavedPacketData.add(display_data);
             }
         }
     }
