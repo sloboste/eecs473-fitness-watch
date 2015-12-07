@@ -53,7 +53,7 @@ public class DeviceControlActivity extends Activity {
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
 
     private TextView mConnectionState;
-    private TextView tvPed, tvBat, tvGPSd, tvGPSl; //Create TextView variables for data
+    private TextView tvPed, tvBat, tvGPSlat, tvGPSlong, tvGPSs, tvGPSl; //Create TextView variables for data
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -154,7 +154,9 @@ public class DeviceControlActivity extends Activity {
         mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
         tvPed.setText(R.string.no_data);
         tvBat.setText(R.string.no_data);
-        tvGPSd.setText(R.string.no_data);
+        tvGPSlat.setText(R.string.no_data);
+        tvGPSlong.setText(R.string.no_data);
+        tvGPSs.setText(R.string.no_data);
         tvGPSl.setText(R.string.no_data);
     }
 
@@ -192,7 +194,9 @@ public class DeviceControlActivity extends Activity {
         //Find TextViews from XML to manipulate them
         tvPed = (TextView) findViewById(R.id.tvPed);
         tvBat = (TextView) findViewById(R.id.tvBat);
-        tvGPSd = (TextView) findViewById(R.id.tvGPSd);
+        tvGPSlat = (TextView) findViewById(R.id.tvGPSlat);
+        tvGPSlong = (TextView) findViewById(R.id.tvGPSlong);
+        tvGPSs = (TextView) findViewById(R.id.tvGPSs);
         tvGPSl = (TextView) findViewById(R.id.tvGPSl);
 
 
@@ -357,11 +361,11 @@ public class DeviceControlActivity extends Activity {
                 } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
                     tvBat.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
-                    tvGPSd.setText(display_data);
+                    tvGPSlat.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
-                    tvGPSd.setText(display_data);
+                    tvGPSlong.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_SPEED) {
-                    tvGPSd.setText(display_data);
+                    tvGPSs.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
                     tvGPSl.setText(display_data);
                 }
