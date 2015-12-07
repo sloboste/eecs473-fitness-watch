@@ -19,8 +19,8 @@ void lcd_builder_init_structs()
 
     // GPS
     memset(&lcd_builder_gps_data, 0, sizeof(lcd_builder_gps_data));
-    lcd_builder_gps_data.longitude = "012 23.5678 S";
-    lcd_builder_gps_data.latitude = "98 87.5432 W";
+    lcd_builder_gps_data.longitude = "42 17.4683 N";
+    lcd_builder_gps_data.latitude = "83 42.9367 W";
     lcd_builder_gps_data.altitude = 5898;
     lcd_builder_gps_data.ground_speed = 23;
 
