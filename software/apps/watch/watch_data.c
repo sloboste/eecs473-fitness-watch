@@ -50,7 +50,7 @@ void watch_data_init()
     watch_data_run_timer_reset(); 
 
     char * default_long = "42 17.4683 N";
-    char * default_lat = "83 42.9367 W";
+    char * default_lat = "083 42.9367 W";
     memset(&watch_data_gps, 0, sizeof(watch_data_gps));
     watch_data_gps.altitude = 267;
     watch_data_gps.ground_speed = 0;

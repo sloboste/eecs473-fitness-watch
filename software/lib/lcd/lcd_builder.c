@@ -40,37 +40,33 @@ void lcd_builder_build_gps()
     lcd_drawLine(32);
     lcd_setCursor(0, 36);
 
-    /*
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[0]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[1]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[2]-'0');
-    lcd_Cursor.row++;
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[4]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[5]-'0');
-    lcd_transferSpecialChar(watch_data_gps.longitude[6]);
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[7]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[8]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[9]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.longitude[10]-'0');
-    lcd_transferChar((char)((int)watch_data_gps.longitude[12]+32));
-    */
-
-    lcd_setCursor(0, 51);
-
-    /*
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[0]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[1]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[2]-'0');
     lcd_Cursor.row++;
-    lcd_transferSmallNumInt((int)watch_data_gps.latitude[3]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[4]-'0');
-    lcd_transferSpecialChar(watch_data_gps.latitude[5]-'0');
-    lcd_transferSmallNumInt((int)watch_data_gps.latitude[6]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[5]-'0');
+    lcd_transferSpecialChar(watch_data_gps.latitude[6]);
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[7]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[8]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.latitude[9]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[10]-'0');
+    lcd_transferChar((char)((int)watch_data_gps.latitude[12]+32));
+
+    lcd_setCursor(0, 51);
+
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[0]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[1]-'0');
     lcd_Cursor.row++;
-    lcd_transferChar((char)((int)watch_data_gps.latitude[11]+32));
-    */
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[3]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[4]-'0');
+    lcd_transferSpecialChar(watch_data_gps.longitude[5]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[6]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[7]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[8]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[9]-'0');
+    lcd_Cursor.row++;
+    lcd_transferChar((char)((int)watch_data_gps.longitude[11]+32));
 
     lcd_drawLine(65);
 
@@ -79,12 +75,18 @@ void lcd_builder_build_gps()
     lcd_transferSpecialChar(':');
     lcd_Cursor.row++;
     lcd_transferSmallNumInt(watch_data_gps.altitude);
+    lcd_Cursor.row++;
+    lcd_transferChar('m');
 
     lcd_setCursor(0, 83);
     lcd_transferString("speed");
     lcd_transferSpecialChar(':');
     lcd_Cursor.row++;
     lcd_transferSmallNumInt(watch_data_gps.ground_speed);
+    lcd_setCursor(9, 83);
+    lcd_transferChar('m');
+    lcd_transferSpecialChar('/');
+    lcd_transferChar('s');
 }
 
 void lcd_builder_build_stopwatch()
