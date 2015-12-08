@@ -404,13 +404,14 @@ void lcd_setCursor(int x, int y){
 
 uint8_t lcd_reverseBitOrder(uint8_t MSB){
 		uint8_t LSB = 0;
-		LSB |= (((0x01) & MSB)<<7);
+	LSB |= (((0x01) & MSB)<<7);
     LSB |= (((0x02) & MSB)<<5);
     LSB |= (((0x04) & MSB)<<3);
     LSB |= (((0x08) & MSB)<<1);
     LSB |= (((0x10) & MSB)>>1);
     LSB |= (((0x20) & MSB)>>3);
     LSB |= (((0x40) & MSB)>>5);
+    LSB |= (((0x80) & MSB)>>7);
     return LSB;
 }
 
@@ -487,7 +488,7 @@ void lcd_refresh(void)
         spi_write(lcd_reverseBitOrder(addr));
         for(byteNum = 0; byteNum < 12; byteNum++)
         {
-            spi_write(~bitmap[(addr-1)*12+byteNum]);
+            spi_write(lcd_reverseBitOrder(~bitmap[(96 - addr)*12+11-byteNum]));
         }
         spi_write(0x00);
     }
@@ -512,6 +513,11 @@ void lcd_drawLine(uint8_t line){
         lcd_Cursor.row++;
     }
 }
+
+// void flipBitmap()
+// {
+
+// }
 
 // /**************************************************************************/
 // /*!
