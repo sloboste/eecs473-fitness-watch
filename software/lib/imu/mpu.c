@@ -3,7 +3,6 @@
 #include "mpu.h"
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
-//#include "SEGGER_RTT.h"
 #include <math.h>
 #include "nrf_delay.h"
 
@@ -19,15 +18,15 @@
 	return;
 }*/
 
-//run once initially, make rate 200 always
-int mympu_open(unsigned int rate) {
+void pedometer_init()
+{
   	mpu_select_device(0);
    	mpu_init_structures();
 	mpu_init(NULL);
 	mpu_set_sensors(INV_XYZ_GYRO|INV_XYZ_ACCEL); 
     //mpu_get_power_state((unsigned char *)&ret);
 	dmp_load_motion_driver_firmware();
-	dmp_set_fifo_rate(rate);
+	dmp_set_fifo_rate(200);
 	mpu_set_dmp_state(1);
 	dmp_enable_feature(DMP_FEATURE_PEDOMETER|DMP_FEATURE_TAP);
 	//dmp_register_tap_cb(&tap_detect);
@@ -35,11 +34,13 @@ int mympu_open(unsigned int rate) {
 	return 0;
 }
 
-uint32_t get_steps(){
+uint32_t pedometer_get_steps()
+{
 	return dmp_get_pedometer_step_count();
 }
 
-void reset_steps(){
+void pedometer_reset_steps()
+{
 	//try a few times to reset even if race condition occurs
 	dmp_set_pedometer_step_count(0);
 	dmp_set_pedometer_step_count(0);
@@ -47,6 +48,7 @@ void reset_steps(){
 	return;
 }
 
+/*
 uint32_t get_walktime(){
 	unsigned long time = 0;
 	dmp_get_pedometer_walk_time(&time);
@@ -59,6 +61,7 @@ void reset_walktime(){
 	dmp_set_pedometer_walk_time(0);
 	return;	
 }
+*/
 
 // int mympu_update() {
 // 	//SEGGER_RTT_printf(0, ":%d\r\n", tap_count);

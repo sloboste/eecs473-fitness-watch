@@ -283,7 +283,7 @@ void lcd_transferBigNumInt(int num){
     for (i = 0; i < numLength-1; i++){
         divisor = divisor * 10;
     }
-    if (num == 99999)
+    if (num == 99999) // FIXME use constant or change the way this is done
     {
         divisor = 1;
         numLength = 1;

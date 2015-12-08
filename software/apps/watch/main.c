@@ -183,7 +183,7 @@ void task_1hz_0(void * arg_ptr)
 
     date_time_increment_second();
 
-    steps = watch_data_step.steps_offset + get_steps();
+    steps = watch_data_step.steps_offset + pedometer_get_steps();
     watch_data_step.steps = steps; 
     state_machine_refresh_screen();
     
@@ -375,7 +375,7 @@ static void on_day_change()
     watch_data_step.yesterday_steps = watch_data_step.steps;
     watch_data_step.steps = 0;
     watch_data_step.steps_offset = 0;
-    reset_steps();
+    pedometer_reset_steps();
 }
 
 /**
@@ -383,8 +383,6 @@ static void on_day_change()
  */
 int main(void)
 {
-    //nrf_delay_ms(2000); // TODO is delay needed for MPU to work after power cycle?
-
     // NOTE: don't change the init order. It may break if you do.
 
     // Init LED pins
@@ -405,7 +403,7 @@ int main(void)
     fuel_quick_start(false);
     
     // Init IMU
-    mympu_open(200);
+    pedometer_init();
 
     // Init time keeping mechanism
     date_time_init(on_minute_change, on_day_change);
