@@ -18,7 +18,7 @@ APPLICATION_SRCS += SEGGER_RTT.c
 APPLICATION_SRCS += SEGGER_RTT_printf.c
 
 ifndef TARGET
-    TARGET = BLEES
+    TARGET = PCB
 endif
 
 TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)

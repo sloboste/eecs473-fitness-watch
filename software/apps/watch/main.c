@@ -25,41 +25,39 @@
 #include "spi_driver.h"
 #include "lcd_builder.h"
 #include "state_machine.h"
+
+#include "watch_data.h"
 #include "date_time.h"
 
 #include "flash.h"
 
 #include "uart_adapter.h"
-#include "gps.h"
+//#include "gps.h"
 
-#include "pcb.h"
+#include "boards.h"
 
 
-// TODO change pin assignments for custom PCB
 #define PIN_BUTTON_CYCLE        PIN_BUTTON_1
 #define PIN_BUTTON_SELECT       PIN_BUTTON_2
-#define PIN_BUTTON_SLEEP        PIN_BUTTON_3
+#define PIN_BUTTON_POWER        PIN_BUTTON_3
 
 
-// TODO
-static gps_info_t gps_info;
-static uint16_t heart_rate_bpm = 0;
+// Buffer used when sending notifications over BLE. 
 static uint8_t packet_buf[PACKET_BUF_LEN];
-//--
 
 
-// TODO remove when using custom PCB
-static void dev_board_gpio_init(void)
+/**
+ * Initialize the GPIO LED pins.
+ */
+static void init_leds(void)
 {
     nrf_gpio_cfg_output(PIN_LED_1);
     nrf_gpio_cfg_output(PIN_LED_2);
     nrf_gpio_cfg_output(PIN_LED_3);
-    //nrf_gpio_cfg_output(PIN_LED_4);
 
     nrf_gpio_pin_set(PIN_LED_1);
     nrf_gpio_pin_set(PIN_LED_2);
     nrf_gpio_pin_set(PIN_LED_3);
-    //nrf_gpio_pin_set(PIN_LED_4);
 }
 
 /**
@@ -99,8 +97,8 @@ static void button_handler(uint32_t event_pins_low_to_high,
         error_code = app_sched_event_put(NULL, 0, state_machine_on_button_1);
         APP_ERROR_CHECK(error_code);
 
-    } else if ((event_pins_high_to_low >> PIN_BUTTON_SLEEP) & 0x1) {
-        // Sleep
+    } else if ((event_pins_high_to_low >> PIN_BUTTON_POWER) & 0x1) {
+        // Power off
         timer_stop_1hz_periodic_0();
         error_code = app_sched_event_put(NULL, 0, state_machine_on_button_2);
         APP_ERROR_CHECK(error_code);
@@ -118,11 +116,11 @@ static void buttons_init()
     nrf_gpio_cfg_sense_input(
         PIN_BUTTON_SELECT, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
     nrf_gpio_cfg_sense_input(
-        PIN_BUTTON_SLEEP, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
+        PIN_BUTTON_POWER, BUTTON_PULL, NRF_GPIO_PIN_SENSE_LOW);
     uint32_t low_to_high_bitmask = 0x00000000;
     uint32_t high_to_low_bitmask = (1 << PIN_BUTTON_CYCLE) +
                                    (1 << PIN_BUTTON_SELECT) +
-                                   (1 << PIN_BUTTON_SLEEP);
+                                   (1 << PIN_BUTTON_POWER);
     APP_GPIOTE_INIT(1);
     static app_gpiote_user_id_t gpiote_user_id;
     error_code = app_gpiote_user_register(
@@ -133,7 +131,6 @@ static void buttons_init()
     APP_ERROR_CHECK(error_code);
 }
 
-// TODO this should probably be moved to state_machine.c
 /**
  * The function to run when the 10 Hz timer from timer_config goes off. We are
  * using it to count tenths of seconds for the stopwatch.
@@ -142,19 +139,18 @@ static void buttons_init()
  */
 void task_10hz(void * arg_ptr)
 {
-    if (++lcd_builder_stopwatch_data.timer_tenths > 9) {
-        lcd_builder_stopwatch_data.timer_tenths = 0;
-        if (++lcd_builder_stopwatch_data.timer_seconds > 59) { 
-            lcd_builder_stopwatch_data.timer_seconds = 0;
-            if (++lcd_builder_stopwatch_data.timer_minutes > 59) { 
-                lcd_builder_stopwatch_data.timer_minutes = 0;
+    if (++watch_data_stopwatch.timer_tenths > 9) {
+        watch_data_stopwatch.timer_tenths = 0;
+        if (++watch_data_stopwatch.timer_seconds > 59) { 
+            watch_data_stopwatch.timer_seconds = 0;
+            if (++watch_data_stopwatch.timer_minutes > 59) { 
+                watch_data_stopwatch.timer_minutes = 0;
             }
         }
     }
     state_machine_refresh_screen();
 }
 
-// TODO this should probably be moved to state_machine.c
 /**
  * The function to run when the 1 Hz timer number 1 from timer_config goes off.
  * We are using it to count seconds for the run timer.
@@ -163,20 +159,18 @@ void task_10hz(void * arg_ptr)
  */
 void task_1hz_1(void * arg_ptr)
 {
-    if (++lcd_builder_run_data.timer_seconds > 59) {
-        lcd_builder_run_data.timer_seconds = 0;
-        if (++lcd_builder_run_data.timer_minutes > 59) { 
-            lcd_builder_run_data.timer_minutes = 0;
-            if (++lcd_builder_run_data.timer_hours > 23) { 
-                lcd_builder_run_data.timer_hours = 0;
+    if (++watch_data_run.timer_seconds > 59) {
+        watch_data_run.timer_seconds = 0;
+        if (++watch_data_run.timer_minutes > 59) { 
+            watch_data_run.timer_minutes = 0;
+            if (++watch_data_run.timer_hours > 23) { 
+                watch_data_run.timer_hours = 0;
             }
         }
     }
     state_machine_refresh_screen();
 }
 
-// TODO this should probably be moved to state_machine.c
-// TODO decide on functionality
 /**
  * The function to run when the 1 Hz timer number 0 from timer_config goes off.
  * We are using it to TODO???.
@@ -185,19 +179,18 @@ void task_1hz_1(void * arg_ptr)
  */
 void task_1hz_0(void * arg_ptr)
 {
+    uint32_t steps;
+
     date_time_increment_second();
 
-    // TODO/FIXME do real stuff
-    //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
-    //set_time(gps_info.hours, gps_info.minutes, gps_info.seconds);
-    ++heart_rate_bpm;
-    //----
-
-    uint32_t steps = lcd_builder_step_data.steps_offset + get_steps();
-    lcd_builder_step_data.steps = steps; 
+    steps = watch_data_step.steps_offset + get_steps();
+    watch_data_step.steps = steps; 
     state_machine_refresh_screen();
+    
+    nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
 }
 
+// TODO clean up
 /**
  * Called in the LOG case
  */
@@ -211,12 +204,12 @@ static void GPS_log_helper()
     uint8_t buf[18];
     memset(packet_buf, 0, PACKET_BUF_LEN); 
     memset(buf, 0, 18); 
-    loopNum = gps_flash_dump_partial(buf);
+    // FIXME uncomment: loopNum = gps_flash_dump_partial(buf);
     i = 0;
     buf_len = 16;
 
     // copy over contents to buffer
-    uart_adapter_read(buf, buf_len);
+    // FIXME uncomment: uart_adapter_read(buf, buf_len);
     // build and send packet
     packets_build_reply_packet(
         packet_buf,
@@ -233,7 +226,7 @@ static void GPS_log_helper()
         // Check to see if its the end of the sentence
 
         // copy over contents to buffer
-        uart_adapter_read(buf, buf_len);
+        // FIXME uncomment: uart_adapter_read(buf, buf_len);
         // build and send packet
         packets_build_reply_packet(
             packet_buf,
@@ -253,7 +246,7 @@ static void GPS_log_helper()
     // Check to see if its the end of the sentence
 
     // copy over contents to buffer
-    uart_adapter_read(buf, buf_len);
+    // FIXME uncomment: uart_adapter_read(buf, buf_len);
     packets_build_reply_packet(
     packet_buf,
     PACKET_TYPE_REPLY_GPS_LOG,
@@ -263,6 +256,7 @@ static void GPS_log_helper()
     ble_watch_send_reply_packet(packet_buf, buf_len);
 
     timer_start_1hz_periodic_0();
+
     nrf_gpio_pin_toggle(PIN_LED_2);
 }
 
@@ -277,12 +271,11 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
     uint8_t packet_type;
     packet_type = packets_decode_request_packet(data, (uint8_t) len);
 
-    // TODO finish
     switch (packet_type) {
         case PACKET_TYPE_REQUEST_PED_STEP_COUNT:
             // Send step count
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
-            uint32_t step_count_rev = __REV(lcd_builder_step_data.steps);
+            uint32_t step_count_rev = __REV(watch_data_step.steps);
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_PED_STEP_COUNT,
@@ -298,8 +291,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf,
                 PACKET_TYPE_REPLY_GPS_LATITUDE,
-                (void *) lcd_builder_gps_data.latitude,
-                sizeof(lcd_builder_gps_data.latitude),
+                (void *) watch_data_gps.latitude,
+                sizeof(watch_data_gps.latitude),
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send longitude
@@ -307,13 +300,12 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
-                (void *) lcd_builder_gps_data.longitude,
-                sizeof(lcd_builder_gps_data.longitude),
+                (void *) watch_data_gps.longitude,
+                sizeof(watch_data_gps.longitude),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
-            //uint32_t speed_rev = __REV(gps_info.speed); 
-            uint32_t speed_rev = __REV(lcd_builder_gps_data.ground_speed); 
+            uint32_t speed_rev = __REV(watch_data_gps.ground_speed); 
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
             packets_build_reply_packet(
                 packet_buf, 
@@ -335,8 +327,8 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_BATTERY_LEVEL,
-                (void *) &lcd_builder_battery_level,
-                sizeof(lcd_builder_battery_level),
+                (void *) &watch_data_battery_level,
+                sizeof(watch_data_battery_level),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -344,12 +336,12 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
         case PACKET_TYPE_REQUEST_HEART_RATE:
             // Send heart rate
             memset(&packet_buf, 0, PACKET_BUF_LEN);    
-            uint32_t heart_rate_bpm_rev = __REV16(heart_rate_bpm);
+            uint32_t heart_rate_rev = __REV16(watch_data_heart_rate);
             packets_build_reply_packet(
                 packet_buf, 
                 PACKET_TYPE_REPLY_HEART_RATE,
-                (void *) &heart_rate_bpm_rev,
-                sizeof(heart_rate_bpm_rev),
+                (void *) &heart_rate_rev,
+                sizeof(heart_rate_rev),
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
@@ -366,11 +358,11 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
 
 /**
  * The function to call when a minute passes. We are going to poll the battery
- * levle every minute with this function.
+ * level every minute with this function.
  */
 static void on_minute_change()
 {
-    lcd_builder_battery_level = fuel_get_battery_level();
+    watch_data_battery_level = fuel_get_battery_level();
     state_machine_refresh_screen();
 }
 
@@ -380,9 +372,9 @@ static void on_minute_change()
  */
 static void on_day_change()
 {
-    lcd_builder_step_data.yesterday_steps = lcd_builder_step_data.steps;
-    lcd_builder_step_data.steps = 0;
-    lcd_builder_step_data.steps_offset = 0;
+    watch_data_step.yesterday_steps = watch_data_step.steps;
+    watch_data_step.steps = 0;
+    watch_data_step.steps_offset = 0;
     reset_steps();
 }
 
@@ -391,10 +383,12 @@ static void on_day_change()
  */
 int main(void)
 {
+    //nrf_delay_ms(2000); // TODO is delay needed for MPU to work after power cycle?
+
     // NOTE: don't change the init order. It may break if you do.
 
-    // TODO remove when using custom PCB
-    dev_board_gpio_init();
+    // Init LED pins
+    init_leds();
 
     // Init application timer and scheduler
     timers_init(true);
@@ -418,15 +412,16 @@ int main(void)
     //flash_load_date_time(&date_time); // FIXME uncomment when done testing
 
     // Init SPI, LCD, and state machine
-    spi_init();
+    spi_init(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_SS_PIN);
     state_machine_init();
 
     // TODO
     // Init UART, GPS
-    gps_init();
-    gps_config();
-    gps_enable();
-    //gps_get_info(&gps_info, GPS_TYPE_GPRMC);
+    //uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
+    //gps_init();
+    //gps_config();
+    //gps_enable();
+    //gps_get_info(&gps_info, GPS_TYPE_GPRMC); // TODO test
 
     // Init BLE
     ble_init(request_handler, state_machine_on_ble_adv_con);

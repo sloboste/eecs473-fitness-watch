@@ -2,7 +2,6 @@
 #include <stdbool.h>
 
 #include "date_time.h"
-#include "scheduler_config.h"
 
 // Month names
 static char * month_strings[12] = {

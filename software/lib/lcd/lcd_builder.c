@@ -7,34 +7,13 @@
 #include "charData.h"
 #include "ble_config.h"
 #include "date_time.h"
+#include "watch_data.h"
 
 
-void lcd_builder_init_structs()
+void lcd_builder_init()
 {
-    lcd_builder_bluetooth_state = BLE_STATE_IDLE;
-    lcd_builder_battery_level = 0;
-
-    //TIMER
-    lcd_builder_stopwatch_timer_reset();
-
-    // GPS
-    memset(&lcd_builder_gps_data, 0, sizeof(lcd_builder_gps_data));
-    lcd_builder_gps_data.longitude = "42 17.4683 N";
-    lcd_builder_gps_data.latitude = "83 42.9367 W";
-    lcd_builder_gps_data.altitude = 5898;
-    lcd_builder_gps_data.ground_speed = 23;
-
-    // Run
-    lcd_builder_run_timer_reset(); 
-
-    // Steps
-    memset(&lcd_builder_step_data, 0, sizeof(lcd_builder_step_data));
-    uint8_t i;
-    for (i = 0; i < 5; ++i) {
-        lcd_builder_step_data.goal[i] = '0';
-    }
     // Set goal digit index to one past the end (no highlight)
-    lcd_builder_step_data.goal_digit = 5;
+    lcd_builder_step_goal_digit = 5;
 }
 
 void lcd_builder_build_sleep_message()
@@ -60,32 +39,34 @@ void lcd_builder_build_gps()
 
     lcd_drawLine(32);
     lcd_setCursor(0, 36);
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[0]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[1]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[2]-'0');
+
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[0]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[1]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[2]-'0');
     lcd_Cursor.row++;
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[4]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[5]-'0');
-    lcd_transferSpecialChar(lcd_builder_gps_data.longitude[6]);
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[7]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[8]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[9]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.longitude[10]-'0');
-    lcd_transferChar((char)((int)lcd_builder_gps_data.longitude[12]+32));
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[4]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[5]-'0');
+    lcd_transferSpecialChar(watch_data_gps.longitude[6]);
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[7]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[8]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[9]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.longitude[10]-'0');
+    lcd_transferChar((char)((int)watch_data_gps.longitude[12]+32));
 
     lcd_setCursor(0, 51);
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[0]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[1]-'0');
+
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[0]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[1]-'0');
     lcd_Cursor.row++;
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[3]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[4]-'0');
-    lcd_transferSpecialChar(lcd_builder_gps_data.latitude[5]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[6]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[7]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[8]-'0');
-    lcd_transferSmallNumInt((int)lcd_builder_gps_data.latitude[9]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[3]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[4]-'0');
+    lcd_transferSpecialChar(watch_data_gps.latitude[5]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[6]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[7]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[8]-'0');
+    lcd_transferSmallNumInt((int)watch_data_gps.latitude[9]-'0');
     lcd_Cursor.row++;
-    lcd_transferChar((char)((int)lcd_builder_gps_data.latitude[11]+32));
+    lcd_transferChar((char)((int)watch_data_gps.latitude[11]+32));
 
     lcd_drawLine(65);
 
@@ -93,45 +74,13 @@ void lcd_builder_build_gps()
     lcd_transferString("alt");
     lcd_transferSpecialChar(':');
     lcd_Cursor.row++;
-    lcd_transferSmallNumInt(lcd_builder_gps_data.altitude);
+    lcd_transferSmallNumInt(watch_data_gps.altitude);
 
     lcd_setCursor(0, 83);
     lcd_transferString("speed");
     lcd_transferSpecialChar(':');
     lcd_Cursor.row++;
-    lcd_transferSmallNumInt(lcd_builder_gps_data.ground_speed);
-}
-
-void lcd_builder_stopwatch_timer_reset()
-{
-    memset(&lcd_builder_stopwatch_data, 0, sizeof(lcd_builder_stopwatch_data));
-}
-
-void lcd_builder_stopwatch_timer_lap()
-{
-    lcd_builder_stopwatch_data.lapTimesMin[2] =
-        lcd_builder_stopwatch_data.lapTimesMin[1];
-    lcd_builder_stopwatch_data.lapTimesSec[2] =
-        lcd_builder_stopwatch_data.lapTimesSec[1];
-    lcd_builder_stopwatch_data.lapTimesTenths[2] =
-        lcd_builder_stopwatch_data.lapTimesTenths[1];
-    lcd_builder_stopwatch_data.lapTimesMin[1] =
-        lcd_builder_stopwatch_data.lapTimesMin[0];
-    lcd_builder_stopwatch_data.lapTimesSec[1] =
-        lcd_builder_stopwatch_data.lapTimesSec[0];
-    lcd_builder_stopwatch_data.lapTimesTenths[1] =
-        lcd_builder_stopwatch_data.lapTimesTenths[0];
-    lcd_builder_stopwatch_data.lapTimesMin[0] =
-        lcd_builder_stopwatch_data.timer_minutes;
-    lcd_builder_stopwatch_data.lapTimesSec[0] =
-        lcd_builder_stopwatch_data.timer_seconds;
-    lcd_builder_stopwatch_data.lapTimesTenths[0] =
-        lcd_builder_stopwatch_data.timer_tenths;
-    lcd_builder_stopwatch_data.lapCounter++;
-    if (lcd_builder_stopwatch_data.lapCounter >= 100)
-    {
-        lcd_builder_stopwatch_data.lapCounter = 0;
-    }
+    lcd_transferSmallNumInt(watch_data_gps.ground_speed);
 }
 
 void lcd_builder_build_stopwatch()
@@ -145,91 +94,91 @@ void lcd_builder_build_stopwatch()
     lcd_transferString("watch");
 
     lcd_setCursor(0, 28);
-    if (lcd_builder_stopwatch_data.timer_minutes < 10) {
+    if (watch_data_stopwatch.timer_minutes < 10) {
         lcd_transferBigNumInt(0);
     }
-    lcd_transferBigNumInt(lcd_builder_stopwatch_data.timer_minutes);
+    lcd_transferBigNumInt(watch_data_stopwatch.timer_minutes);
     lcd_transferSpecialBigChar(':');
-    if (lcd_builder_stopwatch_data.timer_seconds < 10) {
+    if (watch_data_stopwatch.timer_seconds < 10) {
         lcd_transferBigNumInt(0);
     }
-    lcd_transferBigNumInt(lcd_builder_stopwatch_data.timer_seconds);
+    lcd_transferBigNumInt(watch_data_stopwatch.timer_seconds);
     lcd_setCursor(9, 38);
     lcd_transferSpecialChar('.');
-    lcd_transferSmallNumInt(lcd_builder_stopwatch_data.timer_tenths);
+    lcd_transferSmallNumInt(watch_data_stopwatch.timer_tenths);
     lcd_transferSmallNumInt(0);
 
     lcd_drawLine(54);
 
-    if (lcd_builder_stopwatch_data.lapCounter > 0)
+    if (watch_data_stopwatch.lapCounter > 0)
     {
         lcd_setCursor(0, 56);
         lcd_transferChar('l');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter);
-        if (lcd_builder_stopwatch_data.lapCounter < 10) {
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapCounter);
+        if (watch_data_stopwatch.lapCounter < 10) {
             lcd_transferSpecialChar(':');
         }
         lcd_Cursor.row++;
-        if (lcd_builder_stopwatch_data.lapTimesMin[0] < 10) {
+        if (watch_data_stopwatch.lapTimesMin[0] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[0]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesMin[0]);
         lcd_transferSpecialChar(':');
-        if (lcd_builder_stopwatch_data.lapTimesSec[0] < 10) {
+        if (watch_data_stopwatch.lapTimesSec[0] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[0]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesSec[0]);
         lcd_transferSpecialChar('.');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[0]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesTenths[0]);
         lcd_transferSmallNumInt(0);
         lcd_drawLine(68);
     }
 
-    if (lcd_builder_stopwatch_data.lapCounter > 1)
+    if (watch_data_stopwatch.lapCounter > 1)
     {
         lcd_setCursor(0, 70);
         lcd_transferChar('l');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter-1);
-        if (lcd_builder_stopwatch_data.lapCounter-1 < 10) {
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapCounter-1);
+        if (watch_data_stopwatch.lapCounter-1 < 10) {
             lcd_transferSpecialChar(':');
         }
         lcd_Cursor.row++;
-        if (lcd_builder_stopwatch_data.lapTimesMin[1] < 10) {
+        if (watch_data_stopwatch.lapTimesMin[1] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[1]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesMin[1]);
         lcd_transferSpecialChar(':');
-        if (lcd_builder_stopwatch_data.lapTimesSec[1] < 10) {
+        if (watch_data_stopwatch.lapTimesSec[1] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[1]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesSec[1]);
         lcd_transferSpecialChar('.');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[1]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesTenths[1]);
         lcd_transferSmallNumInt(0);
         lcd_drawLine(82);
     }
 
-    if (lcd_builder_stopwatch_data.lapCounter > 2)
+    if (watch_data_stopwatch.lapCounter > 2)
     {
         lcd_setCursor(0, 84);
         lcd_transferChar('l');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapCounter-2);
-        if (lcd_builder_stopwatch_data.lapCounter-2 < 10) {
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapCounter-2);
+        if (watch_data_stopwatch.lapCounter-2 < 10) {
             lcd_transferSpecialChar(':');
         }
         lcd_Cursor.row++;
 
-        if (lcd_builder_stopwatch_data.lapTimesMin[2] < 10) {
+        if (watch_data_stopwatch.lapTimesMin[2] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesMin[2]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesMin[2]);
         lcd_transferSpecialChar(':');
-        if (lcd_builder_stopwatch_data.lapTimesSec[2] < 10) {
+        if (watch_data_stopwatch.lapTimesSec[2] < 10) {
             lcd_transferSmallNumInt(0);
         }
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesSec[2]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesSec[2]);
         lcd_transferSpecialChar('.');
-        lcd_transferSmallNumInt(lcd_builder_stopwatch_data.lapTimesTenths[2]);
+        lcd_transferSmallNumInt(watch_data_stopwatch.lapTimesTenths[2]);
         lcd_transferSmallNumInt(0);
     }
 }
@@ -244,27 +193,27 @@ void lcd_builder_build_steps()
     lcd_transferString("steps");
 
     lcd_setCursor(1, 38);
-    if (lcd_builder_step_data.steps < 10000) {
+    if (watch_data_step.steps < 10000) {
         lcd_transferBigNumInt(0);
     }
-    if (lcd_builder_step_data.steps < 1000) {
+    if (watch_data_step.steps < 1000) {
        lcd_transferBigNumInt(0);
     }
-    if (lcd_builder_step_data.steps < 100) {
+    if (watch_data_step.steps < 100) {
         lcd_transferBigNumInt(0);
     }
-    if (lcd_builder_step_data.steps < 10) {
+    if (watch_data_step.steps < 10) {
         lcd_transferBigNumInt(0);
     }
-    lcd_transferBigNumInt(lcd_builder_step_data.steps);
+    lcd_transferBigNumInt(watch_data_step.steps);
 
     lcd_setCursor(4, 66);
     lcd_transferString("of");
     lcd_Cursor.row++;
     for (i = 0; i < 5; i++)
     {
-        lcd_transferSmallNumInt(lcd_builder_step_data.goal[i] - '0');
-        if (lcd_builder_step_data.goal_digit == i)
+        lcd_transferSmallNumInt(watch_data_step.goal[i] - '0');
+        if (lcd_builder_step_goal_digit == i)
         {
             lcd_invertBitMap(7+i, 66, 9);
         }
@@ -276,19 +225,19 @@ void lcd_builder_build_steps()
     lcd_transferString("last");
     lcd_transferSpecialChar(':');
     lcd_Cursor.row++;
-    if (lcd_builder_step_data.yesterday_steps < 10000) {
+    if (watch_data_step.yesterday_steps < 10000) {
         lcd_transferSmallNumInt(0);
     }
-    if (lcd_builder_step_data.yesterday_steps < 1000) {
+    if (watch_data_step.yesterday_steps < 1000) {
         lcd_transferSmallNumInt(0);
     }
-    if (lcd_builder_step_data.yesterday_steps < 100) {
+    if (watch_data_step.yesterday_steps < 100) {
         lcd_transferSmallNumInt(0);
     }
-    if (lcd_builder_step_data.yesterday_steps < 10) {
+    if (watch_data_step.yesterday_steps < 10) {
         lcd_transferSmallNumInt(0);
     }
-    lcd_transferSmallNumInt(lcd_builder_step_data.yesterday_steps);
+    lcd_transferSmallNumInt(watch_data_step.yesterday_steps);
 }
 
 void lcd_builder_build_watch_face()
@@ -315,11 +264,6 @@ void lcd_builder_build_watch_face()
     lcd_transferSmallNumInt(date_time.day_num);
 }
 
-void lcd_builder_run_timer_reset()
-{
-    memset(&lcd_builder_run_data, 0, sizeof(lcd_builder_run_data));
-}
-
 void lcd_builder_build_run()
 {
     lcd_builder_build_top_bar(true);
@@ -332,23 +276,23 @@ void lcd_builder_build_run()
     lcd_transferString("time");
 
     lcd_setCursor(0, 28);
-    if (lcd_builder_run_data.timer_hours < 10) {
+    if (watch_data_run.timer_hours < 10) {
         lcd_transferBigNumInt(0);
     }
-    lcd_transferBigNumInt(lcd_builder_run_data.timer_hours);
+    lcd_transferBigNumInt(watch_data_run.timer_hours);
     lcd_transferSpecialBigChar(':');
-    if (lcd_builder_run_data.timer_minutes < 10) {
+    if (watch_data_run.timer_minutes < 10) {
         lcd_transferBigNumInt(0);
     }
-    lcd_transferBigNumInt(lcd_builder_run_data.timer_minutes);
+    lcd_transferBigNumInt(watch_data_run.timer_minutes);
     lcd_setCursor(9, 38);
     lcd_transferSpecialChar(':');
-    if (lcd_builder_run_data.timer_seconds < 10) {
+    if (watch_data_run.timer_seconds < 10) {
         lcd_transferSmallNumInt(0);
     }
-    lcd_transferSmallNumInt(lcd_builder_run_data.timer_seconds);
+    lcd_transferSmallNumInt(watch_data_run.timer_seconds);
 
-    if (lcd_builder_run_data.timer_running == false)
+    if (watch_data_run.timer_running == false)
     {
         lcd_setCursor(5,52);
       	lcd_transferString("stopped");
@@ -362,10 +306,10 @@ void lcd_builder_build_run()
     lcd_Cursor.row+=2;
     
     // TODO Is there a better way to do this?
-    lcd_transferSmallNumInt(lcd_builder_run_data.meters/1000);
+    lcd_transferSmallNumInt(watch_data_run.meters/1000);
     lcd_transferSpecialChar('.');
-    lcd_transferSmallNumInt((lcd_builder_run_data.meters%1000)/100);
-    lcd_transferSmallNumInt((lcd_builder_run_data.meters%100)/10);
+    lcd_transferSmallNumInt((watch_data_run.meters%1000)/100);
+    lcd_transferSmallNumInt((watch_data_run.meters%100)/10);
 
     lcd_drawLine(82);
 
@@ -373,13 +317,13 @@ void lcd_builder_build_run()
     lcd_transferString("pace");
     lcd_transferSpecialChar(':');
     lcd_Cursor.row+=2;
-    lcd_transferSmallNumInt(lcd_builder_run_data.pace_minutes);
+    lcd_transferSmallNumInt(watch_data_run.pace_minutes);
     lcd_transferSpecialChar(':');
-    if (lcd_builder_run_data.pace_seconds < 10)
+    if (watch_data_run.pace_seconds < 10)
     {
         lcd_transferSmallNumInt(0);
     }
-    lcd_transferSmallNumInt(lcd_builder_run_data.pace_seconds);
+    lcd_transferSmallNumInt(watch_data_run.pace_seconds);
 }
 
 void lcd_builder_build_top_bar(bool time)
@@ -391,14 +335,14 @@ void lcd_builder_build_top_bar(bool time)
     lcd_setCursor(0,1);
 
     // FIXME change back to battery icon
-    //lcd_transferBatteryLevel(lcd_builder_battery_level);
-    lcd_transferSmallNumInt(lcd_builder_battery_level);
+    //lcd_transferBatteryLevel(watch_data_battery_level);
+    lcd_transferSmallNumInt(watch_data_battery_level);
     //------
 
-    if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
-        lcd_transferSpecialChar('&'); // Bluetooth symbol
+    if (watch_data_bluetooth_state == BLE_STATE_ADVERTISING) {
+        lcd_transferSpecialChar('&'); // Bluetooth symbol FIXME use constant
         lcd_transferChar('a');
-    } else if (lcd_builder_bluetooth_state == BLE_STATE_CONNECTED) {
+    } else if (watch_data_bluetooth_state == BLE_STATE_CONNECTED) {
         lcd_transferSpecialChar('&'); // Bluetooth symbol
         lcd_transferChar('c');
     } else {

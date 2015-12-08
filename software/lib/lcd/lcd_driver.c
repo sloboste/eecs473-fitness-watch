@@ -440,10 +440,10 @@ void lcd_clearDisplay()
 {
     int i;
     lcd_initCursor();
-  	nrf_gpio_pin_set(SPI_SS_PIN);
+  	spi_set_slave_select();//nrf_gpio_pin_set(SPI_SS_PIN);
     spi_write(LCD_CLEAR);
     spi_write(0x00);
-    nrf_gpio_pin_clear(SPI_SS_PIN);
+    spi_clear_slave_select();//nrf_gpio_pin_clear(SPI_SS_PIN);
     for (i = 0; i < 96*12; i++)
     {
         bitmap[i] = 0x00;
@@ -477,7 +477,7 @@ void lcd_clearLines(uint8_t start, uint8_t end){
 
 void lcd_refresh(void) 
 {
-  	nrf_gpio_pin_set(SPI_SS_PIN);
+  	spi_set_slave_select();//nrf_gpio_pin_set(SPI_SS_PIN);
     uint8_t addr;
     uint8_t byteNum;
     spi_write(DATA_WRITE);
@@ -492,7 +492,7 @@ void lcd_refresh(void)
         spi_write(0x00);
     }
     spi_write(0x00);
-    nrf_gpio_pin_clear(SPI_SS_PIN);
+    spi_clear_slave_select();//nrf_gpio_pin_clear(SPI_SS_PIN);
 }
 
 /**************************************************************************/
