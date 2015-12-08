@@ -25,12 +25,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
@@ -38,6 +40,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -205,18 +208,29 @@ public class DeviceControlActivity extends Activity {
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
+        updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
+
         //Create a thread and refresh all data
         Thread t = new Thread() {
             @Override
             public void run() {
                 try {
+//                    Thread.sleep(2000);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            // update GPS Log TextView
+//                            updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
+//                        }
+//                    });
+//                    Thread.sleep(10000);
                     while (!isInterrupted()) {
                         Thread.sleep(1000);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 // update pedometer TextView
-                                updateCharacteristic(SampleGattAttributes.REPLY_PED_STEP_COUNT);
+                                updateCharacteristic(SampleGattAttributes.REQUEST_PED_STEP_COUNT);
                             }
                         });
                         Thread.sleep(1000);
@@ -250,6 +264,19 @@ public class DeviceControlActivity extends Activity {
         };
 
         t.start();
+
+        final Button button = (Button) findViewById(R.id.bGmaps);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                //String uri = String.format(Locale.ENGLISH, "geo:%f,%f", 42.291, -83.715);
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", 42.291, -83.715, 42.291, -83.715);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -331,15 +358,13 @@ public class DeviceControlActivity extends Activity {
             byte second_byte = (byte)Integer.parseInt(data.substring(24, 26), 16);
             int data_length = second_byte & 0x00000000ffffffff;
 
-            //int disp_data = 0;
             String display_data = "";
             //Extract data from packet
             try {
-                //convert data to hex and remove whitespace
-                display_data = data.substring(26, data.length());                            //get data portion
+                display_data = data.substring(26, data.length());                                   //get data portion
                 display_data = display_data.replaceAll("\\s+", "");                                 //remove whitespace
                 int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
-                display_data = Integer.toString(disp_data & 0x00000000ffffffff);                                         //convert
+                display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
             }catch(Exception ex){
                 System.out.println("Shit's on fire yo");
             }
