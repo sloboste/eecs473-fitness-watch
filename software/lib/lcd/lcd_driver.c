@@ -1,9 +1,26 @@
-/*********************************************************************
-This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
-interface, not including ground and power.
-
-Written by Joshua Kaufman for the EIR watch by The Watchmen.  
-*********************************************************************/
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ *
+ * 
+ * This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
+ * interface, not including ground and power.
+ */
 
 #include <stdint.h>
 #include <stdbool.h>
