@@ -115,10 +115,19 @@ extern void gps_config();
  */
 extern void gps_get_info(gps_info_t * info_ptr, int type);
 
-
 /**
  * Send a message string (must be null terminated) to the GPS module.
  */
 extern void gps_send_msg(char * msg);
+
+/**
+ * TODO
+ */
+uint16_t gps_flash_dump();
+
+/**
+ * TODO
+ */
+uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired);
 
 #endif
