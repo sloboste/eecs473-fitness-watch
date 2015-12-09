@@ -1,9 +1,26 @@
-/*********************************************************************
-This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
-interface, not including ground and power.
-
-Written by Joshua Kaufman for the EIR watch by The Watchmen.  
-*********************************************************************/
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ *
+ * 
+ * This LCD (LS013B4DN04) uses SPI to communicate, 3 pins are required to  
+ * interface, not including ground and power.
+ */
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -283,7 +300,7 @@ void lcd_transferBigNumInt(int num){
     for (i = 0; i < numLength-1; i++){
         divisor = divisor * 10;
     }
-    if (num == 99999)
+    if (num == 99999) // FIXME use constant or change the way this is done
     {
         divisor = 1;
         numLength = 1;
@@ -404,13 +421,14 @@ void lcd_setCursor(int x, int y){
 
 uint8_t lcd_reverseBitOrder(uint8_t MSB){
 		uint8_t LSB = 0;
-		LSB |= (((0x01) & MSB)<<7);
+	LSB |= (((0x01) & MSB)<<7);
     LSB |= (((0x02) & MSB)<<5);
     LSB |= (((0x04) & MSB)<<3);
     LSB |= (((0x08) & MSB)<<1);
     LSB |= (((0x10) & MSB)>>1);
     LSB |= (((0x20) & MSB)>>3);
     LSB |= (((0x40) & MSB)>>5);
+    LSB |= (((0x80) & MSB)>>7);
     return LSB;
 }
 
@@ -440,10 +458,10 @@ void lcd_clearDisplay()
 {
     int i;
     lcd_initCursor();
-  	nrf_gpio_pin_set(SPI_SS_PIN);
+  	spi_set_slave_select();//nrf_gpio_pin_set(SPI_SS_PIN);
     spi_write(LCD_CLEAR);
     spi_write(0x00);
-    nrf_gpio_pin_clear(SPI_SS_PIN);
+    spi_clear_slave_select();//nrf_gpio_pin_clear(SPI_SS_PIN);
     for (i = 0; i < 96*12; i++)
     {
         bitmap[i] = 0x00;
@@ -477,7 +495,7 @@ void lcd_clearLines(uint8_t start, uint8_t end){
 
 void lcd_refresh(void) 
 {
-  	nrf_gpio_pin_set(SPI_SS_PIN);
+  	spi_set_slave_select();//nrf_gpio_pin_set(SPI_SS_PIN);
     uint8_t addr;
     uint8_t byteNum;
     spi_write(DATA_WRITE);
@@ -487,12 +505,12 @@ void lcd_refresh(void)
         spi_write(lcd_reverseBitOrder(addr));
         for(byteNum = 0; byteNum < 12; byteNum++)
         {
-            spi_write(~bitmap[(addr-1)*12+byteNum]);
+            spi_write(lcd_reverseBitOrder(~bitmap[(96 - addr)*12+11-byteNum]));
         }
         spi_write(0x00);
     }
     spi_write(0x00);
-    nrf_gpio_pin_clear(SPI_SS_PIN);
+    spi_clear_slave_select();//nrf_gpio_pin_clear(SPI_SS_PIN);
 }
 
 /**************************************************************************/
@@ -512,6 +530,11 @@ void lcd_drawLine(uint8_t line){
         lcd_Cursor.row++;
     }
 }
+
+// void flipBitmap()
+// {
+
+// }
 
 // /**************************************************************************/
 // /*!

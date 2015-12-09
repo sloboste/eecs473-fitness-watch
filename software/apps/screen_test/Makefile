@@ -9,36 +9,13 @@ APPLICATION_SRCS += app_scheduler.c
 APPLICATION_SRCS += app_timer_appsh.c
 
 APPLICATION_SRCS += softdevice_handler.c
-APPLICATION_SRCS += ble_srv_common.c
-APPLICATION_SRCS += ble_advdata.c
-APPLICATION_SRCS += ble_conn_params.c
-APPLICATION_SRCS += ble_config.c
-APPLICATION_SRCS += watch_service.c 
-APPLICATION_SRCS += packets.c 
-APPLICATION_SRCS += timer_config.c 
-APPLICATION_SRCS += scheduler_config.c 
-#APPLICATION_SRCS += gps.c 
-#APPLICATION_SRCS += uart_adapter.c 
-#APPLICATION_SRCS += app_uart.c
-APPLICATION_SRCS += nrf_drv_gpiote.c
-APPLICATION_SRCS += nrf_drv_common.c
 
-
-APPLICATION_SRCS += twi_hw_master.c
-APPLICATION_SRCS += inv_mpu.c
-APPLICATION_SRCS += inv_mpu_dmp_motion_driver.c
-APPLICATION_SRCS += mpu.c
 APPLICATION_SRCS += nrf_delay.c
 
 APPLICATION_SRCS += charData.c
 APPLICATION_SRCS += spi_driver.c
 APPLICATION_SRCS += lcd_driver.c
-APPLICATION_SRCS += lcd_builder.c
 
-APPLICATION_SRCS += twi_sw_master.c
-APPLICATION_SRCS += fuel_gauge.c
-
-APPLICATION_SRCS += pstorage.c
 
 # You can change the board type with this variable
 ifndef BOARD_NAME

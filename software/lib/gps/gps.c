@@ -1,3 +1,23 @@
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -8,11 +28,6 @@
 #include "gps.h"
 #include "uart_adapter.h"
 
-// FIXME we really don't want to have the gps module be dependent on the pins
-// used for uart_init... Find a way to pass in the uart_adapter stuff
-#include "pcb.h"
-//#include "green_dev_board.h"
-
 #define MAX_SENTENCE_LEN 130
 
 
@@ -20,10 +35,7 @@ static char gps_buffer[MAX_SENTENCE_LEN];
 
 void gps_init()
 {
-    // FIXME we really don't want to have the gps module be dependent on the
-    // pins used for uart_init... Find a way to pass in the uart_adapter stuff
-    uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
-    gps_disable();
+
 }
 
 void gps_enable()
@@ -316,9 +328,9 @@ uint16_t gps_flash_dump_partial(char * buf)
 
     // send dump message
     //nrf_gpio_pin_clear(PIN_LED_1);
-    nrf_gpio_pin_toggle(PIN_LED_1);
+    //nrf_gpio_pin_toggle(PIN_LED_1);
     gps_send_msg(PMTK_LOCUS_GET_FLASH);
-    nrf_gpio_pin_toggle(PIN_LED_2);
+    //nrf_gpio_pin_toggle(PIN_LED_2);
     // keeps track of sentence size
     uint16_t multiplier = 1;
     //Read in byte from rx_buff and place in buffer (This eats through the buffer until start of dump)

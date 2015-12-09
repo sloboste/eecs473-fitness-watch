@@ -1,3 +1,23 @@
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ */
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -8,9 +28,6 @@
 
 #include "date_time.h"
 
-#include "blue_dev_board.h" // FIXME remove
-#include "nrf_gpio.h" // FIXME remove
-
 
 #define FLASH_BLOCK_SIZE        16 
 #define FLASH_NUM_BLOCKS        2
@@ -20,11 +37,11 @@ static volatile bool flash_busy = false;
 static pstorage_handle_t base_block_id;                                            
 static pstorage_handle_t date_block_id;                                            
 
+
 static pstorage_ntf_cb_t flash_callback(                                              
     pstorage_handle_t * p_handle, uint8_t op_code, uint32_t result,             
     uint8_t * p_data, uint32_t data_len)                                        
 {                                                                               
-    //nrf_gpio_pin_toggle(PIN_LED_1);
     return 0; // FIXME what is the correct return value?
 }          
 
@@ -87,16 +104,16 @@ void flash_store_step_yesterday(uint32_t * step_yesterday_ptr)
     store_uint32(step_yesterday_ptr, 4); 
 }
 
-void flash_load_step_goal(char * step_goal_ptr)
+void flash_load_step_goal(char * step_goal_str)
 {
     uint32_t step_goal;
     load_uint32(&step_goal, 8); 
-    sprintf(step_goal_ptr, "%05u", step_goal);
+    sprintf(step_goal_str, "%05u", step_goal);
 }
 
-void flash_store_step_goal(char * step_goal_ptr)
+void flash_store_step_goal(char * step_goal_str)
 {
-    uint32_t step_goal = atoi(step_goal_ptr);
+    uint32_t step_goal = atoi(step_goal_str);
     store_uint32(&step_goal, 8); 
 }
 

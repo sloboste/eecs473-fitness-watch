@@ -38,7 +38,10 @@ static uint32_t step_count = 0;
 
 static void on_adv_con_change(uint8_t ble_state)
 {
-
+    if (ble_state == BLE_STATE_IDLE)
+    {
+        ble_advertising_start();
+    }
 }
 
 void pcb_gpio_init(void)

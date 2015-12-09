@@ -7,6 +7,7 @@ APPLICATION_SRCS += app_util_platform.c
 
 APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += app_gpiote.c
+APPLICATION_SRCS += nrf_drv_gpiote.c
 
 
 ifndef TARGET

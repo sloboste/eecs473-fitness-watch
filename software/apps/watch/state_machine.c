@@ -1,3 +1,23 @@
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ */
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -12,11 +32,7 @@
 #include "scheduler_config.h"
 #include "timer_config.h"
 #include "flash.h"
-
-// FIXME remove
-#include "blue_dev_board.h"
-#include "nrf_gpio.h"
-//---
+#include "watch_data.h"
 
 
 // The current state of the state machine
@@ -28,12 +44,12 @@ void state_machine_init()
     lcd_clearDisplay();
     current_state = STATE_WATCH_FACE;
 
-    lcd_builder_init_structs(); // FIXME I think using this function is funky...
-
-    flash_load_step_count(&lcd_builder_step_data.steps_offset);
-    lcd_builder_step_data.steps = lcd_builder_step_data.steps_offset;
-    flash_load_step_yesterday(&lcd_builder_step_data.yesterday_steps);
-    flash_load_step_goal(lcd_builder_step_data.goal);
+    lcd_builder_init();
+    watch_data_init();
+    flash_load_step_count(&watch_data_step.steps_offset);
+    watch_data_step.steps = watch_data_step.steps_offset;
+    flash_load_step_yesterday(&watch_data_step.yesterday_steps);
+    flash_load_step_goal(watch_data_step.goal);
     
     state_machine_refresh_screen();
 }
@@ -73,7 +89,7 @@ void state_machine_refresh_screen()
 
 void state_machine_on_ble_adv_con(uint8_t ble_state)
 {
-    lcd_builder_bluetooth_state = ble_state;
+    watch_data_bluetooth_state = ble_state;
     app_sched_event_put(NULL, 0, state_machine_refresh_screen);
 }
 
@@ -95,8 +111,8 @@ void state_machine_on_button_0()
 
         case STATE_STEPS_GOAL:
             // Cycle numbers in step goal
-            if (++lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] > '9') {
-                lcd_builder_step_data.goal[lcd_builder_step_data.goal_digit] = '0';
+            if (++watch_data_step.goal[lcd_builder_step_goal_digit] > '9') {
+                watch_data_step.goal[lcd_builder_step_goal_digit] = '0';
             }
             state_machine_refresh_screen();
             break;
@@ -111,7 +127,7 @@ void state_machine_on_button_0()
             // Run timer reset
             current_state = STATE_RUN_TIMER_OFF;
             timer_stop_1hz_periodic_1();
-            lcd_builder_run_data.timer_running = false;
+            watch_data_run.timer_running = false;
             lcd_builder_build_run();
             state_machine_refresh_screen();
             break;
@@ -134,7 +150,7 @@ void state_machine_on_button_0()
 
         case STATE_STOPWATCH_TIMER_ON:
             // Lap timer 
-            lcd_builder_stopwatch_timer_lap();
+            watch_data_stopwatch_timer_lap();
             break;
 
         default: // ERROR
@@ -148,9 +164,9 @@ void state_machine_on_button_1()
 {
     switch (current_state) {
         case STATE_WATCH_FACE:
-            if (lcd_builder_bluetooth_state == BLE_STATE_ADVERTISING) {
+            if (watch_data_bluetooth_state == BLE_STATE_ADVERTISING) {
                 ble_advertising_stop();
-            } else if (lcd_builder_bluetooth_state == BLE_STATE_IDLE) {
+            } else if (watch_data_bluetooth_state == BLE_STATE_IDLE) {
                 ble_advertising_start();
             }
             state_machine_refresh_screen();
@@ -159,13 +175,13 @@ void state_machine_on_button_1()
         case STATE_STEPS:
             // Go to goal setting
             current_state = STATE_STEPS_GOAL;
-            lcd_builder_step_data.goal_digit = 0;
+            lcd_builder_step_goal_digit = 0;
             state_machine_refresh_screen();
             break;
 
         case STATE_STEPS_GOAL:
             // Go to next goal digit
-            if (++lcd_builder_step_data.goal_digit > 4) {
+            if (++lcd_builder_step_goal_digit > 4) {
                 current_state = STATE_STEPS;
             }
             state_machine_refresh_screen();
@@ -174,20 +190,20 @@ void state_machine_on_button_1()
         case STATE_RUN_TIMER_OFF:
             // Start timer
             current_state = STATE_RUN_TIMER_ON;
-            lcd_builder_run_timer_reset();
+            watch_data_run_timer_reset();
             timer_start_1hz_periodic_1(); 
-            lcd_builder_run_data.timer_running = true;
+            watch_data_run.timer_running = true;
             state_machine_refresh_screen();
             break;
 
         case STATE_RUN_TIMER_ON:
             // Pause or restart timer
-            if (lcd_builder_run_data.timer_running) {
+            if (watch_data_run.timer_running) {
                 timer_stop_1hz_periodic_1();
-                lcd_builder_run_data.timer_running = false;
+                watch_data_run.timer_running = false;
             } else {
                 timer_start_1hz_periodic_1();
-                lcd_builder_run_data.timer_running = true;
+                watch_data_run.timer_running = true;
             }
             state_machine_refresh_screen();
             break;
@@ -199,7 +215,7 @@ void state_machine_on_button_1()
             break;
 
         case STATE_STOPWATCH_TIMER_OFF:
-            lcd_builder_stopwatch_timer_reset();
+            watch_data_stopwatch_timer_reset();
             timer_start_10hz_periodic();
             current_state = STATE_STOPWATCH_TIMER_ON;
             break;
@@ -224,9 +240,9 @@ void state_machine_on_button_2()
     lcd_clearDisplay();
     lcd_builder_build_sleep_message();
     lcd_refresh();
-    flash_store_step_count(&lcd_builder_step_data.steps);
-    flash_store_step_yesterday(&lcd_builder_step_data.yesterday_steps);
-    flash_store_step_goal(lcd_builder_step_data.goal);
+    flash_store_step_count(&watch_data_step.steps);
+    flash_store_step_yesterday(&watch_data_step.yesterday_steps);
+    flash_store_step_goal(watch_data_step.goal);
     flash_store_date_time(&date_time);
     nrf_delay_ms(1000);
     lcd_clearDisplay();

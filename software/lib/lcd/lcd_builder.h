@@ -1,4 +1,24 @@
-/* High level functions and data structures used to build different screens on
+/* This file is part of eecs473-fitness-watch.
+ *   
+ * The code / board schematics created by the authors of eecs473-fitness-watch
+ * are free software/hardware: you can redistribute them and/or modify them
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option)
+ * any later version.
+ *
+ * The code / board schematics are distributed in the hope that they will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+ * Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * the code / board schematics.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * All code / schematics not created by the authors of this repository fall
+ * under their original licenses.
+ *
+ *
+ * High level functions and data structures used to build different screens on
  * the LCD. This abstracts away the line drawing and character sending LCD
  * functions.
  */
@@ -9,99 +29,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-
-//------------------------------------------------------------------------------
-// TODO These probably belong in a data definition file since they will be used
-// by multiple parts of the program that shouldn't know about the
-// screen_building
-
-// Holds GPS data in an LCD friendly format.
-typedef struct lcd_builder_gps_data_struct {
-   uint32_t ground_speed;
-   uint32_t altitude;
-   char * latitude;
-   char * longitude;
-} lcd_builder_gps_data_t;
-
-// Holds run data in an LCD friendly format.
-typedef struct lcd_builder_run_data_struct {
-    uint16_t meters;
-    uint8_t pace_minutes;
-    uint8_t pace_seconds;
-    uint8_t timer_hours;
-    uint8_t timer_minutes;
-    uint8_t timer_seconds;
-    bool timer_running;
-} lcd_builder_run_data_t;
-
-// Holds step data in an LCD friendly format.
-typedef struct lcd_builder_step_data_struct {
-    uint32_t steps;
-    uint32_t steps_offset;
-    uint32_t yesterday_steps;
-    uint8_t goal_digit;
-    char goal[6];
-} lcd_builder_step_data_t;
-
-// Holds stopwatch data in an LCD friendly format.
-typedef struct lcd_builder_stopwatch_data_struct {
-    uint8_t lapTimesMin[3];
-    uint8_t lapTimesSec[3];
-    uint8_t lapTimesTenths[3];
-    uint8_t lapCounter;
-    uint8_t timer_minutes;
-    uint8_t timer_seconds;
-    uint8_t timer_tenths;
-} lcd_builder_stopwatch_data_t;
-
-
-// The current battery level of the watch to show on the screen. 
-uint8_t lcd_builder_battery_level;
-
-// The current bluetooth state (one of ble_config's BLE_STATE_X).
-uint8_t lcd_builder_bluetooth_state;
-
-// The current GPS data that will be shown on the screen.
-lcd_builder_gps_data_t lcd_builder_gps_data;
-
-// The current run data that will be shown on the screen.
-lcd_builder_run_data_t lcd_builder_run_data;
-
-// The current step data that will be shown on the screen.
-lcd_builder_step_data_t lcd_builder_step_data;
-
-// The current step data that will be shown on the screen.
-lcd_builder_stopwatch_data_t lcd_builder_stopwatch_data;
-
+// The current digit the step goal digit selecter is on. 5 means none selected.
+uint8_t lcd_builder_step_goal_digit;
 
 /**
- * Record a lap time in the stopwatch data struct.
- *
- * Note: this only changes the struct and doesn't make the changes visible.
+ * Register the watch data structures with the lcd_builder. 
  */
-extern void lcd_builder_stopwatch_timer_lap();
-
-/**
- * Zero out the values in the stopwatch data struct.
- *
- * Note: this only changes the struct and doesn't make the changes visible.
- */
-extern void lcd_builder_stopwatch_timer_reset();
-
-/**
- * Zero out the timer values in the run data struct.
- *
- * Note: this only changes the struct and doesn't make the changes visible.
- */
-extern void lcd_builder_run_timer_reset();
-
-// FIXME/TODO this function sucks
-/**
- *
- */
-extern void lcd_builder_init_structs();
-
-//------------------------------------------------------------------------------
+extern void lcd_builder_init();
 
 /**
  * Update the LCD bitmap for the pre-sleep mode message.
