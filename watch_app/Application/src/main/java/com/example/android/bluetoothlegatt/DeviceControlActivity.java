@@ -40,6 +40,7 @@ import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -435,6 +436,7 @@ public class DeviceControlActivity extends Activity {
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
                     ClipData clip = ClipData.newPlainText("label", display_data);
                     clipboard.setPrimaryClip(clip);
+                    Toast.makeText(getApplicationContext(), "Logged Copied to Clipboard", Toast.LENGTH_LONG).show();
                 }
             }else{
                 //SavedPacketData.add(display_data);
