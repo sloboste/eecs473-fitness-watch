@@ -69,6 +69,9 @@ uint8_t watch_data_battery_level;
 // The current bluetooth state (one of ble_config's BLE_STATE_X).
 uint8_t watch_data_bluetooth_state;
 
+// GPS tracking symbol
+bool watch_data_tracking_on;
+
 // The current heart rate in BPM from the heart rate monitor.
 uint32_t watch_data_heart_rate;
 

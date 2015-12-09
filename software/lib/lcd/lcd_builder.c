@@ -375,7 +375,14 @@ void lcd_builder_build_top_bar(bool time)
     } else {
         lcd_Cursor.row += 2;
     }
-    lcd_Cursor.row += 3;
+
+    lcd_Cursor.row++;
+    if (watch_data_tracking_on) {
+        lcd_transferChar('t');
+    } else {
+        lcd_Cursor.row++;
+    }
+    lcd_Cursor.row++;
 
     if (time) {
         if (date_time.hours < 10) {
