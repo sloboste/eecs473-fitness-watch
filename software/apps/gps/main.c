@@ -93,12 +93,20 @@ static void GPS_log_helper()
             bytes_got,
             false);
         ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
-        nrf_delay_ms(10);
+        //nrf_delay_ms(10);
+        nrf_delay_ms(100);
+
+        nrf_gpio_pin_toggle(PIN_LED_2); // FIXME remove
 
         memset(buf, 0, BUF_LEN);
         memset(packet_buf, 0, PACKET_BUF_LEN);
         bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
     }
+
+    nrf_gpio_pin_clear(PIN_LED_1); // FIXME remove
+    nrf_gpio_pin_clear(PIN_LED_2); // FIXME remove
+    nrf_gpio_pin_clear(PIN_LED_3); // FIXME remove
+    nrf_delay_ms(10000); // FIXME
 
     // Send terminal packet with no data
     memset(buf, 0, BUF_LEN);
@@ -112,6 +120,10 @@ static void GPS_log_helper()
         true);
     ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
     nrf_delay_ms(10);
+
+    nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
+    nrf_gpio_pin_set(PIN_LED_2); // FIXME remove
+    nrf_gpio_pin_set(PIN_LED_3); // FIXME remove
 
     timer_start_1hz_periodic_0();
 }
