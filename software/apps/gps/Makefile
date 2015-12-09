@@ -23,6 +23,8 @@ APPLICATION_SRCS += app_uart.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
 APPLICATION_SRCS += nrf_drv_common.c
 
+APPLICATION_SRCS += nrf_delay.c
+
 
 # You can change the board type with this variable
 ifndef BOARD_NAME

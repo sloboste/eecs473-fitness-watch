@@ -24,6 +24,8 @@
 
 #include "boards.h"
 
+#include "nrf_delay.h"
+
 
 // Buffer used when sending notifications over BLE. 
 static uint8_t packet_buf[PACKET_BUF_LEN];
@@ -46,6 +48,8 @@ static void init_leds(void)
 void app_error_handler(uint32_t error_code, uint32_t line_num,
                        const uint8_t * p_file_name)
 {
+    nrf_gpio_pin_clear(PIN_LED_3); // FIXME remove
+    nrf_delay_ms(5000);
     // On assert, the system can only recover on reset.
     NVIC_SystemReset();
 }
@@ -78,43 +82,44 @@ static void GPS_log_helper()
     // Used in Log Dump
     uint16_t loopNum;
     uint16_t i;
-    uint8_t buf_len;
     uint8_t buf[18];
     memset(packet_buf, 0, PACKET_BUF_LEN); 
     memset(buf, 0, 18); 
-    loopNum = gps_flash_dump_partial(buf);
+    loopNum = gps_flash_dump_partial(buf); 
+    loopNum = 500; // FIXME remove
     i = 0;
-    buf_len = 16;
 
     // copy over contents to buffer
-    uart_adapter_read(buf, buf_len);
+    uart_adapter_read(buf, 17);
     // build and send packet
     packets_build_reply_packet(
         packet_buf,
         PACKET_TYPE_REPLY_GPS_LOG,
         buf,
         17,
-        (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+        false);
+    ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN); //17);
+    nrf_delay_ms(10);
     
     do
     {
        nrf_gpio_pin_toggle(PIN_LED_3);
 
         memset(packet_buf, 0, PACKET_BUF_LEN); 
-        memset(buf, 0, buf_len); 
+        memset(buf, 0, 18); 
         // Check to see if its the end of the sentence
 
         // copy over contents to buffer
-        uart_adapter_read(buf, buf_len);
+        uart_adapter_read(buf, 16);
         // build and send packet
         packets_build_reply_packet(
             packet_buf,
             PACKET_TYPE_REPLY_GPS_LOG,
             buf,
-            buf_len,
+            16,
             (loopNum-1 == i));
-        ble_watch_send_reply_packet(packet_buf, buf_len);
+        ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN); //16);
+        nrf_delay_ms(10);
         // if end of sentence get next, else inc position
         i++;
         // gps_send_msg(buf);
@@ -124,18 +129,19 @@ static void GPS_log_helper()
     nrf_gpio_pin_toggle(PIN_LED_1);
 
     memset(packet_buf, 0, PACKET_BUF_LEN); 
-    memset(buf, 0, buf_len); 
+    memset(buf, 0, 18); 
     // Check to see if its the end of the sentence
 
     // copy over contents to buffer
-    uart_adapter_read(buf, buf_len);
+    uart_adapter_read(buf, 17);
     packets_build_reply_packet(
         packet_buf,
         PACKET_TYPE_REPLY_GPS_LOG,
         buf,
         17,
         (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+    ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN); //17);
+    nrf_delay_ms(10);
 
     timer_start_1hz_periodic_0();
 
@@ -147,7 +153,20 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
     uint8_t packet_type;
     packet_type = packets_decode_request_packet(data, (uint8_t) len);
 
+    uint8_t test_18_bytes[18];
+    memset(test_18_bytes, 9, sizeof(test_18_bytes));    
+
     switch (packet_type) {
+        case PACKET_TYPE_REQUEST_PED_STEP_COUNT: 
+            memset(packet_buf, 0, PACKET_BUF_LEN);    
+            packets_build_reply_packet(
+                packet_buf,
+                PACKET_TYPE_REPLY_PED_STEP_COUNT,
+                test_18_bytes,
+                18,
+                true);
+            ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+            break;
         case PACKET_TYPE_REQUEST_GPS_LOG: 
             // Send GPS logs
             app_sched_event_put(NULL, 0, GPS_log_helper);  
@@ -155,7 +174,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
 
         default:
             // Unrecognized request. Send all 0's
-            memset(&packet_buf, 0, PACKET_BUF_LEN);    
+            memset(packet_buf, 0, PACKET_BUF_LEN);    
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             break;
 
