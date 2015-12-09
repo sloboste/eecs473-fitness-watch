@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -46,12 +48,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- * For a given BLE device, this Activity provides the user interface to connect, display data,
- * and display GATT services and characteristics supported by the device.  The Activity
- * communicates with {@code BluetoothLeService}, which in turn interacts with the
- * Bluetooth LE API.
- */
 public class DeviceControlActivity extends Activity {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
 
@@ -281,6 +277,18 @@ public class DeviceControlActivity extends Activity {
             }
         });
 
+        final Button button2 = (Button) findViewById(R.id.bRoute);
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Open GPS Parser: https://learn.adafruit.com/custom/ultimate-gps-parser
+                String url = "https://learn.adafruit.com/custom/ultimate-gps-parser";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+
+            }
+        });
+
     }
 
     @Override
@@ -344,6 +352,7 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
+    //converts hex string to ascii string
     private String hex2s(String s){
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < s.length(); i+=2) {
@@ -352,6 +361,7 @@ public class DeviceControlActivity extends Activity {
         }
         return output.toString();
     }
+
 
     // Sets TextViews to appropriate values by parsing data
     // data: a packet of data from BLE
@@ -420,6 +430,11 @@ public class DeviceControlActivity extends Activity {
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
                     tvGPSl.setText(display_data);
                     System.out.println("Full Dump: " + display_data);
+
+                    //copy data
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("label", display_data);
+                    clipboard.setPrimaryClip(clip);
                 }
             }else{
                 //SavedPacketData.add(display_data);
