@@ -20,9 +20,9 @@
     <string name="label_device_address">Device address:</string>
     <string name="label_state">State:</string>
     <string name="label_ped">Step Count:</string>
-    <string name="label_GPSlat">GPS Latitude:</string>
-    <string name="label_GPSlong">GPS Longitude:</string>
-    <string name="label_GPSspeed">GPS Speed:</string>
+    <string name="label_GPSlat">Latitude:</string>
+    <string name="label_GPSlong">Longitude:</string>
+    <string name="label_GPSspeed">Speed:</string>
     <string name="label_gpslog">GPS Logging Packet:</string>
     <string name="label_bat">Battery Level:</string>
 

@@ -28,15 +28,18 @@ import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +60,7 @@ public class DeviceControlActivity extends Activity {
 
     private TextView mConnectionState;
     private TextView tvPed, tvBat, tvGPSlat, tvGPSlong, tvGPSs, tvGPSl; //Create TextView variables for data
+    private ProgressBar pbBattery;
     private String mDeviceName;
     private String mDeviceAddress;
     private ExpandableListView mGattServicesList;
@@ -160,7 +164,7 @@ public class DeviceControlActivity extends Activity {
         tvGPSlat.setText(R.string.no_data);
         tvGPSlong.setText(R.string.no_data);
         tvGPSs.setText(R.string.no_data);
-        tvGPSl.setText(R.string.no_data);
+        //tvGPSl.setText(R.string.no_data);
     }
 
     private void updateCharacteristic(byte packet){
@@ -201,7 +205,9 @@ public class DeviceControlActivity extends Activity {
         tvGPSlong = (TextView) findViewById(R.id.tvGPSlong);
         tvGPSs = (TextView) findViewById(R.id.tvGPSs);
         tvGPSl = (TextView) findViewById(R.id.tvGPSl);
+        tvGPSl.setMovementMethod(new ScrollingMovementMethod());
 
+        pbBattery = (ProgressBar) findViewById(R.id.pbBattery);
 
         getActionBar().setTitle(mDeviceName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -215,16 +221,16 @@ public class DeviceControlActivity extends Activity {
             @Override
             public void run() {
                 try {
-//                    Thread.sleep(2000);
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            // update GPS Log TextView
-//                            updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
-//                        }
-//                    });
-//                    Thread.sleep(10000);
-                    while (!isInterrupted()) {
+                    Thread.sleep(2000);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // update GPS Log TextView
+                            updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
+                        }
+                    });
+                    Thread.sleep(10000);
+                   /* while (!isInterrupted()) {
                         Thread.sleep(1000);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -257,7 +263,7 @@ public class DeviceControlActivity extends Activity {
 //                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
 //                            }
 //                        });
-                    }
+                    }*/
                 } catch (InterruptedException e) {
                 }
             }
@@ -268,10 +274,8 @@ public class DeviceControlActivity extends Activity {
         final Button button = (Button) findViewById(R.id.bGmaps);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // Perform action on click
-                //String uri = String.format(Locale.ENGLISH, "geo:%f,%f", 42.291, -83.715);
+                // Open Locaion in Google Maps
                 String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", 42.291, -83.715, 42.291, -83.715);
-
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
             }
@@ -340,6 +344,15 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
+    private String hex2s(String s){
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < s.length(); i+=2) {
+            String str = s.substring(i, i+2);
+            output.append((char)Integer.parseInt(str, 16));
+        }
+        return output.toString();
+    }
+
     // Sets TextViews to appropriate values by parsing data
     // data: a packet of data from BLE
     private void displayData(String data) {
@@ -358,13 +371,22 @@ public class DeviceControlActivity extends Activity {
             byte second_byte = (byte)Integer.parseInt(data.substring(24, 26), 16);
             int data_length = second_byte & 0x00000000ffffffff;
 
+            //skip gibberish packets
+            if(packet_type < 0 && packet_type > 7) return;
+            if(data_length < 0 && data_length > 18) return;
+
             String display_data = "";
             //Extract data from packet
             try {
+                //display_data = data;
+                System.out.println(display_data);
                 display_data = data.substring(26, data.length());                                   //get data portion
                 display_data = display_data.replaceAll("\\s+", "");                                 //remove whitespace
-                int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
-                display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
+                display_data = display_data.substring(0, data_length * 2);
+                display_data = hex2s(display_data);
+                System.out.println(display_data);
+                //int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                //display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
             }catch(Exception ex){
                 System.out.println("Shit's on fire yo");
             }
@@ -374,8 +396,10 @@ public class DeviceControlActivity extends Activity {
                 if(!SavedPacketData.isEmpty()){
                     StringBuilder stringBuilder = new StringBuilder();
                     for(String packet_data:SavedPacketData){
+                        //packet_data = String.format("%040x", new BigInteger(1, packet_data.getBytes(/*YOUR_CHARSET?*/)));
                         stringBuilder.append(packet_data);
                     }
+                    //display_data = String.format("%040x", new BigInteger(1, display_data.getBytes(/*YOUR_CHARSET?*/)));
                     display_data = stringBuilder.append(display_data).toString();
 
                     //clear it for next use
@@ -384,7 +408,9 @@ public class DeviceControlActivity extends Activity {
                 if (packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT) {
                     tvPed.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
-                    tvBat.setText(display_data);
+                    //append percent sign
+                    tvBat.setText(display_data+"%");
+                    pbBattery.setProgress(Integer.parseInt(display_data));
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
                     tvGPSlat.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
@@ -393,8 +419,10 @@ public class DeviceControlActivity extends Activity {
                     tvGPSs.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
                     tvGPSl.setText(display_data);
+                    System.out.println("Full Dump: " + display_data);
                 }
             }else{
+                //SavedPacketData.add(display_data);
                 SavedPacketData.add(display_data);
             }
         }
