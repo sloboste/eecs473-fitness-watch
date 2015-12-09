@@ -27,7 +27,7 @@
 #include "uart_adapter.h"
 
 #define MAX_SENTENCE_LEN    130
-#define LOG_DUMP_LEN        8192
+#define LOG_DUMP_LEN       11000 //256 
 
 #include "nrf_gpio.h" // FIXME remove
 #include "boards.h" // FIXME remove
@@ -236,12 +236,12 @@ void gps_get_info(gps_info_t * info_ptr, int type)
     } while (sentence_type(gps_buffer) != type);
 
     switch (type) {
-    case GPS_TYPE_GPRMC:
-        parse_gprcm(gps_buffer, info_ptr);
-        break;
-    case GPS_TYPE_GPGGA:
-        parse_gpgga(gps_buffer, info_ptr);
-        break;
+        case GPS_TYPE_GPRMC:
+            parse_gprcm(gps_buffer, info_ptr);
+            break;
+        case GPS_TYPE_GPGGA:
+            parse_gpgga(gps_buffer, info_ptr);
+            break;
     }
 }
 
@@ -301,13 +301,18 @@ uint16_t gps_flash_dump()
         gps_buffer_position += bytes_read;
     }
 
-    // Get the terminating sentence
+    // Get the terminating $PMTKLOX sentence
     bytes_read = get_sentence(gps_buffer_position, MAX_SENTENCE_LEN);
     gps_buffer_position += bytes_read;
 
+    // Fake the ACK sentence (the LOCUS parser needs this)
+    char * fake_ack = "$PMTK001,622,3*36";
+    memcpy(gps_buffer_position, fake_ack, strlen(fake_ack));
+    gps_buffer_position += strlen(fake_ack);
+
     gps_log_dump_len = gps_buffer_position - gps_buffer;
 
-    return num_sentences + 2;
+    return num_sentences + 3;
 }
 
 uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired)
@@ -328,4 +333,19 @@ uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired)
         bytes_sent += num_bytes_desired;
         return num_bytes_desired;
     }
+}
+
+void gps_erase_log()
+{
+    gps_send_msg(PMTK_LOCUS_ERASE_FLASH);
+}
+
+void gps_start_logging()
+{
+    gps_send_msg(PMTK_LOCUS_STARTLOG);
+}
+
+void gps_stop_logging()
+{
+    gps_send_msg(PMTK_LOCUS_STOPLOG);
 }

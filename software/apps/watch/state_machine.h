@@ -34,8 +34,7 @@ enum state_machine_state_enum {
     STATE_STEPS_GOAL,
     STATE_RUN_TIMER_OFF,
     STATE_RUN_TIMER_ON,
-    STATE_GPS_OFF,
-    STATE_GPS_ON,
+    STATE_GPS,
     STATE_STOPWATCH_TIMER_OFF,
     STATE_STOPWATCH_TIMER_ON,
 };

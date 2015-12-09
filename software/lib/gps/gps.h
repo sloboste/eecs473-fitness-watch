@@ -54,12 +54,13 @@
 // TODO determine if we will use all of these ---
 #define PMTK_LOCUS_STARTLOG  "$PMTK185,0*22"
 #define PMTK_LOCUS_STOPLOG "$PMTK185,1*23"
-#define PMTK_LOCUS_STARTSTOPACK "$PMTK001,185,3*3C"
-#define PMTK_LOCUS_QUERY_STATUS "$PMTK183*38"
 #define PMTK_LOCUS_ERASE_FLASH "$PMTK184,1*22"
 #define PMTK_LOCUS_GET_FLASH "$PMTK622,1*29"
 #define LOCUS_OVERLAP 0
 #define LOCUS_FULLSTOP 1
+
+#define PMTK_LOCUS_QUERY_STATUS "$PMTK183*38"
+#define PMTK_LOCUS_STARTSTOPACK "$PMTK001,185,3*3C"
 // ---
 
 
@@ -123,11 +124,26 @@ extern void gps_send_msg(char * msg);
 /**
  * TODO
  */
-uint16_t gps_flash_dump();
+extern void gps_erase_log();
 
 /**
  * TODO
  */
-uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired);
+extern void gps_start_logging();
+
+/**
+ * TODO
+ */
+extern void gps_stop_logging();
+
+/**
+ * TODO
+ */
+extern uint16_t gps_flash_dump();
+
+/**
+ * TODO
+ */
+extern uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired);
 
 #endif
