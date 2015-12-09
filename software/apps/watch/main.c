@@ -8,6 +8,7 @@
 #include "app_error.h"
 #include "nrf.h"
 #include "softdevice_handler.h"
+#include "nrf_delay.h"
 
 #include "nrf_gpio.h"
 #include "app_gpiote.h"
@@ -32,7 +33,7 @@
 #include "flash.h"
 
 #include "uart_adapter.h"
-//#include "gps.h"
+#include "gps.h"
 
 #include "boards.h"
 
@@ -196,68 +197,61 @@ void task_1hz_0(void * arg_ptr)
  */
 static void GPS_log_helper()
 {
+    uint8_t BUF_LEN = 18;
+    uint8_t buf[BUF_LEN];
+
     timer_stop_1hz_periodic_0();
-    // Used in Log Dump
-    uint16_t loopNum;
-    uint16_t i;
-    uint8_t buf_len;
-    uint8_t buf[18];
-    memset(packet_buf, 0, PACKET_BUF_LEN); 
-    memset(buf, 0, 18); 
-    // FIXME uncomment: loopNum = gps_flash_dump_partial(buf);
-    i = 0;
-    buf_len = 16;
 
-    // copy over contents to buffer
-    // FIXME uncomment: uart_adapter_read(buf, buf_len);
-    // build and send packet
-    packets_build_reply_packet(
-        packet_buf,
-        PACKET_TYPE_REPLY_GPS_LOG,
-        buf,
-        17,
-        (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+    nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
+
+    gps_flash_dump();
     
-    do
-    {
-        memset(packet_buf, 0, PACKET_BUF_LEN); 
-        memset(buf, 0, buf_len); 
-        // Check to see if its the end of the sentence
-
-        // copy over contents to buffer
-        // FIXME uncomment: uart_adapter_read(buf, buf_len);
-        // build and send packet
+    // Send log dump data
+    uint8_t bytes_got;
+    memset(buf, 0, BUF_LEN);
+    memset(packet_buf, 0, PACKET_BUF_LEN);
+    bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
+    while (bytes_got) {
         packets_build_reply_packet(
             packet_buf,
             PACKET_TYPE_REPLY_GPS_LOG,
             buf,
-            buf_len,
-            (loopNum-1 == i));
-        ble_watch_send_reply_packet(packet_buf, buf_len);
-        // if end of sentence get next, else inc position
-        i++;
-        // gps_send_msg(buf);
+            bytes_got,
+            false);
+        ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+        //nrf_delay_ms(10);
+        nrf_delay_ms(100);
+
+        nrf_gpio_pin_toggle(PIN_LED_2); // FIXME remove
+
+        memset(buf, 0, BUF_LEN);
+        memset(packet_buf, 0, PACKET_BUF_LEN);
+        bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
     }
-    while (i < loopNum);
 
-    memset(packet_buf, 0, PACKET_BUF_LEN); 
-    memset(buf, 0, buf_len); 
-    // Check to see if its the end of the sentence
+    nrf_gpio_pin_clear(PIN_LED_1); // FIXME remove
+    nrf_gpio_pin_clear(PIN_LED_2); // FIXME remove
+    nrf_gpio_pin_clear(PIN_LED_3); // FIXME remove
+    nrf_delay_ms(10000); // FIXME
 
-    // copy over contents to buffer
-    // FIXME uncomment: uart_adapter_read(buf, buf_len);
+    // Send terminal packet with no data
+    memset(buf, 0, BUF_LEN);
+    memset(packet_buf, 0, PACKET_BUF_LEN);
+
     packets_build_reply_packet(
-    packet_buf,
-    PACKET_TYPE_REPLY_GPS_LOG,
-    buf,
-    17,
-    (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+        packet_buf,
+        PACKET_TYPE_REPLY_GPS_LOG,
+        buf,
+        0,
+        true);
+    ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+    nrf_delay_ms(10);
+
+    nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
+    nrf_gpio_pin_set(PIN_LED_2); // FIXME remove
+    nrf_gpio_pin_set(PIN_LED_3); // FIXME remove
 
     timer_start_1hz_periodic_0();
-
-    nrf_gpio_pin_toggle(PIN_LED_2);
 }
 
 /**
@@ -415,10 +409,10 @@ int main(void)
 
     // TODO
     // Init UART, GPS
-    //uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
+    uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
     //gps_init();
     //gps_config();
-    //gps_enable();
+    gps_enable();
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC); // TODO test
 
     // Init BLE

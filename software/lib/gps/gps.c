@@ -27,11 +27,12 @@
 #include "uart_adapter.h"
 
 #define MAX_SENTENCE_LEN    130
-#define LOG_DUMP_LEN        256
-// TODO make log dump len 256 8192
+#define LOG_DUMP_LEN        8192
+
+#include "nrf_gpio.h" // FIXME remove
+#include "boards.h" // FIXME remove
 
 
-//static char gps_buffer[MAX_SENTENCE_LEN];
 static char gps_buffer[LOG_DUMP_LEN];
 static uint32_t gps_log_dump_len;
 
@@ -103,6 +104,9 @@ static uint8_t get_sentence(char * buf, uint8_t buf_len)
     ++idx;
     uart_adapter_read(&buf[idx], 1);
     ++idx;
+
+    nrf_gpio_pin_toggle(PIN_LED_3);    
+
     return idx;
 }
 
