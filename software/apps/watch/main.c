@@ -46,6 +46,8 @@
 // Buffer used when sending notifications over BLE. 
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
+// TODO
+static gps_info_t gps_info;
 
 /**
  * Initialize the GPIO LED pins.
@@ -186,6 +188,44 @@ void task_1hz_0(void * arg_ptr)
 
     steps = watch_data_step.steps_offset + pedometer_get_steps();
     watch_data_step.steps = steps; 
+
+    bool got_gprmc = false;
+    bool got_gpgga = false;
+    if (gps_is_enabled()) {
+        while (!(got_gprmc && got_gpgga)) {
+            switch (gps_get_info(&gps_info)) { 
+                case GPS_TYPE_GPRMC:
+                    strcpy(watch_data_gps.longitude, gps_info.longitude); 
+                    strcpy(watch_data_gps.latitude, gps_info.latitude); 
+                    watch_data_gps.ground_speed =
+                        (uint32_t) (KNOT_IN_METERS_PER_SECOND * gps_info.speed); 
+                    got_gprmc = true;
+                    
+                    if (gps_info.hours < 5) {
+                        gps_info.hours = 24 + gps_info.hours - 5;
+                    }
+                    date_time_update_time_same_day(
+                        gps_info.hours, gps_info.minutes, gps_info.seconds);
+                    break;
+                case GPS_TYPE_GPGGA:
+                    strcpy(watch_data_gps.longitude, gps_info.longitude); 
+                    strcpy(watch_data_gps.latitude, gps_info.latitude); 
+                    watch_data_gps.altitude = gps_info.altitude; 
+                    got_gpgga = true;
+                    break;
+                case GPS_TYPE_NO_FIX:
+                    nrf_gpio_pin_toggle(PIN_LED_2);
+                    // Not worth trying
+                    got_gprmc = true;
+                    got_gpgga = true;
+                    break;
+                case GPS_TYPE_INVALID:
+                    nrf_gpio_pin_toggle(PIN_LED_3);
+                    break;
+            }
+        }
+    }
+
     state_machine_refresh_screen();
     
     nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
@@ -199,6 +239,11 @@ static void GPS_log_helper()
 {
     uint8_t BUF_LEN = 18;
     uint8_t buf[BUF_LEN];
+
+    bool was_enabled = gps_is_enabled();
+    if (!was_enabled) {
+        gps_enable();
+    }
 
     timer_stop_1hz_periodic_0();
 
@@ -250,6 +295,10 @@ static void GPS_log_helper()
     nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
     nrf_gpio_pin_set(PIN_LED_2); // FIXME remove
     nrf_gpio_pin_set(PIN_LED_3); // FIXME remove
+
+    if (!was_enabled) {
+        gps_disable();
+    }
 
     timer_start_1hz_periodic_0();
 }
@@ -410,10 +459,11 @@ int main(void)
     // TODO
     // Init UART, GPS
     uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
-    //gps_init();
+    gps_init();
     //gps_config();
-    gps_enable();
+    //gps_enable();
     //gps_get_info(&gps_info, GPS_TYPE_GPRMC); // TODO test
+    gps_disable();
 
     // Init BLE
     ble_init(request_handler, state_machine_on_ble_adv_con);

@@ -65,11 +65,13 @@
 
 
 // Sentence types we care about
-#define GPS_TYPE_GPRMC 0 // Has long, lat, time, speed
-#define GPS_TYPE_GPGGA 1 // Has long, lat, time, altitude
+#define GPS_TYPE_INVALID    0 
+#define GPS_TYPE_NO_FIX     1
+#define GPS_TYPE_GPRMC      2 // Has long, lat, time, speed
+#define GPS_TYPE_GPGGA      3 // Has long, lat, time, altitude
 
 // TODO would be great to not use a float
-//#define KNOT_IN_METERS_PER_SECOND 0.514444F
+#define KNOT_IN_METERS_PER_SECOND 0.514444F
 
 
 #define GPS_LAT_LONG_LEN    20
@@ -79,11 +81,10 @@ typedef struct gps_info_struct {
     // Altitude (meters) relative to sea level
     int32_t altitude; 
     // Ground speed (Knots)
-    // FIXME change this tonight so that it is in some kind of meters unit as some kind of unsigned integer unit
     float speed;
     // Coordinates formated like "083 44.1917 W" null terminated
-    char latitude[16]; 
-    char longitude[16]; 
+    char latitude[14]; 
+    char longitude[14]; 
     // Time (UTC)
     uint8_t hours;
     uint8_t minutes;
@@ -95,6 +96,11 @@ typedef struct gps_info_struct {
  * Initialize the GPS module.
  */
 extern void gps_init();
+
+/**
+ * TODO
+ */
+bool gps_is_enabled();
 
 /**
  * Turn on the GPS module. 
@@ -113,8 +119,9 @@ extern void gps_config();
 
 /** 
  * Get information from the GPS module. 
+    TODO
  */
-extern void gps_get_info(gps_info_t * info_ptr, int type);
+extern int gps_get_info(gps_info_t * info_ptr);
 
 /**
  * Send a message string (must be null terminated) to the GPS module.

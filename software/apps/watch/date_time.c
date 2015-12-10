@@ -65,10 +65,10 @@ void date_time_init(void (*on_minute_hour_change)(void),
     memset(&date_time, 0, sizeof(date_time));
     
     // Default date/time
-    date_time.hours = 5; 
-    date_time.minutes = 28; 
+    date_time.hours = 12; 
+    date_time.minutes = 0; 
     date_time.seconds = 0; 
-    date_time.day_num = 9;
+    date_time.day_num = 10;
     date_time.month_num = 12;
     date_time.year_2digit = 15;
     update_day_month_str();
@@ -134,4 +134,13 @@ void date_time_increment_second()
     if (min_update) {
         on_min_hr_change();
     }
+}
+
+void date_time_update_time_same_day(uint8_t hours, uint8_t minutes,
+                                    uint8_t seconds)
+{
+    date_time.hours = hours; 
+    date_time.minutes = minutes; 
+    date_time.seconds = seconds; 
+    on_min_hr_change();
 }

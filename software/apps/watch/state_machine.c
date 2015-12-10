@@ -35,6 +35,9 @@
 #include "watch_data.h"
 #include "gps.h"
 
+#include "boards.h" // FIXME remove
+#include "nrf_gpio.h" // FIXME remove
+
 
 // The current state of the state machine
 static enum state_machine_state_enum current_state;
@@ -119,8 +122,35 @@ void state_machine_on_button_0()
 
         case STATE_RUN_TIMER_OFF:
             current_state = STATE_GPS;
+            //timer_stop_1hz_periodic_0(); // FIXME remove
+            if (!watch_data_gps_logging_on) {
+                gps_enable();
+            }
             lcd_clearDisplay();
             state_machine_refresh_screen();
+        
+            /* FIXME remove 
+            gps_info_t gps_info;
+            while (1) {
+                switch (gps_get_info(&gps_info)) {                                          
+                    case GPS_TYPE_GPRMC:
+                        strcpy(watch_data_gps.longitude, gps_info.longitude);               
+                        strcpy(watch_data_gps.latitude, gps_info.latitude);                 
+                        watch_data_gps.ground_speed =
+                            (uint32_t) (KNOT_IN_METERS_PER_SECOND * gps_info.speed);           
+
+                        state_machine_refresh_screen();
+                        break;
+                    case GPS_TYPE_GPGGA:
+                        strcpy(watch_data_gps.longitude, gps_info.longitude);               
+                        strcpy(watch_data_gps.latitude, gps_info.latitude);                 
+                        watch_data_gps.altitude = gps_info.altitude;                        
+    
+                        state_machine_refresh_screen();
+                        break;
+                }        
+            }
+            */ 
             break;
 
         case STATE_RUN_TIMER_ON:
@@ -134,6 +164,10 @@ void state_machine_on_button_0()
 
         case STATE_GPS:
             current_state = STATE_STOPWATCH_TIMER_OFF;
+            if (!watch_data_gps_logging_on) {
+                gps_disable();
+            }
+            //timer_start_1hz_periodic_0(); // FIXME remove
             lcd_clearDisplay();
             state_machine_refresh_screen();
             break;
@@ -206,13 +240,13 @@ void state_machine_on_button_1()
 
         case STATE_GPS:
             // Enable or disable gps logging
-            if (watch_data_tracking_on) {
+            if (watch_data_gps_logging_on) {
                 gps_stop_logging();
-                watch_data_tracking_on = false;
+                watch_data_gps_logging_on = false;
             } else {
                 gps_erase_log();
                 gps_start_logging();
-                watch_data_tracking_on = true;
+                watch_data_gps_logging_on = true;
             }
             state_machine_refresh_screen();
             break;
@@ -243,9 +277,9 @@ void state_machine_on_button_2()
     lcd_clearDisplay();
     lcd_builder_build_sleep_message();
     lcd_refresh();
-    if (watch_data_tracking_on) {
+    if (watch_data_gps_logging_on) {
         gps_stop_logging();
-        watch_data_tracking_on = false;
+        watch_data_gps_logging_on = false;
     }
     flash_store_step_count(&watch_data_step.steps);
     flash_store_step_yesterday(&watch_data_step.yesterday_steps);
