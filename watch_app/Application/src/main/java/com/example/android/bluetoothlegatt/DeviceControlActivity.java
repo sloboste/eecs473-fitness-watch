@@ -70,6 +70,9 @@ public class DeviceControlActivity extends Activity {
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
 
+    private double lat = 42.291;
+    private double lon = -83.715;
+
     ArrayList<String> SavedPacketData = new ArrayList<>();
 
     // Code to manage Service lifecycle.
@@ -272,7 +275,7 @@ public class DeviceControlActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Open Locaion in Google Maps
-                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", 42.291, -83.715, 42.291, -83.715);
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", lat, lon, lat, lon);
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
             }
@@ -417,25 +420,41 @@ public class DeviceControlActivity extends Activity {
                     SavedPacketData.clear();
                 }
                 if (packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT) {
-                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
                     display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvPed.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
-                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
                     display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     //append percent sign
                     tvBat.setText(display_data+"%");
                     pbBattery.setProgress(Integer.parseInt(display_data));
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
-                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
-                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
+                    display_data = hex2s(display_data);
                     tvGPSlat.setText(display_data);
+                    //change d m mf to df
+                    int degree = Integer.parseInt(display_data.substring(0,3));
+                    double minute = Double.parseDouble(display_data.substring(4, 11));
+                    char sign = display_data.charAt(display_data.length()-1);
+                    lat = degree + minute/60;
+
+                    if(sign == 'W' || sign == 'S'){
+                        lat = -lat;
+                    }
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
-                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
-                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
+                    display_data = hex2s(display_data);
                     tvGPSlong.setText(display_data);
+                    //change d m mf to df
+                    int degree = Integer.parseInt(display_data.substring(0,3));
+                    double minute = Double.parseDouble(display_data.substring(4, 11));
+                    char sign = display_data.charAt(display_data.length() - 1);
+                    lon = degree + minute/60;
+
+                    if(sign == 'W' || sign == 'S'){
+                        lon = -lon;
+                    }
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_SPEED) {
-                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
                     display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvGPSs.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
