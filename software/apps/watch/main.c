@@ -46,7 +46,7 @@
 // Buffer used when sending notifications over BLE. 
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
-// TODO
+// Holds data from GPS
 static gps_info_t gps_info;
 
 /**
@@ -214,26 +214,21 @@ void task_1hz_0(void * arg_ptr)
                     got_gpgga = true;
                     break;
                 case GPS_TYPE_NO_FIX:
-                    nrf_gpio_pin_toggle(PIN_LED_2);
-                    // Not worth trying
+                    // No data to get, just break out
                     got_gprmc = true;
                     got_gpgga = true;
                     break;
                 case GPS_TYPE_INVALID:
-                    nrf_gpio_pin_toggle(PIN_LED_3);
                     break;
             }
         }
     }
 
     state_machine_refresh_screen();
-    
-    nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
 }
 
-// TODO clean up
 /**
- * Called in the LOG case
+ * Handle a GPS log dump request.
  */
 static void GPS_log_helper()
 {
@@ -246,8 +241,6 @@ static void GPS_log_helper()
     }
 
     timer_stop_1hz_periodic_0();
-
-    nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
 
     gps_flash_dump();
     
@@ -264,20 +257,12 @@ static void GPS_log_helper()
             bytes_got,
             false);
         ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
-        //nrf_delay_ms(10);
         nrf_delay_ms(100);
-
-        nrf_gpio_pin_toggle(PIN_LED_2); // FIXME remove
 
         memset(buf, 0, BUF_LEN);
         memset(packet_buf, 0, PACKET_BUF_LEN);
         bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
     }
-
-    nrf_gpio_pin_clear(PIN_LED_1); // FIXME remove
-    nrf_gpio_pin_clear(PIN_LED_2); // FIXME remove
-    nrf_gpio_pin_clear(PIN_LED_3); // FIXME remove
-    nrf_delay_ms(10000); // FIXME
 
     // Send terminal packet with no data
     memset(buf, 0, BUF_LEN);
@@ -290,11 +275,6 @@ static void GPS_log_helper()
         0,
         true);
     ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
-    nrf_delay_ms(10);
-
-    nrf_gpio_pin_set(PIN_LED_1); // FIXME remove
-    nrf_gpio_pin_set(PIN_LED_2); // FIXME remove
-    nrf_gpio_pin_set(PIN_LED_3); // FIXME remove
 
     if (!was_enabled) {
         gps_disable();

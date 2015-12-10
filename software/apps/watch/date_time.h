@@ -59,7 +59,11 @@ extern void date_time_init(void (*on_minute_hour_change)(void),
 extern void date_time_increment_second();
 
 /**
- * TODO
+ * Update the current time without accounting for a day change.
+ *
+ * hours -- the new current hour.
+ * minutes -- the new current minute.
+ * seconds -- the new current second.
  */
 extern void date_time_update_time_same_day(uint8_t hours, uint8_t minutes,
                                            uint8_t seconds);

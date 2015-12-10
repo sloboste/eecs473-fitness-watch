@@ -360,7 +360,7 @@ void lcd_builder_build_top_bar(bool time)
     }
     lcd_setCursor(0,1);
 
-    // FIXME change back to battery icon
+    // FIXME change back to battery icon when fuel gauge works on PCB
     //lcd_transferBatteryLevel(watch_data_battery_level);
     lcd_transferBatteryLevel(70);
     //lcd_transferSmallNumInt(watch_data_battery_level);
