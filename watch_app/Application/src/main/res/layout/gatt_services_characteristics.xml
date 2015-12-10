@@ -318,7 +318,8 @@
         android:layout_height="395dp"
         android:text="tvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSl"
         android:textSize="18sp"
-        android:editable="true" />
+        android:editable="true"
+        android:visibility="invisible" />
 
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"

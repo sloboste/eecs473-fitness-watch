@@ -227,7 +227,7 @@ public class DeviceControlActivity extends Activity {
                         }
                     });
                     Thread.sleep(10000);
-                   /* while (!isInterrupted()) {
+                   while (!isInterrupted()) {
                         Thread.sleep(1000);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -260,7 +260,7 @@ public class DeviceControlActivity extends Activity {
 //                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
 //                            }
 //                        });
-                    }*/
+                    }
                 } catch (InterruptedException e) {
                 }
             }
@@ -394,8 +394,7 @@ public class DeviceControlActivity extends Activity {
                 display_data = data.substring(26, data.length());                                   //get data portion
                 display_data = display_data.replaceAll("\\s+", "");                                 //remove whitespace
                 display_data = display_data.substring(0, data_length * 2);
-                display_data = hex2s(display_data);
-                System.out.println(display_data);
+
                 //int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
                 //display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
             }catch(Exception ex){
@@ -410,27 +409,38 @@ public class DeviceControlActivity extends Activity {
                         //packet_data = String.format("%040x", new BigInteger(1, packet_data.getBytes(/*YOUR_CHARSET?*/)));
                         stringBuilder.append(packet_data);
                     }
-                    //display_data = String.format("%040x", new BigInteger(1, display_data.getBytes(/*YOUR_CHARSET?*/)));
+                    display_data = hex2s(display_data);
+                    System.out.println(display_data);
                     display_data = stringBuilder.append(display_data).toString();
 
                     //clear it for next use
                     SavedPacketData.clear();
                 }
                 if (packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT) {
+                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvPed.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
+                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     //append percent sign
                     tvBat.setText(display_data+"%");
                     pbBattery.setProgress(Integer.parseInt(display_data));
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
+                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvGPSlat.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
+                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvGPSlong.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_SPEED) {
+                    int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvGPSs.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
                     tvGPSl.setText(display_data);
-                    System.out.println("Full Dump: " + display_data);
+                    //System.out.println("Full Dump: " + display_data);
 
                     //copy data
                     ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -440,6 +450,8 @@ public class DeviceControlActivity extends Activity {
                 }
             }else{
                 //SavedPacketData.add(display_data);
+                display_data = hex2s(display_data);
+                System.out.println(display_data);
                 SavedPacketData.add(display_data);
             }
         }
