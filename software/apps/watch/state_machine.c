@@ -281,10 +281,10 @@ void state_machine_on_button_2()
         gps_stop_logging();
         watch_data_gps_logging_on = false;
     }
+    flash_store_date_time(&date_time);
     flash_store_step_count(&watch_data_step.steps);
     flash_store_step_yesterday(&watch_data_step.yesterday_steps);
     flash_store_step_goal(watch_data_step.goal);
-    flash_store_date_time(&date_time);
     nrf_delay_ms(1000);
     lcd_clearDisplay();
     sd_power_system_off();

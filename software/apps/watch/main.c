@@ -315,7 +315,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf,
                 PACKET_TYPE_REPLY_GPS_LATITUDE,
                 (void *) watch_data_gps.latitude,
-                sizeof(watch_data_gps.latitude),
+                sizeof(watch_data_gps.latitude), // FIXME use strlen
                 true); 
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send longitude
@@ -324,7 +324,7 @@ static ble_watch_request_handler_t request_handler(uint8_t * data, uint16_t len)
                 packet_buf, 
                 PACKET_TYPE_REPLY_GPS_LONGITUDE,
                 (void *) watch_data_gps.longitude,
-                sizeof(watch_data_gps.longitude),
+                sizeof(watch_data_gps.longitude), // FIXME use strlen
                 true);
             ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
             // Send speed
@@ -431,6 +431,12 @@ int main(void)
     // Init time keeping mechanism
     date_time_init(on_minute_change, on_day_change);
     flash_load_date_time(&date_time);
+    // FIXME date load/store broke...
+    date_time.day_num = 10;
+    date_time.month_num = 12;
+    date_time.year_2digit = 15;
+    update_day_month_str();
+    //----
 
     // Init SPI, LCD, and state machine
     spi_init(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_SS_PIN);

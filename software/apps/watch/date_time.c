@@ -43,7 +43,7 @@ static void (*on_dy_change)(void);
  * http://stackoverflow.com/questions/6385190/
  *                  correctness-of-sakamotos-algorithm-to-find-the-day-of-week
  */
-static void update_day_month_str()
+void update_day_month_str()
 {
     uint8_t day_of_week_num;
     uint16_t year;   

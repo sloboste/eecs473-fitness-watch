@@ -122,8 +122,9 @@ void flash_load_date_time(date_time_t * date_time_ptr)
     uint32_t error_code;
     error_code = pstorage_load((uint8_t *) date_time_ptr, &date_block_id,
                                sizeof(*date_time_ptr), 0);          
+                               //16, 0);          
     APP_ERROR_CHECK(error_code);
-    nrf_delay_ms(10);
+    nrf_delay_ms(50);
 }
 
 void flash_store_date_time(date_time_t * date_time_ptr)
@@ -131,6 +132,7 @@ void flash_store_date_time(date_time_t * date_time_ptr)
     uint32_t error_code;
     error_code = pstorage_update(&date_block_id, (uint8_t*) date_time_ptr,
                                  sizeof(*date_time_ptr), 0);
+                                 //16, 0);          
     APP_ERROR_CHECK(error_code);                                                
-    nrf_delay_ms(10);
+    nrf_delay_ms(50);
 }
