@@ -202,8 +202,9 @@ void task_1hz_0(void * arg_ptr)
                     got_gprmc = true;
                     
                     if (gps_info.hours < 5) {
-                        gps_info.hours = 24 + gps_info.hours - 5;
-                    }
+                        gps_info.hours = 24 + gps_info.hours;
+                    } 
+                    gps_info.hours -= 5;
                     date_time_update_time_same_day(
                         gps_info.hours, gps_info.minutes, gps_info.seconds);
                     break;
