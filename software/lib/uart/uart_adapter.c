@@ -28,8 +28,7 @@
 #include "uart_adapter.h"
 
 #define UART_TX_BUF_SIZE 128 
-#define UART_RX_BUF_SIZE 2048
-//4096
+#define UART_RX_BUF_SIZE 512 
 
 
 /**

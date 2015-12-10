@@ -28,8 +28,8 @@ APPLICATION_SRCS += nrf_delay.c
 
 # You can change the board type with this variable
 ifndef BOARD_NAME
-    #BOARD_NAME = PCB
-    BOARD_NAME = BLUE_DEV_BOARD
+    BOARD_NAME = PCB
+    #BOARD_NAME = BLUE_DEV_BOARD
 endif
 
 ifndef TARGET

@@ -72,7 +72,7 @@ extern void flash_store_step_yesterday(uint32_t * step_yesterday_ptr);
  *
  * step_goal_str -- string in which to load the step goal.
  */
-extern void flash_store_load_goal(char * step_goal_str);
+extern void flash_store_load_step_goal(char * step_goal_str);
 
 /**
  * Store the current step goal into flash.

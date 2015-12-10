@@ -8,6 +8,7 @@
 #include "app_error.h"
 #include "nrf.h"
 #include "softdevice_handler.h"
+#include "nrf_delay.h"
 
 #include "nrf_gpio.h"
 #include "app_gpiote.h"
@@ -32,7 +33,7 @@
 #include "flash.h"
 
 #include "uart_adapter.h"
-//#include "gps.h"
+#include "gps.h"
 
 #include "boards.h"
 
@@ -45,6 +46,8 @@
 // Buffer used when sending notifications over BLE. 
 static uint8_t packet_buf[PACKET_BUF_LEN];
 
+// Holds data from GPS
+static gps_info_t gps_info;
 
 /**
  * Initialize the GPIO LED pins.
@@ -185,79 +188,99 @@ void task_1hz_0(void * arg_ptr)
 
     steps = watch_data_step.steps_offset + pedometer_get_steps();
     watch_data_step.steps = steps; 
+
+    bool got_gprmc = false;
+    bool got_gpgga = false;
+    if (gps_is_enabled()) {
+        while (!(got_gprmc && got_gpgga)) {
+            switch (gps_get_info(&gps_info)) { 
+                case GPS_TYPE_GPRMC:
+                    strcpy(watch_data_gps.longitude, gps_info.longitude); 
+                    strcpy(watch_data_gps.latitude, gps_info.latitude); 
+                    watch_data_gps.ground_speed =
+                        (uint32_t) (KNOT_IN_METERS_PER_SECOND * gps_info.speed); 
+                    got_gprmc = true;
+                    
+                    if (gps_info.hours < 5) {
+                        gps_info.hours = 24 + gps_info.hours - 5;
+                    }
+                    date_time_update_time_same_day(
+                        gps_info.hours, gps_info.minutes, gps_info.seconds);
+                    break;
+                case GPS_TYPE_GPGGA:
+                    strcpy(watch_data_gps.longitude, gps_info.longitude); 
+                    strcpy(watch_data_gps.latitude, gps_info.latitude); 
+                    watch_data_gps.altitude = gps_info.altitude; 
+                    got_gpgga = true;
+                    break;
+                case GPS_TYPE_NO_FIX:
+                    // No data to get, just break out
+                    got_gprmc = true;
+                    got_gpgga = true;
+                    break;
+                case GPS_TYPE_INVALID:
+                    break;
+            }
+        }
+    }
+
     state_machine_refresh_screen();
-    
-    nrf_gpio_pin_toggle(PIN_LED_1); // FIXME remove
 }
 
-// TODO clean up
 /**
- * Called in the LOG case
+ * Handle a GPS log dump request.
  */
 static void GPS_log_helper()
 {
+    uint8_t BUF_LEN = 18;
+    uint8_t buf[BUF_LEN];
+
+    bool was_enabled = gps_is_enabled();
+    if (!was_enabled) {
+        gps_enable();
+    }
+
     timer_stop_1hz_periodic_0();
-    // Used in Log Dump
-    uint16_t loopNum;
-    uint16_t i;
-    uint8_t buf_len;
-    uint8_t buf[18];
-    memset(packet_buf, 0, PACKET_BUF_LEN); 
-    memset(buf, 0, 18); 
-    // FIXME uncomment: loopNum = gps_flash_dump_partial(buf);
-    i = 0;
-    buf_len = 16;
 
-    // copy over contents to buffer
-    // FIXME uncomment: uart_adapter_read(buf, buf_len);
-    // build and send packet
-    packets_build_reply_packet(
-        packet_buf,
-        PACKET_TYPE_REPLY_GPS_LOG,
-        buf,
-        17,
-        (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+    gps_flash_dump();
     
-    do
-    {
-        memset(packet_buf, 0, PACKET_BUF_LEN); 
-        memset(buf, 0, buf_len); 
-        // Check to see if its the end of the sentence
-
-        // copy over contents to buffer
-        // FIXME uncomment: uart_adapter_read(buf, buf_len);
-        // build and send packet
+    // Send log dump data
+    uint8_t bytes_got;
+    memset(buf, 0, BUF_LEN);
+    memset(packet_buf, 0, PACKET_BUF_LEN);
+    bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
+    while (bytes_got) {
         packets_build_reply_packet(
             packet_buf,
             PACKET_TYPE_REPLY_GPS_LOG,
             buf,
-            buf_len,
-            (loopNum-1 == i));
-        ble_watch_send_reply_packet(packet_buf, buf_len);
-        // if end of sentence get next, else inc position
-        i++;
-        // gps_send_msg(buf);
+            bytes_got,
+            false);
+        ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+        nrf_delay_ms(100);
+
+        memset(buf, 0, BUF_LEN);
+        memset(packet_buf, 0, PACKET_BUF_LEN);
+        bytes_got = gps_get_log_dump_bytes(buf, BUF_LEN);
     }
-    while (i < loopNum);
 
-    memset(packet_buf, 0, PACKET_BUF_LEN); 
-    memset(buf, 0, buf_len); 
-    // Check to see if its the end of the sentence
+    // Send terminal packet with no data
+    memset(buf, 0, BUF_LEN);
+    memset(packet_buf, 0, PACKET_BUF_LEN);
 
-    // copy over contents to buffer
-    // FIXME uncomment: uart_adapter_read(buf, buf_len);
     packets_build_reply_packet(
-    packet_buf,
-    PACKET_TYPE_REPLY_GPS_LOG,
-    buf,
-    17,
-    (loopNum-1 == i));
-    ble_watch_send_reply_packet(packet_buf, buf_len);
+        packet_buf,
+        PACKET_TYPE_REPLY_GPS_LOG,
+        buf,
+        0,
+        true);
+    ble_watch_send_reply_packet(packet_buf, PACKET_BUF_LEN);
+
+    if (!was_enabled) {
+        gps_disable();
+    }
 
     timer_start_1hz_periodic_0();
-
-    nrf_gpio_pin_toggle(PIN_LED_2);
 }
 
 /**
@@ -407,24 +430,20 @@ int main(void)
 
     // Init time keeping mechanism
     date_time_init(on_minute_change, on_day_change);
-    //flash_load_date_time(&date_time); // FIXME uncomment when done testing
+    flash_load_date_time(&date_time);
 
     // Init SPI, LCD, and state machine
     spi_init(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_SS_PIN);
     state_machine_init();
 
-    // TODO
     // Init UART, GPS
-    //uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
-    //gps_init();
-    //gps_config();
-    //gps_enable();
-    //gps_get_info(&gps_info, GPS_TYPE_GPRMC); // TODO test
+    uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
+    gps_init();
+    gps_disable();
 
     // Init BLE
     ble_init(request_handler, state_machine_on_ble_adv_con);
 
-    // TODO decide if this will be started immediately
     // Start the timer for seconds time keeping and sensor polling
     // This must be the last thing before the main loop
     timer_start_1hz_periodic_0();

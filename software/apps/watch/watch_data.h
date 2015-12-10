@@ -27,7 +27,7 @@
 // Holds GPS data in an LCD friendly format.
 typedef struct gps_data_struct {
    uint32_t ground_speed;
-   uint32_t altitude;
+   int32_t altitude;
    char latitude[14];
    char longitude[14];
 } watch_data_gps_t;
@@ -68,6 +68,9 @@ uint8_t watch_data_battery_level;
 
 // The current bluetooth state (one of ble_config's BLE_STATE_X).
 uint8_t watch_data_bluetooth_state;
+
+// GPS logging state on/off
+bool watch_data_gps_logging_on;
 
 // The current heart rate in BPM from the heart rate monitor.
 uint32_t watch_data_heart_rate;

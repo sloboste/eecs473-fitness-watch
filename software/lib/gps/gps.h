@@ -25,10 +25,8 @@
  * a checksum calculator such as http://www.hhhh.org/wiml/proj/nmeaxor.html
  */
 
-#ifndef __GPS_H
-#define __GPS_H
-
-// TODO Clean this up
+#ifndef GPS_H
+#define GPS_H
 
 // How fast the GPS module outputs sentences
 #define PMTK_SET_NMEA_UPDATE_1HZ  "$PMTK220,1000*1F"
@@ -51,24 +49,21 @@
 // Do not output antenna status updates
 #define PGCMD_NOANTENNA "$PGCMD,33,0*6D" 
 
-// TODO determine if we will use all of these ---
 #define PMTK_LOCUS_STARTLOG  "$PMTK185,0*22"
 #define PMTK_LOCUS_STOPLOG "$PMTK185,1*23"
-#define PMTK_LOCUS_STARTSTOPACK "$PMTK001,185,3*3C"
-#define PMTK_LOCUS_QUERY_STATUS "$PMTK183*38"
 #define PMTK_LOCUS_ERASE_FLASH "$PMTK184,1*22"
 #define PMTK_LOCUS_GET_FLASH "$PMTK622,1*29"
 #define LOCUS_OVERLAP 0
 #define LOCUS_FULLSTOP 1
-// ---
 
 
 // Sentence types we care about
-#define GPS_TYPE_GPRMC 0 // Has long, lat, time, speed
-#define GPS_TYPE_GPGGA 1 // Has long, lat, time, altitude
+#define GPS_TYPE_INVALID    0 
+#define GPS_TYPE_NO_FIX     1
+#define GPS_TYPE_GPRMC      2 // Has long, lat, time, speed
+#define GPS_TYPE_GPGGA      3 // Has long, lat, time, altitude
 
-// TODO would be great to not use a float
-//#define KNOT_IN_METERS_PER_SECOND 0.514444F
+#define KNOT_IN_METERS_PER_SECOND 0.514444F
 
 
 #define GPS_LAT_LONG_LEN    20
@@ -78,11 +73,10 @@ typedef struct gps_info_struct {
     // Altitude (meters) relative to sea level
     int32_t altitude; 
     // Ground speed (Knots)
-    // FIXME change this tonight so that it is in some kind of meters unit as some kind of unsigned integer unit
     float speed;
     // Coordinates formated like "083 44.1917 W" null terminated
-    char latitude[16]; 
-    char longitude[16]; 
+    char latitude[14]; 
+    char longitude[14]; 
     // Time (UTC)
     uint8_t hours;
     uint8_t minutes;
@@ -94,6 +88,11 @@ typedef struct gps_info_struct {
  * Initialize the GPS module.
  */
 extern void gps_init();
+
+/**
+ * Returns true if the GPS is not in standby mode.
+ */
+bool gps_is_enabled();
 
 /**
  * Turn on the GPS module. 
@@ -112,13 +111,50 @@ extern void gps_config();
 
 /** 
  * Get information from the GPS module. 
+ * 
+ * info_ptr -- pointer to the struct in which to place the data got.
+ *
+ * Returns the type sentence data contained in the struct. 
  */
-extern void gps_get_info(gps_info_t * info_ptr, int type);
-
+extern int gps_get_info(gps_info_t * info_ptr);
 
 /**
  * Send a message string (must be null terminated) to the GPS module.
  */
 extern void gps_send_msg(char * msg);
+
+/**
+ * Erase the contents of the GPS log flash memory.
+ */
+extern void gps_erase_log();
+
+/**
+ * Enable logging on the GPS.
+ */
+extern void gps_start_logging();
+
+/**
+ * Disable logging on the GPS.
+ */
+extern void gps_stop_logging();
+
+/**
+ * Tell the GPS module to dump the contents of its log flash memory.
+ *
+ * Returns the number of sentences contained in the dump.
+ */
+extern uint16_t gps_flash_dump();
+
+/**
+ * Get the next chunk of the log dump. Call this in a loop until it returns 0
+ * in order to get the full log dump.
+ *
+ * buf -- buffer in which to put the bytes from the log. 
+ * num_bytes_desired -- how many bytes you want put into buf. 
+ * 
+ * Returns the number of bytes put into buf. This may be less than
+ * num_bytes_desired. Returns 0 when there are no more bytes in the log.
+ */
+extern uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired);
 
 #endif

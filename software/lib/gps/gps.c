@@ -23,29 +23,41 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "nrf_gpio.h"
+#include "nrf_delay.h"
 
 #include "gps.h"
 #include "uart_adapter.h"
 
-#define MAX_SENTENCE_LEN 130
+#define MAX_SENTENCE_LEN    130
+#define LOG_DUMP_LEN        11000 // 256 for dev board
 
 
-static char gps_buffer[MAX_SENTENCE_LEN];
+static char gps_buffer[LOG_DUMP_LEN];
+static uint32_t gps_log_dump_len;
+static bool enabled;
+
 
 void gps_init()
 {
+    enabled = false;
+}
 
+bool gps_is_enabled()
+{
+    return enabled;
 }
 
 void gps_enable()
 {
-    gps_send_msg(PMTK_AWAKE);
+    gps_send_msg("xxxxx");
+    nrf_delay_ms(250);
+    enabled = true;
 }
 
 void gps_disable()
 {
     gps_send_msg(PMTK_STANDBY);
+    enabled = false;
 }
 
 void gps_config()
@@ -73,10 +85,10 @@ static int sentence_type(char * buf)
          (buf[3] == 'G') && (buf[4] == 'G') && (buf[5] == 'A') ) {     
         return GPS_TYPE_GPGGA;                                                           
     }   
-    return -1;
+    return GPS_TYPE_INVALID;
 }
 
-void get_sentence(char * buf, uint8_t buf_len)
+static uint8_t get_sentence(char * buf, uint8_t buf_len)
 {
     memset(buf, 0, buf_len);
     // Find start    
@@ -100,7 +112,8 @@ void get_sentence(char * buf, uint8_t buf_len)
     ++idx;
     uart_adapter_read(&buf[idx], 1);
     ++idx;
-    //return idx;
+
+    return idx;
 }
 
 static void parse_time(char * buf, uint8_t * hours_ptr, uint8_t * minutes_ptr,
@@ -146,8 +159,8 @@ static void parse_coordinate(char * buf, char * coord)
 
 static bool parse_gpgga(char * buf, gps_info_t * gps_info_ptr)
 {
-    // $GPGGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx
-    //        time      lat       long       fix      alt 
+    // $GPGGA,hhmmss.ss,lllll.llll,a,yyyy.yyyy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx
+    //        time      long          lat       fix      alt 
 
     char * start = buf;
     char * end;
@@ -160,12 +173,15 @@ static bool parse_gpgga(char * buf, gps_info_t * gps_info_ptr)
                &gps_info_ptr->seconds);
     start = strchr(start, ',') + 1;
 
+    // Get longitude 
+    if (start[1] == ',') {
+        return false;
+    }
+    parse_coordinate(start, gps_info_ptr->longitude); 
+    start = strchr(start, ',') + 1;
+
     // Get lattitude 
     parse_coordinate(start, gps_info_ptr->latitude); 
-    start = strchr(start, ',') + 1;
-    
-    // Get longitude 
-    parse_coordinate(start, gps_info_ptr->longitude); 
     start = strchr(start, ',') + 1;
 
     // Skip over stuff
@@ -184,8 +200,8 @@ static bool parse_gpgga(char * buf, gps_info_t * gps_info_ptr)
 
 static bool parse_gprcm(char * buf, gps_info_t * gps_info_ptr)
 {
-    // $GPRMC,hhmmss.ss,A,llll.ll,a,yyyyy.yy,a,x.x,x.x,ddmmyy,x.x,a*hh
-    //                    lat       long
+    // $GPRMC,hhmmss.ss,A,llll.llll,a,yyyyy.yyyy,a,x.x,x.x,ddmmyy,x.x,a*hh
+    //                    lat         long
 
     char * start = buf;
     char * end;
@@ -203,13 +219,13 @@ static bool parse_gprcm(char * buf, gps_info_t * gps_info_ptr)
         return false; 
     }
     start = strchr(start, ',') + 1;
+    
+    // Get longitude 
+    parse_coordinate(start, gps_info_ptr->longitude); 
+    start = strchr(start, ',') + 1;
 
     // Get lattitude 
     parse_coordinate(start, gps_info_ptr->latitude); 
-    start = strchr(start, ',') + 1;
-    
-    // Get longitude and format like "12 34.56 N" 
-    parse_coordinate(start, gps_info_ptr->longitude); 
     start = strchr(start, ',') + 1;
 
     // Ground speed in Knots
@@ -220,125 +236,59 @@ static bool parse_gprcm(char * buf, gps_info_t * gps_info_ptr)
     return true;
 }
 
-void gps_get_info(gps_info_t * info_ptr, int type)
+int gps_get_info(gps_info_t * info_ptr)
 {
     memset(info_ptr, 0, sizeof(*info_ptr));
-
-    do {
-        get_sentence(gps_buffer, 128); 
-    } while (sentence_type(gps_buffer) != type);
-
+    
+    int type;
+    memset(gps_buffer, 0, 128);
+    get_sentence(gps_buffer, 128);
+    type = sentence_type(gps_buffer);
     switch (type) {
-    case GPS_TYPE_GPRMC:
-        parse_gprcm(gps_buffer, info_ptr);
-        break;
-    case GPS_TYPE_GPGGA:
-        parse_gpgga(gps_buffer, info_ptr);
-        break;
+        case GPS_TYPE_GPRMC:
+            if (!parse_gprcm(gps_buffer, info_ptr)) {
+                type = GPS_TYPE_NO_FIX;
+            }
+            break;
+        case GPS_TYPE_GPGGA:
+            if (!parse_gpgga(gps_buffer, info_ptr)) {
+                type = GPS_TYPE_NO_FIX;
+            }
+            break;
     }
+    return type;
 }
 
-// uint16_t gps_flash_dump_partial(uint8_t * buf, uint8_t * buf_len)
-// {
-//     static uint16_t numSentences = 0;
-//     static uint8_t sentencePos = 0;
-//     static uint8_t sentenceSize = 0;
-//     // Initiate flash dump
-//     // Init packetByteCount to 0;
-
-//     // used in for loops
-//     int i = 0;
-//     int j = 0;
-
-//     // Checks to see if its mid dump, if not then begin dump
-//     if (numSentences == 0)
-//     {   
-//         // send dump message
-//         //nrf_gpio_pin_clear(PIN_LED_1);
-//         gps_send_msg(PMTK_LOCUS_GET_FLASH);
-//         // keeps track of sentence size
-//         sentenceSize = 0;
-//         uint16_t multiplier = 1;
-//         //Read in byte from rx_buff and place in buffer (This eats through the buffer until start of dump)
-//         sentenceSize = get_sentence(gps_buffer, 128);
-//         while (gps_buffer[5] != 'L' || gps_buffer[6] != 'O' || gps_buffer[7] != 'X' || gps_buffer[8] != ',' || gps_buffer[9] != '0')
-//         {
-//             sentenceSize = get_sentence(gps_buffer, 128);
-//         }
-//         //Read in the num sentences that will be sent
-//         for (i = 0; gps_buffer[i+12] != '*' ;i++)
-//         {
-//             multiplier = multiplier*10;
-//         }
-//         for (j = 0; j < i ;j++)
-//         {
-//             //multiplier = multiplier/10;
-//             numSentences += multiplier*(((int)gps_buffer[j+11])-48);
-//         }
-//         // resets position in sentence
-//         sentencePos = 0;
-//         // sets end of dump flag to false
-//         sentenceSize = get_sentence(gps_buffer, 128);
-
-//     }
-
-
-//     for (i = 0; i < *buf_len; i++)
-//     {
-//         // nrf_gpio_pin_toggle(PIN_LED_3);
-//         // nrf_delay_ms(500);
-//         if(sentencePos + i == sentenceSize)
-//         {
-//             // nrf_gpio_pin_toggle(PIN_LED_4);
-//             // nrf_delay_ms(500);
-//             numSentences--;
-//             if (numSentences != 0)
-//             {
-//                 // get a new sentence
-//                 sentenceSize = get_sentence(gps_buffer, 128);
-//                 // -i to make up for +i a few lines below.. init to 0
-//                 sentencePos = 0 - i;
-//             }
-//             else
-//             {
-//                 nrf_gpio_pin_toggle(PIN_LED_1);
-//                 break;
-//             }
-//         }
-//         else
-//         {
-//             // copy over buffer
-//             buf[i] = gps_buffer[sentencePos+i];
-//         }
-//     }
-//     *buf_len = i;
-//     sentencePos += i;
-//     return numSentences;
-// }
-
-uint16_t gps_flash_dump_partial(char * buf)
+uint16_t gps_flash_dump()
 {
-    uint16_t numSentences = 0;
-    // Initiate flash dump
-    // Init packetByteCount to 0;
+    gps_log_dump_len = 0;
+    char * gps_buffer_position = gps_buffer;
+
+    uint16_t num_sentences = 0;
+    uint8_t bytes_read; 
 
     // used in for loops
     int i = 0;
     int j = 0;
 
     // send dump message
-    //nrf_gpio_pin_clear(PIN_LED_1);
-    //nrf_gpio_pin_toggle(PIN_LED_1);
     gps_send_msg(PMTK_LOCUS_GET_FLASH);
-    //nrf_gpio_pin_toggle(PIN_LED_2);
+
     // keeps track of sentence size
     uint16_t multiplier = 1;
-    //Read in byte from rx_buff and place in buffer (This eats through the buffer until start of dump)
-    get_sentence(gps_buffer, 128);
-    while (gps_buffer[5] != 'L' || gps_buffer[6] != 'O' || gps_buffer[7] != 'X' || gps_buffer[8] != ',' || gps_buffer[9] != '0')
-    {
-        get_sentence(gps_buffer, 128);
-    }
+
+    // Read in byte from rx_buff and place in buffer
+    // This eats through the buffer until start of dump
+    // TODO use sentence_type function
+    do {
+        bytes_read = get_sentence(gps_buffer, MAX_SENTENCE_LEN);
+    } while (gps_buffer[5] != 'L' || gps_buffer[6] != 'O' ||
+             gps_buffer[7] != 'X' || gps_buffer[8] != ',' ||
+             gps_buffer[9] != '0');
+
+    gps_buffer_position += bytes_read;
+
+    // TODO use atoi
     //Read in the num sentences that will be sent
     for (i = 0; gps_buffer[i+11] != '*' ;i++)
     {
@@ -347,9 +297,71 @@ uint16_t gps_flash_dump_partial(char * buf)
     for (j = 0; j < i ;j++)
     {
         multiplier = multiplier/10;
-        numSentences += multiplier*(((int)gps_buffer[j+11])-48);
+        num_sentences += multiplier*(((int)gps_buffer[j+11])-48);
     }
-    memcpy(buf, gps_buffer, 17);
+    // -----
 
-    return (numSentences*8);
+    // Get the dump data
+    uint16_t k; 
+    for (k = 0; k < num_sentences; ++k) {
+        // Sanity check
+        if ((gps_buffer_position + MAX_SENTENCE_LEN) >=
+            (gps_buffer + LOG_DUMP_LEN)) {
+            // We don't have any more room! Store an incomplete log.
+            gps_log_dump_len = gps_buffer_position - gps_buffer;
+            return k + 1; 
+        }
+
+        // Read in sentence
+        bytes_read = get_sentence(gps_buffer_position, MAX_SENTENCE_LEN);
+        gps_buffer_position += bytes_read;
+    }
+
+    // Get the terminating $PMTKLOX sentence
+    bytes_read = get_sentence(gps_buffer_position, MAX_SENTENCE_LEN);
+    gps_buffer_position += bytes_read;
+
+    // Fake the ACK sentence (the LOCUS parser needs this)
+    char * fake_ack = "$PMTK001,622,3*36";
+    memcpy(gps_buffer_position, fake_ack, strlen(fake_ack));
+    gps_buffer_position += strlen(fake_ack);
+
+    gps_log_dump_len = gps_buffer_position - gps_buffer;
+
+    return num_sentences + 3;
+}
+
+uint8_t gps_get_log_dump_bytes(uint8_t * buf, uint8_t num_bytes_desired)
+{
+    static uint32_t bytes_sent = 0; 
+    uint32_t bytes_remaining = gps_log_dump_len - bytes_sent; 
+    uint8_t * gps_buffer_position = gps_buffer + bytes_sent;
+    
+    if (bytes_remaining == 0) {
+        bytes_sent = 0; // Reset after whole log transfered
+        return 0;
+    } else if (bytes_remaining < num_bytes_desired) {
+        memcpy(buf, gps_buffer_position, bytes_remaining); 
+        bytes_sent += bytes_remaining;
+        return bytes_remaining;
+    } else {
+        memcpy(buf, gps_buffer_position, num_bytes_desired); 
+        bytes_sent += num_bytes_desired;
+        return num_bytes_desired;
+    }
+}
+
+void gps_erase_log()
+{
+    gps_send_msg(PMTK_LOCUS_ERASE_FLASH);
+}
+
+void gps_start_logging()
+{
+    gps_send_msg(PMTK_LOCUS_STARTLOG);
+}
+
+void gps_stop_logging()
+{
+    gps_send_msg(PMTK_LOCUS_STOPLOG);
 }

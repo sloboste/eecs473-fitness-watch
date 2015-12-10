@@ -80,7 +80,7 @@ void lcd_builder_build_gps()
     lcd_Cursor.row++;
     lcd_transferSmallNumInt((int)watch_data_gps.longitude[3]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.longitude[4]-'0');
-    lcd_transferSpecialChar(watch_data_gps.longitude[5]-'0');
+    lcd_transferSpecialChar(watch_data_gps.longitude[5]);
     lcd_transferSmallNumInt((int)watch_data_gps.longitude[6]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.longitude[7]-'0');
     lcd_transferSmallNumInt((int)watch_data_gps.longitude[8]-'0');
@@ -360,7 +360,7 @@ void lcd_builder_build_top_bar(bool time)
     }
     lcd_setCursor(0,1);
 
-    // FIXME change back to battery icon
+    // FIXME change back to battery icon when fuel gauge works on PCB
     //lcd_transferBatteryLevel(watch_data_battery_level);
     lcd_transferBatteryLevel(70);
     //lcd_transferSmallNumInt(watch_data_battery_level);
@@ -375,7 +375,14 @@ void lcd_builder_build_top_bar(bool time)
     } else {
         lcd_Cursor.row += 2;
     }
-    lcd_Cursor.row += 3;
+
+    lcd_Cursor.row++;
+    if (watch_data_gps_logging_on) {
+        lcd_transferChar('l');
+    } else {
+        lcd_Cursor.row++;
+    }
+    lcd_Cursor.row++;
 
     if (time) {
         if (date_time.hours < 10) {

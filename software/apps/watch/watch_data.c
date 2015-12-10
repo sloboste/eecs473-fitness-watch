@@ -64,6 +64,7 @@ void watch_data_run_timer_reset()
 
 void watch_data_init()
 {
+    watch_data_gps_logging_on = false;
     watch_data_bluetooth_state = BLE_STATE_IDLE;
     watch_data_battery_level = 0;
     watch_data_stopwatch_timer_reset();
