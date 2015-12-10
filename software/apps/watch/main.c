@@ -430,25 +430,20 @@ int main(void)
 
     // Init time keeping mechanism
     date_time_init(on_minute_change, on_day_change);
-    //flash_load_date_time(&date_time); // FIXME uncomment when done testing
+    flash_load_date_time(&date_time);
 
     // Init SPI, LCD, and state machine
     spi_init(SPI_SCK_PIN, SPI_MISO_PIN, SPI_MOSI_PIN, SPI_SS_PIN);
     state_machine_init();
 
-    // TODO
     // Init UART, GPS
     uart_adapter_init(PIN_RXD, PIN_TXD, PIN_RTS, PIN_CTS);
     gps_init();
-    //gps_config();
-    //gps_enable();
-    //gps_get_info(&gps_info, GPS_TYPE_GPRMC); // TODO test
     gps_disable();
 
     // Init BLE
     ble_init(request_handler, state_machine_on_ble_adv_con);
 
-    // TODO decide if this will be started immediately
     // Start the timer for seconds time keeping and sensor polling
     // This must be the last thing before the main loop
     timer_start_1hz_periodic_0();
