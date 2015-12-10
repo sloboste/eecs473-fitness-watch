@@ -20,6 +20,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -38,6 +40,7 @@ import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -46,12 +49,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
-/**
- * For a given BLE device, this Activity provides the user interface to connect, display data,
- * and display GATT services and characteristics supported by the device.  The Activity
- * communicates with {@code BluetoothLeService}, which in turn interacts with the
- * Bluetooth LE API.
- */
 public class DeviceControlActivity extends Activity {
     private final static String TAG = DeviceControlActivity.class.getSimpleName();
 
@@ -72,6 +69,9 @@ public class DeviceControlActivity extends Activity {
 
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+
+    private double lat = 42.291;
+    private double lon = -83.715;
 
     ArrayList<String> SavedPacketData = new ArrayList<>();
 
@@ -230,7 +230,7 @@ public class DeviceControlActivity extends Activity {
                         }
                     });
                     Thread.sleep(10000);
-                   /* while (!isInterrupted()) {
+                   while (!isInterrupted()) {
                         Thread.sleep(1000);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -263,7 +263,7 @@ public class DeviceControlActivity extends Activity {
 //                                updateCharacteristic(SampleGattAttributes.REQUEST_GPS_LOG);
 //                            }
 //                        });
-                    }*/
+                    }
                 } catch (InterruptedException e) {
                 }
             }
@@ -275,9 +275,21 @@ public class DeviceControlActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Open Locaion in Google Maps
-                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", 42.291, -83.715, 42.291, -83.715);
+                String uri = String.format(Locale.ENGLISH, "geo:%f,%f?q=%f,%f", lat, lon, lat, lon);
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 startActivity(intent);
+            }
+        });
+
+        final Button button2 = (Button) findViewById(R.id.bRoute);
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Open GPS Parser: https://learn.adafruit.com/custom/ultimate-gps-parser
+                String url = "https://learn.adafruit.com/custom/ultimate-gps-parser";
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+
             }
         });
 
@@ -344,6 +356,7 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
+    //converts hex string to ascii string
     private String hex2s(String s){
         StringBuilder output = new StringBuilder();
         for (int i = 0; i < s.length(); i+=2) {
@@ -352,6 +365,7 @@ public class DeviceControlActivity extends Activity {
         }
         return output.toString();
     }
+
 
     // Sets TextViews to appropriate values by parsing data
     // data: a packet of data from BLE
@@ -383,8 +397,7 @@ public class DeviceControlActivity extends Activity {
                 display_data = data.substring(26, data.length());                                   //get data portion
                 display_data = display_data.replaceAll("\\s+", "");                                 //remove whitespace
                 display_data = display_data.substring(0, data_length * 2);
-                display_data = hex2s(display_data);
-                System.out.println(display_data);
+
                 //int disp_data = Integer.parseInt(display_data.substring(0, data_length * 2), 16);   //Grab only the relevent data
                 //display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
             }catch(Exception ex){
@@ -399,30 +412,65 @@ public class DeviceControlActivity extends Activity {
                         //packet_data = String.format("%040x", new BigInteger(1, packet_data.getBytes(/*YOUR_CHARSET?*/)));
                         stringBuilder.append(packet_data);
                     }
-                    //display_data = String.format("%040x", new BigInteger(1, display_data.getBytes(/*YOUR_CHARSET?*/)));
+                    display_data = hex2s(display_data);
+                    System.out.println(display_data);
                     display_data = stringBuilder.append(display_data).toString();
 
                     //clear it for next use
                     SavedPacketData.clear();
                 }
                 if (packet_type == SampleGattAttributes.REPLY_PED_STEP_COUNT) {
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvPed.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_BATTERY_LEVEL) {
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     //append percent sign
                     tvBat.setText(display_data+"%");
                     pbBattery.setProgress(Integer.parseInt(display_data));
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LATITUDE) {
+                    display_data = hex2s(display_data);
                     tvGPSlat.setText(display_data);
+                    //change d m mf to df
+                    int degree = Integer.parseInt(display_data.substring(0,3));
+                    double minute = Double.parseDouble(display_data.substring(4, 11));
+                    char sign = display_data.charAt(display_data.length()-1);
+                    lat = degree + minute/60;
+
+                    if(sign == 'W' || sign == 'S'){
+                        lat = -lat;
+                    }
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LONGITUDE) {
+                    display_data = hex2s(display_data);
                     tvGPSlong.setText(display_data);
+                    //change d m mf to df
+                    int degree = Integer.parseInt(display_data.substring(0,3));
+                    double minute = Double.parseDouble(display_data.substring(4, 11));
+                    char sign = display_data.charAt(display_data.length() - 1);
+                    lon = degree + minute/60;
+
+                    if(sign == 'W' || sign == 'S'){
+                        lon = -lon;
+                    }
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_SPEED) {
+                    int disp_data = Integer.parseInt(display_data, 16);   //Grab only the relevent data
+                    display_data = Integer.toString(disp_data & 0x00000000ffffffff);                    //convert
                     tvGPSs.setText(display_data);
                 } else if (packet_type == SampleGattAttributes.REPLY_GPS_LOG) {
                     tvGPSl.setText(display_data);
-                    System.out.println("Full Dump: " + display_data);
+                    //System.out.println("Full Dump: " + display_data);
+
+                    //copy data
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("label", display_data);
+                    clipboard.setPrimaryClip(clip);
+                    Toast.makeText(getApplicationContext(), "Logged Copied to Clipboard", Toast.LENGTH_LONG).show();
                 }
             }else{
                 //SavedPacketData.add(display_data);
+                display_data = hex2s(display_data);
+                System.out.println(display_data);
                 SavedPacketData.add(display_data);
             }
         }

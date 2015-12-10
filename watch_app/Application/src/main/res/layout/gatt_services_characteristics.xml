@@ -174,18 +174,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:layout_weight="0.80">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_gpslog"
-            android:textSize="18sp" />
+        android:weightSum="1" >
 
         <Space
             android:layout_width="5dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_weight="0.46" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="View Route"
+            android:id="@+id/bRoute" />
     </LinearLayout>
 
     <!--<LinearLayout-->
@@ -315,10 +315,11 @@
     <TextView
         android:id="@+id/tvGPSl"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
+        android:layout_height="395dp"
         android:text="tvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSltvGPSl"
         android:textSize="18sp"
-        android:editable="true" />
+        android:editable="true"
+        android:visibility="invisible" />
 
     <LinearLayout android:orientation="horizontal"
         android:layout_width="match_parent"
