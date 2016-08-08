@@ -10,16 +10,16 @@ Steven Sloboda
 ## Pictures
 
 
-![Watch on wrist](images/watch_on_wrist.png "Watch on wrist")
+![Watch on wrist](images/watch_on_wrist.jpg "Watch on wrist")
 
 
-![Watch on case open](images/watch_case_open.png "Watch case open")
+![Watch on case open](images/watch_case_open.jpg "Watch case open")
 
 
-![Watch PCB](images/watch_pcb.png "Watch PCB")
+![Watch PCB](images/watch_pcb.jpg "Watch PCB")
 
 
-![Watch board schematic](images/watch_board_schematic.png "Watch board schematic")
+![Watch board schematic](images/watch_board_schematic.jpg "Watch board schematic")
 
 
 ## Setup
