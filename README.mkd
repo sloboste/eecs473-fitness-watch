@@ -7,6 +7,21 @@ Tyler Kohan
 Amit Shah                                                                       
 Steven Sloboda  
 
+## Pictures
+
+
+![Watch on wrist](images/watch_on_wrist.png "Watch on wrist")
+
+
+![Watch on case open](images/watch_case_open.png "Watch case open")
+
+
+![Watch PCB](images/watch_pcb.png "Watch PCB")
+
+
+![Watch board schematic](images/watch_board_schematic.png "Watch board schematic")
+
+
 ## Setup
 * Download the jlink software for your specific platmform from https://www.segger.com/jlink-software.html
 * Download the GCC ARM Embedded Toolchain from https://launchpad.net/gcc-arm-embedded/+download or if you're running Ubuntu https://launchpad.net/~terry.guo/+archive/ubuntu/gcc-arm-embedded works very well
